@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+
+<html class="no-js">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1.0, width=device-width, maximum-scale=1.0" />
+  <title>Log In</title>
+
+  <!-- <link rel="stylesheet" href="//web.ccpgamescdn.com/shared/webfonts/shentox/webfont.css"> -->
+  <link href="/login_assets/css/webfont.css" rel="stylesheet" type="text/css"/>
+  <link href="/login_assets/css/style.min.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body id="loginbody" class="en">
+  <div id="container">
+    <header>
+      <a href="#" class="logo">
+        <img src="/login_assets/css/subtile-logo5.png" /><span> </span>
+      </a>
+    </header>
+    <section id="main">
+
+      <h1>Log in to your account</h1>
+
+      <div id="ValidationContaiarcparcner"></div>
+
+      <form action="./" method="post">
+        <input name="__RequestVerificationToken" type="hidden" value=""/>
+        <div id="PasswordHidden" style="display: none;">
+          <p class="info">Please log in by clicking the third party login provider button below or <a href="#" id="LogInWithEmailAnchor">login with email and password</a>.</p>
+        </div>
+
+        <div id="PasswordVisible" >
+          <fieldset>
+            <legend class="visuallyhidden">Account Information</legend>
+            <div class="field">
+              <label for="UserName">Username</label>
+              <input id="UserName" name="UserName" type="text" value="" />
+            </div>
+            <div class="field">
+              <label for="Password">Password</label>
+              <input id="Password" name="Password" type="password" />
+            </div>
+            <div class="checkbox">
+              <label class="remember">
+                <input id="RememberMe" name="RememberMe" type="checkbox" value="true" />
+                <input name="RememberMe" type="hidden" value="false" />Remember me?
+              </label>
+            </div>
+            <div class="submit">
+              <input class="btn btn-blue" id="submitButton" type="submit" value="Log In" />
+              <a class="forgot" href="https://secure.eveonline.com/forgotpassword.aspx">Forgot password?</a>
+            </div>
+          </fieldset>
+        </div>
+        <div class="thirdparty">
+          <p class="login-with">Other sign-in services</p>
+          <div>
+            <a href="/account/external">
+              <i class="fa fa-facebook"></i>
+            </a>
+          </div>
+          <div>
+            <a href="/account/external" class="steam">
+              <i class="fa fa-steam"></i>
+            </a>
+          </div>
+        </div>
+      </form>
+      <script type="text/javascript" nonce="4gpiR+cDcUGL3+D7mOmA+Q==">
+        document.getElementById("UserName").onfocus = function (el, ev) {
+          document.getElementById("UserName").parentElement.classList.add("on");
+        }
+        document.getElementById("Password").onfocus = function () {
+          document.getElementById("Password").parentElement.classList.add("on");
+        }
+        document.getElementById("UserName").onblur = function () {
+          document.getElementById("UserName").parentElement.classList.remove("on");
+        }
+        document.getElementById("Password").onblur = function () {
+          document.getElementById("Password").parentElement.classList.remove("on");
+        }
+
+        document.getElementById("UserName").focus();
+
+        document.getElementById("LogInWithEmailAnchor").onclick = function (el, e) {
+          document.getElementById("PasswordHidden").style.display = "none";
+          document.getElementById("PasswordVisible").style.display = null;
+          document.getElementById("UserName").focus();
+        };
+
+        
+      </script>
+      <section id="new-account">
+        <div class="create-account">
+          <p>
+            New to Subtile?
+            <a href="https://secure.eveonline.com/signup/">Create account</a>
+          </p>
+        </div>
+      </section>
+
+    </section>
+    <footer>
+    </footer>
+  </div>
+
+  <script type="text/javascript" nonce="4gpiR+cDcUGL3+D7mOmA+Q==">
+    document.getElementById("UserName").focus();
+  </script>
+</body>
+</html>

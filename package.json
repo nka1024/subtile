@@ -1,0 +1,31 @@
+{
+  "name": "subtile",
+  "productName": "subtile",
+  "version": "1.0.0",
+  "main": "subtile.js",
+  "devDependencies": {
+    "expose-loader": "0.7.5",
+    "ts-loader": "4.4.2",
+    "typescript": "2.9.2",
+    "webpack": "4.15.0",
+    "webpack-cli": "3.0.8",
+    "webpack-dev-server": "3.1.4",
+    "canvasinput":"1.2.7"
+  },
+  "dependencies": {
+    "phaser": "3.10.1"
+  },
+  "scripts": {
+    "dev": "webpack --mode development && webpack-dev-server --mode development",
+    "build": "webpack --mode production && webpack-dev-server --mode production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nka1024/subtile.git"
+  },
+  "author": "Kirill Nepomnyaschiy <https://github.com/nka1024>",
+  "bugs": {
+    "url": "https://github.com/nka1024/subtile/issues"
+  },
+  "homepage": "https://github.com/nka1024/subtile#readme"
+}

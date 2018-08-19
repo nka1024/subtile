@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+
+<html class="no-js">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1.0, width=device-width, maximum-scale=1.0" />
+  <title>Log In</title>
+
+  <!-- <link rel="stylesheet" href="//web.ccpgamescdn.com/shared/webfonts/shentox/webfont.css"> -->
+  <link href="/login_assets/css/webfont.css" rel="stylesheet" type="text/css" />
+  <link href="/login_assets/css/style.min.1.css" rel="stylesheet" type="text/css" />
+  <script src="./build/bundle.js"></script>
+</head>
+
+<body id="loginbody" class="en">
+    <canvas id="canvas_main"></canvas>
+  <div id="container">
+    <header>
+      <a href="#" class="logo">
+        <img src="/login_assets/css/subtile-logo7.png" /><span> </span>
+      </a>
+    </header>
+    <section id="main">
+      <div id="loginForm"  style="z-index: 1">
+        <h1>create new tilemap</h1>
+        <div id="ValidationContaiarcparcner"></div>
+        <form action="./" method="post">
+          <input name="__RequestVerificationToken" type="hidden" value="" />
+          <div id="PasswordHidden" style="display: none;">
+
+          </div>
+
+          <div id="PasswordVisible">
+            <fieldset>
+              <legend class="visuallyhidden">Account Information</legend>
+
+              <div class="field" style="text-align:center">
+                <!-- <div style="background-color: #111111; width:10%"> -->
+                <div style=" width:150px; margin:auto;">
+                  &nbsp;&nbsp;
+                  <label for="UserName" style="width:40%; text-align: center">Width</label>
+                  &nbsp;&nbsp;&nbsp;
+                  <label for="UserName" style="width:40%; text-align: center">Height</label>
+                  &nbsp;&nbsp;
+                  <br>
+                  <input id="width" name="width" type="text" value="32" style="width:40%;  text-align: center" /> &nbsp;&nbsp;&nbsp;&nbsp;
+                  <input id="height" name="height" type="text" value="32" style="width:40%; text-align: center" />
+                </div>
+                <!-- </div> -->
+                <!-- <div style="background-color: #111111; width:10%"> -->
+                <!-- <label for="UserName">Tilemap name</label> -->
+              </div>
+
+              <div class="field" style="text-align:center">
+                <label for="tilemap_name">Tilemap name</label>
+                <br>
+                <input id="tilemap_name" name="tilemap_name" type="text" value="" style="width:100%; text-align: center" />
+              </div>
+          </div>
+
+
+
+          <!-- <div class="checkbox">
+              <label class="remember">
+                <input id="RememberMe" name="RememberMe" type="checkbox" value="true" />
+                <input name="RememberMe" type="hidden" value="false" />
+              </label>
+            </div>
+            <p class="info">&nbsp;</p> -->
+
+
+
+          <div class="submit">
+            <input class="btn btn-blue" id="submitButton" type="submit" value="Create" />
+            <a class="forgot" href="https://secure.eveonline.com/forgotpassword.aspx">Readme.md</a>
+          </div>
+          </fieldset>
+      </div>
+      </form>
+      <script type="text/javascript" nonce="4gpiR+cDcUGL3+D7mOmA+Q==">
+        // document.getElementById("UserName").onfocus = function (el, ev) {
+        //   document.getElementById("UserName").parentElement.classList.add("on");
+        // }
+        // document.getElementById("Password").onfocus = function () {
+        //   document.getElementById("Password").parentElement.classList.add("on");
+        // }
+        // document.getElementById("UserName").onblur = function () {
+        //   document.getElementById("UserName").parentElement.classList.remove("on");
+        // }
+        // document.getElementById("Password").onblur = function () {
+        //   document.getElementById("Password").parentElement.classList.remove("on");
+        // }
+
+        // document.getElementById("UserName").focus();
+
+        // document.getElementById("LogInWithEmailAnchor").onclick = function (el, e) {
+        //   document.getElementById("PasswordHidden").style.display = "none";
+        //   document.getElementById("PasswordVisible").style.display = null;
+        //   document.getElementById("UserName").focus();
+        // };
+
+
+      </script>
+      <section id="new-account">
+        <div class="create-account">
+          <p>
+            New to Subtile?
+            <a href="https://secure.eveonline.com/signup/">Create account</a>
+          </p>
+        </div>
+      </section>
+
+    </section>
+    <footer>
+    </footer>
+  </div>
+
+  <script type="text/javascript" nonce="4gpiR+cDcUGL3+D7mOmA+Q==">
+    document.getElementById("tilemap_name").focus();
+  </script>
+</body>
+
+</html>

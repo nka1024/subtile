@@ -1,0 +1,401 @@
+﻿* {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline
+}
+
+body,
+select,
+input,
+textarea {
+	color: #fff
+}
+
+input {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+
+body {
+    background: #000 url(/login_assets/site-bg-v5.png) no-repeat center center fixed;
+    background-color: #0b1115;
+	font: 14px/1.231 "Shentox-Light", Arial;
+	line-height: 1.5;
+	background-size: cover;
+	letter-spacing: 1.2px
+}
+
+@font-face {font-family: 'Shentox-Regular';src: url('/login_assets/fonts/33F95B_2_0.eot');src: url('/login_assets/fonts/33F95B_2_0.eot?#iefix') format('embedded-opentype'),url('/login_assets/fonts/33F95B_2_0.woff2') format('woff2'),url('/login_assets/fonts/33F95B_2_0.woff') format('woff'),url('/login_assets/fonts/33F95B_2_0.ttf') format('truetype');}
+  
+@font-face {font-family: 'Shentox-Medium';src: url('/login_assets/fonts/33F95B_3_0.eot');src: url('/login_assets/fonts/33F95B_3_0.eot?#iefix') format('embedded-opentype'),url('/login_assets/fonts/33F95B_3_0.woff2') format('woff2'),url('/login_assets/fonts/33F95B_3_0.woff') format('woff'),url('/login_assets/fonts/33F95B_3_0.ttf') format('truetype');}
+  
+@font-face {font-family: 'Shentox-Light';src: url('/login_assets/fonts/33F95B_4_0.eot');src: url('/login_assets/fonts/33F95B_4_0.eot?#iefix') format('embedded-opentype'),url('/login_assets/fonts/33F95B_4_0.woff2') format('woff2'),url('/login_assets/fonts/33F95B_4_0.woff') format('woff'),url('/login_assets/fonts/33F95B_4_0.ttf') format('truetype');}
+ 
+
+section {
+	display: block
+}
+
+/*     next file      */
+
+header a.logo img {
+	margin-top: 4px;
+	width: 173x;
+	height: 96px
+}
+
+header a.logo span {
+	vertical-align: top
+}
+
+header {
+	text-align: center;
+	padding: 30px 0
+}
+
+h1,
+.submit input {
+	-webkit-font-smoothing: antialiased;
+	font-family: "Shentox-Medium", Arial;
+	text-transform: uppercase
+}
+
+#container {
+	margin: 0 auto
+}
+
+
+
+#main {
+	background: rgba(30, 30, 30, .8);
+	-webkit-backdrop-filter: blur(2px) saturate(125%);
+	backdrop-filter: blur(2px) saturate(125%);
+	padding: 30px;
+	position: relative
+}
+
+#main p,
+#main a,
+#main label {
+	font-size: 16px
+}
+
+#main form p,
+#main form a,
+#main form label {
+	font-size: 14px
+}
+
+h1 {
+	text-align: center;
+	font-family: "Shentox-Medium", Arial;
+	margin-bottom: 30px;
+	font-weight: normal;
+	font-size: 18px;
+	letter-spacing: 2.4px
+}
+
+
+#main table {
+	margin-bottom: 15px
+}
+
+#main p.info {
+	color: #fff;
+	font-size: 15px;
+	line-height: 1.5;
+	padding-right: 35px;
+	margin-bottom: 15px
+}
+
+
+fieldset {
+	padding: 10px 0 0
+}
+
+.field {
+	position: relative;
+	padding: 10px 0 10px 0
+}
+
+.field label {
+	font-family: "Shentox-Regular", Arial;
+	text-transform: uppercase;
+	color: #9b9b9b;
+}
+
+.field.on label {
+	color: #2eaada
+}
+
+.field input {
+	padding: 10px 0 10px 0;
+	width: 100%;
+	color: #fff;
+	font-size: 14px;
+	border: none;
+	transition: border-color ease-in-out .3s;
+	border-bottom: 1px solid #7e888d;
+	background-color: transparent
+}
+
+.field input:focus {
+	border-bottom: 1px solid #2eaada;
+	outline: none
+}
+
+.field select {
+	border: 1px solid #000;
+	padding: 8px;
+	width: 100%;
+	color: #606060;
+	box-shadow: inset 0 0 15px #939292;
+	outline: none;
+	font-size: 16px;
+	line-height: 20px
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+	.field select {
+		background: #fff url(/src/img/dropdown-arrow.png) no-repeat 98% 50%;
+		-webkit-appearance: none
+	}
+	.field select:focus {
+		background: #fff url(/src/img/dropdown-arrow-focus.png) no-repeat 98% 50%
+	}
+}
+
+.field select:focus {
+	border: 1px solid #5e9ac4;
+	box-shadow: inset 0 0 15px #64befb;
+	outline: none;
+	background-color: #eaf2f7
+}
+
+.field option {
+	margin: 5px 0
+}
+
+input[type="checkbox"] {
+	margin-right: 5px;
+	width: auto
+}
+
+.checkbox {
+	float: left;
+	color: #9b9b9b;
+	padding-bottom: 12px;
+	font-family: "Shentox-Light", Arial
+}
+
+.authenticator-checkbox {
+	float: none;
+	padding: 0 0 10px 0
+}
+
+.submit {
+	padding: 5px 0 0;
+	text-align: right
+}
+
+.eula input {
+	text-align: center
+}
+
+.submit input {
+	border: 0;
+	background: #1d1f21;
+	background: rgba(255, 255, 255, .1);
+	padding: 4px 12px;
+	font-size: 125.5%;
+	text-shadow: 1px 1px 2px #7f7f7f;
+	background-image: linear-gradient(bottom, #d3e3eb 40%, #b9d2de 70%);
+	background-image: -ms-linear-gradient(bottom, #d3e3eb 40%, #b9d2de 70%);
+	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(.4, #d3e3eb), color-stop(.7, #b9d2de));
+	color: #202020;
+	border-radius: 3px;
+	border: 1px solid #b9d2de;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#b9d2de', endColorstr='#d3e3eb', GradientType=0)
+}
+
+.submit input:hover {
+	background-image: linear-gradient(bottom, #b9d2de 40%, #98bacd 70%);
+	background-image: -ms-linear-gradient(bottom, #b9d2de 40%, #98bacd 70%);
+	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(.4, #b9d2de), color-stop(.7, #98bacd));
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#98bacd', endColorstr='#b9d2de', GradientType=0)
+}
+
+.submit a.forgot {
+	margin: 15px 0;
+	display: inline-block;
+	color: #03b7ff
+}
+
+.submit a.forgot:hover {
+	color: #2980b9
+}
+
+
+
+
+.submit .btn {
+	font-family: "Shentox-Medium", Arial;
+	letter-spacing: 1.3px;
+	font-size: 16px;
+	border-radius: 0;
+	border: none;
+	padding: 20px 0;
+	text-shadow: none;
+	transition: all ease-in 100ms
+}
+
+.btn:hover {
+	background: rgba(0, 0, 0, .3);
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .2)
+}
+
+.submit .btn-blue {
+	background: #2980b9;
+	color: #fff;
+	width: 100%
+}
+
+
+.submit .continue {
+	float: right;
+	width: 40%
+}
+
+.submit .cancel {
+	background-color: rgba(0, 0, 0, .1);
+	border: 1px solid #fff;
+	display: inline-block;
+	width: 40%;
+	margin-right: 20%
+}
+
+
+
+
+.visuallyhidden {
+	border: 0;
+	clip: rect(0 0 0 0);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px
+}
+
+.visuallyhidden.focusable:active,
+.visuallyhidden.focusable:focus {
+	clip: auto;
+	height: auto;
+	margin: 0;
+	overflow: visible;
+	position: static;
+	width: auto
+}
+
+.invisible {
+	visibility: hidden
+}
+
+.clearfix:before,
+.clearfix:after {
+	content: "\20";
+	display: block;
+	height: 0;
+	overflow: hidden
+}
+
+.clearfix:after {
+	clear: both
+}
+
+.clearfix {
+	zoom: 1
+}
+
+
+#new-account {
+	text-align: center;
+	margin: 60px 0 0 0;
+	left: 0;
+	position: absolute;
+	width: 100%
+}
+
+#new-account h3 {
+	font-family: "Shentox-Regular", Arial;
+	font-size: 20px;
+	margin: 0 0 20px 0;
+	font-weight: normal;
+	letter-spacing: 2px;
+	text-transform: uppercase
+}
+
+#new-account p {
+	font-family: "Shentox-Medium", Arial;
+	font-size: 18px;
+	margin: 0 0 20px 0;
+	text-transform: uppercase;
+	letter-spacing: 1.8px
+}
+
+#new-account a {
+	color: #03b7ff;
+	font-size: 18px
+}
+
+#new-account a:hover {
+	color: #2980b9
+}
+
+
+
+
+@media only screen and (min-width:320px) {
+	#container {
+		width: 90%
+	}
+	header {
+		padding: 10px 0
+	}
+	h1 {
+		font-size: 18px
+	}
+}
+
+@media only screen and (min-width:544px) {
+	#container {
+		width: 504px
+	}
+	header {
+		padding: 10px 0
+	}
+	.thirdparty div {
+		float: right
+	}
+	#main p.login-with {
+		display: inline-block
+	}
+}
+
+@media only screen and (min-width:960px) {
+	#container {
+		width: 460px
+	}
+	header {
+		padding: 35px 0 15px 0
+	}
+	h1 {
+		font-size: 24px;
+		margin-top: 20px
+	}
+}
