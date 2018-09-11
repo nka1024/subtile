@@ -6,16 +6,12 @@
 */
 
 import { Button, ButtonType } from "../uikit/button";
+import { OkPopup } from "../windows/OkPopup";
 
 /// <reference path="./types/canvasinput.d.ts"/>
 
 
 export class EditorRootScene extends Phaser.Scene {
-
-  // private canvas2: HTMLCanvasElement;
-  private ci:CanvasInput;
-  private titleText: Phaser.GameObjects.Text;
-  // private inputField:CanvasInput;
   constructor() {
     super({
       key: "EditorRootScene"
@@ -23,77 +19,24 @@ export class EditorRootScene extends Phaser.Scene {
   }
 
   preload() {
-      Button.load(this);
+    Button.load(this);
   }
-  create(data):void {
+
+  create(data): void {
+
+    var wm = document.querySelector('.window_manager') as HTMLElement;
+    OkPopup.initialize(document);
     
-    // this.sys.canvas.ownerDocument
-    // var c = document.getElementById('canvas_main');
-    // console.log(c);
-
-
-
-    // var input = document.createElement('input');
-    // input.type = 'text';
-    // input.style.position = 'absolute';
-    // input.style.left = '10px';
-    // input.style.top = '10px';
-    // input.style.width = '300px';
-    // input.style.height = '60px';
-    // document.body.appendChild(input);
-
-
-    // input.style.zIndex = 0;
-    // document.body.appendChild()
-    // this.canvas2 = this.sys.canvas.ownerDocument.createElement('canvas');
-    // this.canvas2.setAttribute('width', "300");
-    // this.canvas2.setAttribute('height', "100");
-    // this.canvas2.style.backgroundColor = "0xffffff";
-    // document.body.appendChild(this.canvas2);
-
-    // this.sys.events.on("render",()=> {
-    //   this.ci.render();
-    // });
-    // this.ci = new CanvasInput({
-    //   x: 20, y: 460,
-    //   canvas: this.sys.canvas,
-    //   fontSize: 18,
-    //   fontFamily: 'Arial',
-    //   fontColor: '#212121',
-    //   fontWeight: 'bold',
-    //   width: 256/2 - 20,
-    //   height: 20,
-    //   padding: 8,
-    //   borderWidth: 1,
-    //   borderColor: '#000',
-    //   borderRadius: 3,
-    //   boxShadow: '1px 1px 0px #fff',
-    //   innerShadow: '0px 0px 5px rgba(0, 0, 0, 0.5)',
-    //   placeHolder: 'Enter message here...'
-    // })
-    
-    
-    // this.titleText = this.add.text(
-    //   this.sys.canvas.width/2 - 50, 10,
-    //   '',
-    //   { fontFamily: 'system-ui', fontSize: 32, color: '#ffffff' }
-    // );
-
-    // Buttons
-    // var okButton = Button.create(this, 128/2 + 20, 300, ButtonType.ok, "OK");
-    // var expandButton = Button.create(this, 128/2 + 20, 420, ButtonType.expand, "EXPAND");
-    var plainButton = Button.create(this, 128/2 + 20, 20, ButtonType.plain, "show menu");
-    plainButton.onclick = () => {
-      console.log('lala');
-      var c = document.getElementById('container');
-      c.hidden = !c.hidden;
-    };
+    var popup = new OkPopup(wm, "Hello", "This is an instance of OkPopup");
+    popup.show();
+    popup.okButton.addEventListener('click', () => {
+      var popup2 = new OkPopup(wm, "Hello again", "I am the other instance of OkPopup");
+      popup2.show();
+    });
 
   }
 
-  update():void {
-    // this.titleText.x = this.sys.canvas.width/2 - this.titleText.width/2;
+  update(): void {
   }
 
-  
 }

@@ -25,8 +25,6 @@ export class Game extends Phaser.Game {
 
 window.onload = () => {
   var c = document.getElementById('canvas_main') as HTMLCanvasElement;
-  console.log('document: ' + document);
-  console.log('canvas: ' + c);
   const config: GameConfig = {
     title: "subtile",
     url: "https://github.com/nka1024/subtile",

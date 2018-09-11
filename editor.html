@@ -14,21 +14,26 @@
 </head>
 
 <body id="loginbody" class="en">
-    <canvas id="canvas_main"></canvas>
-  <div id="container">
+  <canvas id="canvas_main" style="position: absolute; z-index: -100;"></canvas>
+
+
+  <div class="window_manager">
+  </div>
+
+  <!-- LOGIN FORM -->
+  <div id="container" class="login_container" style="position: relative" hidden=true>
     <header>
       <a href="#" class="logo">
         <img src="/login_assets/css/subtile-logo7.png" /><span> </span>
       </a>
     </header>
     <section id="main">
-      <div id="loginForm"  style="z-index: 1">
+      <div id="loginForm" style="z-index: 1;">
         <h1>create new tilemap</h1>
         <div id="ValidationContaiarcparcner"></div>
         <form action="./" method="post">
           <input name="__RequestVerificationToken" type="hidden" value="" />
           <div id="PasswordHidden" style="display: none;">
-
           </div>
 
           <div id="PasswordVisible">
@@ -60,17 +65,6 @@
           </div>
 
 
-
-          <!-- <div class="checkbox">
-              <label class="remember">
-                <input id="RememberMe" name="RememberMe" type="checkbox" value="true" />
-                <input name="RememberMe" type="hidden" value="false" />
-              </label>
-            </div>
-            <p class="info">&nbsp;</p> -->
-
-
-
           <div class="submit">
             <input class="btn btn-blue" id="submitButton" type="submit" value="Create" />
             <a class="forgot" href="https://secure.eveonline.com/forgotpassword.aspx">Readme.md</a>
@@ -78,30 +72,7 @@
           </fieldset>
       </div>
       </form>
-      <script type="text/javascript" nonce="4gpiR+cDcUGL3+D7mOmA+Q==">
-        // document.getElementById("UserName").onfocus = function (el, ev) {
-        //   document.getElementById("UserName").parentElement.classList.add("on");
-        // }
-        // document.getElementById("Password").onfocus = function () {
-        //   document.getElementById("Password").parentElement.classList.add("on");
-        // }
-        // document.getElementById("UserName").onblur = function () {
-        //   document.getElementById("UserName").parentElement.classList.remove("on");
-        // }
-        // document.getElementById("Password").onblur = function () {
-        //   document.getElementById("Password").parentElement.classList.remove("on");
-        // }
 
-        // document.getElementById("UserName").focus();
-
-        // document.getElementById("LogInWithEmailAnchor").onclick = function (el, e) {
-        //   document.getElementById("PasswordHidden").style.display = "none";
-        //   document.getElementById("PasswordVisible").style.display = null;
-        //   document.getElementById("UserName").focus();
-        // };
-
-
-      </script>
       <section id="new-account">
         <div class="create-account">
           <p>
@@ -115,6 +86,27 @@
     <footer>
     </footer>
   </div>
+  <!-- // LOGIN FORM -->
+
+  <!-- OK_POPUP prefab-->
+  <div class="ok_popup_prefab">
+    <div id="container" class="empty_container centered" style="position: absolute; top: 150px;">
+      <section id="main">
+        <div id="loginForm">
+          <h1 class="text_title" style="text-align: center;"></h1>
+          <h2 class="text_message" style="text-align: center;"></h2>
+          <br/>
+          <form>
+            <div class="submit">
+              <input class="btn btn-blue submit_button" id="submitButton" type="button" value="OK" />
+            </div>
+            </fieldset>
+        </div>
+        </form>
+      </section>
+    </div>
+  </div>
+  <!-- // OK_POPUP prefab -->
 
   <script type="text/javascript" nonce="4gpiR+cDcUGL3+D7mOmA+Q==">
     document.getElementById("tilemap_name").focus();

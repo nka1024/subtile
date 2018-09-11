@@ -21,7 +21,7 @@ input {
 }
 
 body {
-    background: #000 url(/login_assets/site-bg-v5.png) no-repeat center center fixed;
+    /* background: #000 url(/login_assets/site-bg-v5.png) no-repeat center center fixed; */
     background-color: #0b1115;
 	font: 14px/1.231 "Shentox-Light", Arial;
 	line-height: 1.5;
@@ -68,7 +68,12 @@ h1,
 	margin: 0 auto
 }
 
-
+.centered {
+	left: 0; 
+	right: 0; 
+	margin-left: auto; 
+	margin-right: auto
+}
 
 #main {
 	background: rgba(30, 30, 30, .8);
@@ -222,12 +227,12 @@ input[type="checkbox"] {
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#b9d2de', endColorstr='#d3e3eb', GradientType=0)
 }
 
-.submit input:hover {
+/* .submit input:hover {
 	background-image: linear-gradient(bottom, #b9d2de 40%, #98bacd 70%);
 	background-image: -ms-linear-gradient(bottom, #b9d2de 40%, #98bacd 70%);
 	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(.4, #b9d2de), color-stop(.7, #98bacd));
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#98bacd', endColorstr='#b9d2de', GradientType=0)
-}
+} */
 
 .submit a.forgot {
 	margin: 15px 0;
