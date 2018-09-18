@@ -6,6 +6,10 @@
  */
 
 export let CONST = {
+  LAND_MAX: 4,
+  TREE_MAX: 9,
+  ROCK_MAX: 4,
+  
   DEV: false,
 
   UI_THEME: "dark_blue",

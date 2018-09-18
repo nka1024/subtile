@@ -16,75 +16,150 @@
 <body id="loginbody" class="en">
   <canvas id="canvas_main" style="position: absolute; z-index: -100;"></canvas>
 
-
   <div class="window_manager">
   </div>
 
-  <!-- LOGIN FORM -->
-  <div id="container" class="login_container" style="position: relative" hidden=true>
-    <header>
-      <a href="#" class="logo">
-        <img src="/login_assets/css/subtile-logo7.png" /><span> </span>
-      </a>
-    </header>
-    <section id="main">
-      <div id="loginForm" style="z-index: 1;">
-        <h1>create new tilemap</h1>
-        <div id="ValidationContaiarcparcner"></div>
-        <form action="./" method="post">
-          <input name="__RequestVerificationToken" type="hidden" value="" />
-          <div id="PasswordHidden" style="display: none;">
+  <!-- OBJECTS FORM -->
+  <div class="objects_list_window_prefab">
+    <div id="container" class="objects_container lefted" hidden=false style="display: block; position: absolute; width: 800px; left: 100px; ">
+      <section id="main" style="padding: 10px; vertical-align: middle ">
+        <div id="loginForm">
+          <div class="obj_list" style="vertical-align: middle">
           </div>
-
-          <div id="PasswordVisible">
-            <fieldset>
-              <legend class="visuallyhidden">Account Information</legend>
-
-              <div class="field" style="text-align:center">
-                <!-- <div style="background-color: #111111; width:10%"> -->
-                <div style=" width:150px; margin:auto;">
-                  &nbsp;&nbsp;
-                  <label for="UserName" style="width:40%; text-align: center">Width</label>
-                  &nbsp;&nbsp;&nbsp;
-                  <label for="UserName" style="width:40%; text-align: center">Height</label>
-                  &nbsp;&nbsp;
-                  <br>
-                  <input id="width" name="width" type="text" value="32" style="width:40%;  text-align: center" /> &nbsp;&nbsp;&nbsp;&nbsp;
-                  <input id="height" name="height" type="text" value="32" style="width:40%; text-align: center" />
-                </div>
-                <!-- </div> -->
-                <!-- <div style="background-color: #111111; width:10%"> -->
-                <!-- <label for="UserName">Tilemap name</label> -->
-              </div>
-
-              <div class="field" style="text-align:center">
-                <label for="tilemap_name">Tilemap name</label>
-                <br>
-                <input id="tilemap_name" name="tilemap_name" type="text" value="" style="width:100%; text-align: center" />
-              </div>
-          </div>
-
-
-          <div class="submit">
-            <input class="btn btn-blue" id="submitButton" type="submit" value="Create" />
-            <a class="forgot" href="https://secure.eveonline.com/forgotpassword.aspx">Readme.md</a>
-          </div>
-          </fieldset>
-      </div>
-      </form>
-
-      <section id="new-account">
-        <div class="create-account">
-          <p>
-            New to Subtile?
-            <a href="https://secure.eveonline.com/signup/">Create account</a>
-          </p>
-        </div>
       </section>
+    </div>
+  </div>
+  <!-- // OBJECTS FORM -->
 
-    </section>
-    <footer>
-    </footer>
+  <!-- MENU FORM -->
+  <div class="menu_window_prefab">
+    <div id="container" class="menu_container lefted" hidden=false style="display: block; position: absolute; width: 100px;">
+      <section id="main" style="padding: 5px;">
+        <div id="loginForm">
+          <form action="./" method="post">
+            <div class="submit">
+              <input class="btn btn-blue land_button" id="landButton" type="button" value="LAND" />
+            </div>
+            <div class="submit">
+              <input class="btn btn-blue objects_button" id="objectsButton" type="button" value="OBJECTS" />
+            </div>
+            <div class="submit">
+              <input class="btn btn-blue grid_button" id="gridButton" type="button" value="GRID" />
+            </div>
+            <div class="submit">
+              <input class="btn btn-blue export_button" id="exportButton" type="button" value="EXPORT" />
+            </div>
+            </fieldset>
+        </div>
+        </form>
+      </section>
+      <footer>
+      </footer>
+    </div>
+  </div>
+  <!-- // MENU FORM -->
+
+  <!-- EXPORT FORM -->
+  <div class="export_window_prefab">
+    <div id="container" class="export_container centered" hidden=false style="display: block; position: absolute;">
+      <header>
+        <br><br>
+      </header>
+      <section id="main">
+        <div id="loginForm">
+          <h1 class="text_title"></h1>
+          <form action="./" method="post">
+            <input name="__RequestVerificationToken" type="hidden" value="" />
+            <div id="PasswordHidden" style="display: none;">
+            </div>
+            <div class="input" style="text-align:center">
+              <textarea id="wmd-input" class="" style="width:98%; height:100px; padding:5px; color:#000" cols=10 rows=10
+                name="post-text"></textarea>
+            </div>
+
+            <div class="submit" style="text-align:center">
+              <input class="btn btn-blue export_button" id="exportButton" type="button" value="EXPORT" style="width:30%" />
+              <input class="btn btn-blue import_button" id="importButton" type="button" value="IMPORT" style="width:30%" />
+              <input class="btn btn-blue cancel_button" id="cancelButton" type="button" value="CANCEL" style="width:30%" />
+            </div>
+        </div>
+        </form>
+
+      </section>
+      <footer>
+      </footer>
+    </div>
+  </div>
+  <!-- // EXPORT FORM -->
+
+  <!-- LOGIN FORM -->
+  <div class="newmap_window_prefab">
+    <div id="container" class="newmap_container centered" hidden=false style="display: block; position: absolute;">
+      <header>
+        <a href="#" class="logo">
+          <img src="/login_assets/css/subtile-logo7.png" /><span> </span>
+        </a>
+      </header>
+      <section id="main">
+        <div id="loginForm">
+          <h1 class="text_title">create new tilemap</h1>
+          <div id="ValidationContaiarcparcner"></div>
+          <form action="./" method="post">
+            <input name="__RequestVerificationToken" type="hidden" value="" />
+            <div id="PasswordHidden" style="display: none;">
+            </div>
+
+            <div id="PasswordVisible">
+              <fieldset>
+                <legend class="visuallyhidden">Account Information</legend>
+
+                <div class="field" style="text-align:center">
+                  <!-- <div style="background-color: #111111; width:10%"> -->
+                  <div style=" width:150px; margin:auto;">
+                    &nbsp;&nbsp;
+                    <label for="UserName" style="width:40%; text-align: center">Width</label>
+                    &nbsp;&nbsp;&nbsp;
+                    <label for="UserName" style="width:40%; text-align: center">Height</label>
+                    &nbsp;&nbsp;
+                    <br>
+                    <input id="width" name="width" class="width_input" type="text" value="32" style="width:40%;  text-align: center" />
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <input id="height" name="height" class="height_input" type="text" value="32" style="width:40%; text-align: center" />
+                  </div>
+                  <!-- </div> -->
+                  <!-- <div style="background-color: #111111; width:10%"> -->
+                  <!-- <label for="UserName">Tilemap name</label> -->
+                </div>
+
+                <div class="field" style="text-align:center">
+                  <label for="tilemap_name">Tilemap name</label>
+                  <br>
+                  <input id="tilemap_name" class="map_name_input" name="tilemap_name" type="text" value="" style="width:100%; text-align: center" />
+                </div>
+            </div>
+
+
+            <div class="submit">
+              <input class="btn btn-blue submit_button" id="submitButton" type="button" value="Create" />
+              <a class="forgot" href="https://secure.eveonline.com/forgotpassword.aspx">Readme.md</a>
+            </div>
+            </fieldset>
+        </div>
+        </form>
+
+        <section id="new-account">
+          <div class="create-account">
+            <p>
+              New to Subtile?
+              <a href="https://secure.eveonline.com/signup/">Create account</a>
+            </p>
+          </div>
+        </section>
+
+      </section>
+      <footer>
+      </footer>
+    </div>
   </div>
   <!-- // LOGIN FORM -->
 
@@ -95,7 +170,7 @@
         <div id="loginForm">
           <h1 class="text_title" style="text-align: center;"></h1>
           <h2 class="text_message" style="text-align: center;"></h2>
-          <br/>
+          <br />
           <form>
             <div class="submit">
               <input class="btn btn-blue submit_button" id="submitButton" type="button" value="OK" />

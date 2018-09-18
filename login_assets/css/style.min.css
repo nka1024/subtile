@@ -15,7 +15,7 @@ textarea {
 }
 
 body {
-    background: #000 url(/login_assets/site-bg-v5.png) no-repeat center center fixed;
+    background: #000 url(/login_assets/site-bg-v5.png) no-repeat center center fixed ;
     background-color: #0b1115;
 	font: 14px/1.231 "Shentox-Light", Arial;
 	line-height: 1.5;
@@ -52,7 +52,7 @@ header {
 }
 
 h1,
-.submit input {
+.submit input, textarea{
 	-webkit-font-smoothing: antialiased;
 	font-family: "Shentox-Medium", Arial;
 	text-transform: uppercase
@@ -156,6 +156,17 @@ fieldset {
 	background-color: transparent
 }
 
+.field textarea {
+	padding: 10px 0 10px 0;
+	width: 100%;
+	color: #fff;
+	font-size: 14px;
+	border: none;
+	transition: border-color ease-in-out .3s;
+	border-bottom: 1px solid #7e888d;
+	background-color: transparent
+}
+
 .field input:focus {
 	border-bottom: 1px solid #2eaada;
 	outline: none
@@ -212,7 +223,7 @@ input[type="checkbox"] {
 
 .submit {
 	padding: 5px 0 0;
-	text-align: right
+	text-align: center
 }
 
 .eula input {
@@ -279,7 +290,7 @@ input[type="checkbox"] {
 
 
 .submit .continue {
-	float: right;
+	float: center;
 	width: 40%
 }
 

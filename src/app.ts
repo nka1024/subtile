@@ -43,7 +43,9 @@ window.onload = () => {
     disableContextMenu: true,
     // backgroundColor: "#b8b021",
     backgroundColor: "#0c0f12",
-    pixelArt: false,
+    // backgroundColor: "#b8b021",
+
+    pixelArt: true,
     antialias: false,
     canvas: c,
     canvasStyle: "position: fixed; top: 0; left: 0"

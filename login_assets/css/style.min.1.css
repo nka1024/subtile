@@ -75,6 +75,10 @@ h1,
 	margin-right: auto
 }
 
+.lefted {
+	left: 0; 
+	margin-left: auto; 
+}
 #main {
 	background: rgba(30, 30, 30, .8);
 	-webkit-backdrop-filter: blur(2px) saturate(125%);
