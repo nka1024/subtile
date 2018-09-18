@@ -13,14 +13,14 @@ export class ObjectsListWindow extends BaseWindow {
     static innerHtml:string;
 
     // public
-    public objects:Array<HTMLElement>;
+    public onObjectClick:Function;
 
     // private 
     private filenamePrefix:string;
     private itemWidth:number;
     private itemHeight:number;
     private maxIdx:number
-
+    private objects:Array<HTMLElement>;
     
     constructor(filenamePrefix:string, maxIdx:number, itemWidth:number, itemHeight:number) {
         super();
@@ -32,22 +32,29 @@ export class ObjectsListWindow extends BaseWindow {
 
         this.objects = [];
         let listParent = this.element.querySelector(".obj_list");
-        for(let i = 1; i <= this.maxIdx; i++) {
-            let filename = this.filenamePrefix + '_' + i + '.png';
+        for(let idx = 1; idx <= this.maxIdx; idx++) {
+            let filename = this.filenamePrefix + '_' + idx + '.png';
             let element = document.createElement('input');
-            element.className = "btn btn-blue land_button";
+            element.className = "btn btn-blue land_button"+idx;
             element.id = "landButton"
             element.style.width = this.itemWidth + 'px';
             element.style.height = this.itemHeight + 'px';
             element.style.verticalAlign = "middle";
             element.type = "button";
             element.style.background = 'rgba(184,176,33,1) url(/assets/tilemap/'+filename+') no-repeat center';
-
+            element.style.marginRight = '5px';
+            element.addEventListener('click', ()=>{
+                if (this.onObjectClick) {
+                    this.onObjectClick(idx)
+                }
+            });
+            
             listParent.appendChild(element);
             this.objects.push(element);
-            listParent.innerHTML += '&nbsp;'
         }
     }
+
+     
 
     // Window HTML properties
     protected getWindowName(): string { return "objects_list_window" }

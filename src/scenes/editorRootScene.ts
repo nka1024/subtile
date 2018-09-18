@@ -5,7 +5,6 @@
 * @license      Apache 2.0
 */
 
-import { Button, ButtonType } from "../uikit/button";
 import { OkPopup } from "../windows/OkPopup";
 import { NewmapWindow } from "../windows/NewmapWindow";
 import { MenuWindow } from "../windows/MenuWindow";
@@ -51,6 +50,9 @@ export class EditorRootScene extends Phaser.Scene {
         this.list.destroy()
       }
       this.list = new ObjectsListWindow("tree", CONST.TREE_MAX, 40, 40);
+      this.list.onObjectClick = (idx:number) => {
+        console.log('clicked tree ' + idx);
+      }
       this.list.show()
     })
 
@@ -59,6 +61,9 @@ export class EditorRootScene extends Phaser.Scene {
         this.list.destroy()
       }
       this.list = new ObjectsListWindow("land", CONST.LAND_MAX, 128, 128);
+      this.list.onObjectClick = (idx:number) => {
+        console.log('clicked land ' + idx);
+      }
       this.list.show()
     });
 
@@ -66,13 +71,13 @@ export class EditorRootScene extends Phaser.Scene {
       var exportWindow = new ExportWindow("EXPORT MAP DATA");
       exportWindow.show();
     });
-    
-
   }
 
 
   update(): void {
   }
+
+
 
   addBackground() {
     var bgX = this.sys.canvas.width/2;
