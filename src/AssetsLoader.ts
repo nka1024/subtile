@@ -16,6 +16,8 @@ export let ASSETS = {
 export class AssetsLoader {
   public static preload(scene: Phaser.Scene) {
     scene.load.image("placeholder", "./assets/placeholder.png");
+    scene.load.image("grid_128_50", "./assets/grid_128_a50.png");
+    scene.load.image("grid_128_30", "./assets/grid_128_a50.png");
     scene.load.image("cursor", "./assets/cursor.png");
     for (let idx = 1; idx <= ASSETS.TERRAIN_MAX; idx++) {
       scene.load.image("terrain_" + idx, "./assets/tilemap/terrain_" + idx + ".png");

@@ -41,7 +41,7 @@ window.onload = () => {
     },
     physics: null,
     disableContextMenu: true,
-    backgroundColor: "#777777",
+    backgroundColor: "#000000",
     // backgroundColor: "#0c0f12",
     // backgroundColor: "#b8b021",
 

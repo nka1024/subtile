@@ -19,9 +19,10 @@ import { ToolsPanel } from "../windows/ToolsPanel";
 
 export class EditorRootScene extends Phaser.Scene {
 
-  private list:ObjectsListPanel;
-  private toolsPanel:ToolsPanel;
-  private cursor:Phaser.GameObjects.Sprite;
+  private grid: Phaser.GameObjects.Image[];
+  private list: ObjectsListPanel;
+  private toolsPanel: ToolsPanel;
+  private cursor: Phaser.GameObjects.Sprite;
 
   constructor() {
     super({
@@ -34,10 +35,11 @@ export class EditorRootScene extends Phaser.Scene {
   }
 
   create(data): void {
-    this.cameras.main.setBackgroundColor(0xb8b021);
+    this.cameras.main.setBackgroundColor(0x1f1f1f);
     WindowManager.initialize();
 
-    this.cursor = this.add.sprite(150,150, "cursor");
+    this.cursor = this.add.sprite(150, 150, "cursor");
+    this.cursor.depth = 1000;
     this.cursor.originX = 0.5;
     this.cursor.originY = 1;
     this.cursor.setInteractive();
@@ -48,42 +50,73 @@ export class EditorRootScene extends Phaser.Scene {
     var menu = new MenuPanel();
     menu.show();
 
+    // objects button
     menu.objectsButton.addEventListener('click', () => {
       if (this.list) {
         this.list.destroy()
         // close if pressed again
-        if(this.list.filenamePrefix.startsWith("tree")) {
-          this.list = null
-          return
+        if (this.list.filenamePrefix.startsWith("tree")) {
+          this.list = null;
+          return;
         }
       }
       this.list = new ObjectsListPanel("tree", ASSETS.TREE_MAX, 40, 40);
-      this.list.onObjectClick = (idx:number) => {
-        this.cursor.setTexture("tree_"+idx);
+      this.list.onObjectClick = (idx: number) => {
+        this.cursor.setTexture("tree_" + idx);
       }
-      this.list.show()
+      this.list.show();
     })
 
+    // grid button
+    menu.gridButton.addEventListener('click', () => {
+      if (this.grid != null) {
+        for (let img of this.grid) {
+          img.destroy();
+        }
+        this.grid = null;
+        return;
+      }
+      var grid = []
+      // grid image
+      for(let i = 0; i < 3; i++) {
+        for(let j = 0; j < 3; j++) {
+          let img = new Phaser.GameObjects.Image(this, 0, 0, null);
+          img.scaleX = 2;
+          img.scaleY = 2;
+          img.originX = 0;
+          img.originY = 0;
+          img.setTexture("grid_128_30");
+          img.x = 256 * i;
+          img.y = 256 * j;
+          img.depth = 1000;;
+          this.add.existing(img);    
+          grid.push(img);
+        }
+      }
+      this.grid = grid;
+    });
+
+    // terrain button
     menu.terrainButton.addEventListener('click', () => {
       if (this.list) {
         this.list.destroy()
 
         // close if pressed again
-        if(this.list.filenamePrefix.startsWith("terrain")) {
+        if (this.list.filenamePrefix.startsWith("terrain")) {
           this.list = null
           return
         }
       }
       this.list = new ObjectsListPanel("terrain", ASSETS.TERRAIN_MAX, 128, 128);
-      this.list.onObjectClick = (idx:number) => {
-        this.cursor.setTexture("terrain_"+idx);
+      this.list.onObjectClick = (idx: number) => {
+        this.cursor.setTexture("terrain_" + idx);
       }
       this.list.show()
     });
 
+    // export button
     menu.exportButton.addEventListener('click', () => {
       this.showExportWindow();
-      
     });
   }
 
@@ -108,9 +141,9 @@ export class EditorRootScene extends Phaser.Scene {
     });
   }
 
-  
+
   update(): void {
-    this.cursorFollow();   
+    this.cursorFollow();
     this.cameraDrag();
     this.cursorTouchHandler();
   }
@@ -118,7 +151,7 @@ export class EditorRootScene extends Phaser.Scene {
   private cursorTouchHandler() {
     if (!this.cursor.texture) return;
 
-    if(this.input.activePointer.isDown) {
+    if (this.input.activePointer.isDown) {
       if (this.cursor.alpha != 0.5) {
         this.cursor.alpha = 0.5;
       }
@@ -127,28 +160,27 @@ export class EditorRootScene extends Phaser.Scene {
         this.cursor.alpha = 1;
         if (this.list != null) {
           this.createObject();
-          this.cursor.setTexture("tree_" + this.getRandomInt(1,9))
+          this.cursor.setTexture("tree_" + this.getRandomInt(1, 9))
         }
       }
     }
   }
 
   private cursorFollow() {
-    let worldPosX = Math.round(this.input.activePointer.x/2)*2;
-    let worldPosY = Math.round(this.input.activePointer.y/2)*2;
+    let worldPosX = Math.round(this.input.activePointer.x / 2) * 2;
+    let worldPosY = Math.round(this.input.activePointer.y / 2) * 2;
     this.cursor.x = Math.round(worldPosX + this.cameras.main.scrollX);
     this.cursor.y = Math.round(worldPosY + this.cameras.main.scrollY);
     this.cursor.scaleX = 2;
     this.cursor.scaleY = 2;
-    this.cursor.depth = 1000; 
-    this.toolsPanel.cordLabel.innerHTML = this.cursor.x + ':' + this.cursor.y ;
+    this.toolsPanel.cordLabel.innerHTML = this.cursor.x + ':' + this.cursor.y;
   }
 
-  private prevPointerX:number;
-  private prevPointerY:number;
+  private prevPointerX: number;
+  private prevPointerY: number;
   private cameraDrag() {
     let ptr = this.input.activePointer;
-    if(ptr.isDown) {
+    if (ptr.isDown) {
       if (!ptr.justDown) {
         this.cameras.main.scrollX -= (ptr.x - this.prevPointerX)
         this.cameras.main.scrollY -= (ptr.y - this.prevPointerY)
@@ -161,10 +193,9 @@ export class EditorRootScene extends Phaser.Scene {
       this.prevPointerX = 0;
       this.prevPointerY = 0;
     }
-    
   }
 
-  private createObjectFromConfig(data:any) {
+  private createObjectFromConfig(data: any) {
     let obj = new Phaser.GameObjects.Image(this, 0, 0, null);
     obj.scaleX = this.cursor.scaleX;
     obj.scaleY = this.cursor.scaleY;
@@ -196,9 +227,9 @@ export class EditorRootScene extends Phaser.Scene {
   }
 
   addBackground() {
-    var bgX = this.sys.canvas.width/2;
-    var bgY = this.sys.canvas.height/2;
-    var placeholder = new Phaser.GameObjects.Sprite(this,bgX, bgY, "placeholder");
+    var bgX = this.sys.canvas.width / 2;
+    var bgY = this.sys.canvas.height / 2;
+    var placeholder = new Phaser.GameObjects.Sprite(this, bgX, bgY, "placeholder");
     placeholder.scaleX = placeholder.scaleY = 2;
     this.add.existing(placeholder);
   }
