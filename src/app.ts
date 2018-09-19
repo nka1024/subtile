@@ -41,8 +41,8 @@ window.onload = () => {
     },
     physics: null,
     disableContextMenu: true,
-    // backgroundColor: "#b8b021",
-    backgroundColor: "#0c0f12",
+    backgroundColor: "#777777",
+    // backgroundColor: "#0c0f12",
     // backgroundColor: "#b8b021",
 
     pixelArt: true,

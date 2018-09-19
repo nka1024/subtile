@@ -7,7 +7,7 @@ import { BaseWindow } from "./BaseWindow";
 * @license      Apache 2.0
 */
 
-export class MenuWindow extends BaseWindow {
+export class MenuPanel extends BaseWindow {
     // static
     static innerHtml:string;
 
@@ -28,9 +28,9 @@ export class MenuWindow extends BaseWindow {
 
     // Window HTML properties
     protected getWindowName(): string { return "menu_window" }
-    protected getInnerHTML(): string  { return MenuWindow.innerHtml }
+    protected getInnerHTML(): string  { return MenuPanel.innerHtml }
     static initialize() {
-        MenuWindow.innerHtml = BaseWindow.getPrefab(".menu_window_prefab").innerHTML;
+        MenuPanel.innerHtml = BaseWindow.getPrefab(".menu_window_prefab").innerHTML;
     }
 
 

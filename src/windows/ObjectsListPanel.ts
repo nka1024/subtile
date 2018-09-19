@@ -8,7 +8,7 @@ import { CONST } from "../const/const";
 * @license      Apache 2.0
 */
 
-export class ObjectsListWindow extends BaseWindow {
+export class ObjectsListPanel extends BaseWindow {
     // static
     static innerHtml:string;
 
@@ -57,8 +57,8 @@ export class ObjectsListWindow extends BaseWindow {
 
     // Window HTML properties
     protected getWindowName(): string { return "objects_list_window" }
-    protected getInnerHTML(): string  { return ObjectsListWindow.innerHtml }
+    protected getInnerHTML(): string  { return ObjectsListPanel.innerHtml }
     static initialize() {
-        ObjectsListWindow.innerHtml = BaseWindow.getPrefab(".objects_list_window_prefab").innerHTML;
+        ObjectsListPanel.innerHtml = BaseWindow.getPrefab(".objects_list_window_prefab").innerHTML;
     }
 }
