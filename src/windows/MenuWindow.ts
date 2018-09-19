@@ -12,7 +12,7 @@ export class MenuWindow extends BaseWindow {
     static innerHtml:string;
 
     // public
-    public landButton:HTMLElement;
+    public terrainButton:HTMLElement;
     public objectsButton:HTMLElement;
     public gridButton:HTMLElement;
     public exportButton:HTMLElement;
@@ -20,7 +20,7 @@ export class MenuWindow extends BaseWindow {
     constructor() {
         super();
 
-        this.landButton = this.element.querySelector(".land_button");
+        this.terrainButton = this.element.querySelector(".terrain_button");
         this.objectsButton = this.element.querySelector(".objects_button");
         this.gridButton = this.element.querySelector(".grid_button");
         this.exportButton = this.element.querySelector(".export_button");

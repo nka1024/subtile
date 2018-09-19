@@ -8,37 +8,63 @@ import { BaseWindow } from "./BaseWindow";
 */
 
 export class ExportWindow extends BaseWindow {
-    // static
-    static innerHtml:string;
+  // static
+  static innerHtml: string;
 
-    // public
-    public cancelButton:HTMLElement;
-    public exportButton:HTMLElement;
-    public importButton:HTMLElement;
-    public dataInput:HTMLElement;
-    public titleText:HTMLElement;
-    
-    constructor(title:string) {
-        super();
+  // public
+  public cancelButton: HTMLElement;
+  public exportButton: HTMLElement;
+  public importButton: HTMLElement;
+  public dataInput: HTMLTextAreaElement;
+  public titleText: HTMLElement;
 
-        this.titleText = this.element.querySelector(".text_title");
-        this.dataInput = this.element.querySelector(".data_input");
-        this.exportButton = this.element.querySelector(".export_button");
-        this.importButton = this.element.querySelector(".import_button");
-        this.cancelButton = this.element.querySelector(".cancel_button");
+  constructor(title: string) {
+    super();
 
-        this.titleText.innerHTML = title;
-        this.cancelButton.addEventListener('click', () => {
-            this.destroy();            
-        });
+    this.titleText = this.element.querySelector(".text_title");
+    this.dataInput = this.element.querySelector(".data_input");
+    this.exportButton = this.element.querySelector(".export_button");
+    this.importButton = this.element.querySelector(".import_button");
+    this.cancelButton = this.element.querySelector(".cancel_button");
+
+    this.titleText.innerHTML = title;
+    this.cancelButton.addEventListener('click', () => {
+      this.destroy();
+    });
+  }
+
+  // Window HTML properties
+  protected getWindowName(): string { return "export_window" }
+  protected getInnerHTML(): string { return ExportWindow.innerHtml }
+  static initialize() {
+    ExportWindow.innerHtml = BaseWindow.getPrefab(".export_window_prefab").innerHTML;
+  }
+
+
+  public populate(children: Phaser.GameObjects.GameObject[]) {
+    var result = [];
+
+    for (let child of children) {
+      let image = child as Phaser.GameObjects.Image
+      // exclude cursor 
+      if (image.depth == 1000) continue
+
+      let texture = image.texture
+      console.log(texture.key + ' ' + image.x + ':' + image.y);
+
+      let childData = {
+        texture: texture.key,
+        depth: image.depth,
+        x: image.x,
+        y: image.y
+      };
+      result.push(childData);
     }
 
-    // Window HTML properties
-    protected getWindowName(): string { return "export_window" }
-    protected getInnerHTML(): string  { return ExportWindow.innerHtml }
-    static initialize() {
-        ExportWindow.innerHtml = BaseWindow.getPrefab(".export_window_prefab").innerHTML;
-    }
+    this.dataInput.value = JSON.stringify(result);
+  }
 
-
+  public getInputText() {
+    return this.dataInput.value;
+  }
 }

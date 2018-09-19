@@ -14,9 +14,9 @@ export class ObjectsListWindow extends BaseWindow {
 
     // public
     public onObjectClick:Function;
+    public filenamePrefix:string;
 
     // private 
-    private filenamePrefix:string;
     private itemWidth:number;
     private itemHeight:number;
     private maxIdx:number
@@ -35,8 +35,7 @@ export class ObjectsListWindow extends BaseWindow {
         for(let idx = 1; idx <= this.maxIdx; idx++) {
             let filename = this.filenamePrefix + '_' + idx + '.png';
             let element = document.createElement('input');
-            element.className = "btn btn-blue land_button"+idx;
-            element.id = "landButton"
+            // element.className = "btn btn-blue";
             element.style.width = this.itemWidth + 'px';
             element.style.height = this.itemHeight + 'px';
             element.style.verticalAlign = "middle";

@@ -5,45 +5,46 @@
 * @license      Apache 2.0
 */
 
-export abstract class BaseWindow  {
-    // private
-    protected element:HTMLElement;
-    protected parent:HTMLElement;
-    
-    constructor() {
-        var parent = document.querySelector('.window_manager') as HTMLElement;
-        this.createDiv(parent, this.getWindowName());
-    }
+export abstract class BaseWindow {
+  // private
+  protected element: HTMLElement;
+  protected parent: HTMLElement;
 
-    private createDiv(parent:HTMLElement, className:string) {
-        var element = document.createElement('div');
-        element.style.display = "none";
-        element.className = className;
-        element.innerHTML = this.getInnerHTML();
-        parent.appendChild(element);
-        this.element = element;
-    }
+  constructor() {
+    var parent = document.querySelector('.window_manager') as HTMLElement;
+    this.createDiv(parent, this.getWindowName());
+  }
 
-    public destroy() {
-        this.element.parentNode.removeChild(this.element);
-    }
+  private createDiv(parent: HTMLElement, className: string) {
+    var element = document.createElement('div');
+    element.style.display = "none";
+    element.className = className;
+    element.innerHTML = this.getInnerHTML();
+    parent.appendChild(element);
+    this.element = element;
+  }
 
-    protected static getPrefab(prefabName:string):HTMLElement {
-        var d = document.querySelector(prefabName);
-        d.parentNode.removeChild(d);
-        return d as HTMLElement;
-    }
+  public destroy() {
+    this.element.parentNode.removeChild(this.element);
+  }
 
-    // static initialize(document:HTMLDocument) {
-    // }
+  protected static getPrefab(prefabName: string): HTMLElement {
+    var d = document.querySelector(prefabName);
+    d.parentNode.removeChild(d);
+    return d as HTMLElement;
+  }
 
-    public show() {
-        this.element.style.display = "block";
-    }
-    public hide() {
-        this.element.style.display = "none";
-    }
+  // static initialize(document:HTMLDocument) {
+  // }
 
-    protected abstract getWindowName():string;
-    protected abstract getInnerHTML():string;
+  public show() {
+    this.element.style.display = "block";
+  }
+  public hide() {
+    this.element.style.display = "none";
+  }
+
+  protected abstract getWindowName(): string;
+  protected abstract getInnerHTML(): string;
+
 }
