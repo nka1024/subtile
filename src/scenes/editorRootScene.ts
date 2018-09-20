@@ -12,6 +12,7 @@ import { ExportWindow } from "../windows/ExportWindow";
 import { WindowManager } from "../windows/WindowManager";
 import { ASSETS, AssetsLoader } from "../AssetsLoader";
 import { ToolsPanel } from "../windows/ToolsPanel";
+import { TileGrid } from "../TileGrid";
 
 
 /// <reference path="./types/canvasinput.d.ts"/>
@@ -19,7 +20,8 @@ import { ToolsPanel } from "../windows/ToolsPanel";
 
 export class EditorRootScene extends Phaser.Scene {
 
-  private grid: Phaser.GameObjects.Image[];
+  
+  private grid: TileGrid;
   private list: ObjectsListPanel;
   private toolsPanel: ToolsPanel;
   private cursor: Phaser.GameObjects.Sprite;
@@ -38,6 +40,7 @@ export class EditorRootScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(0x1f1f1f);
     WindowManager.initialize();
 
+    this.grid = new TileGrid(this);
     this.cursor = this.add.sprite(150, 150, "cursor");
     this.cursor.depth = 1000;
     this.cursor.originX = 0.5;
@@ -53,7 +56,8 @@ export class EditorRootScene extends Phaser.Scene {
     // objects button
     menu.objectsButton.addEventListener('click', () => {
       if (this.list) {
-        this.list.destroy()
+        this.list.destroy();
+        this.cursor.setTexture("cursor");
         // close if pressed again
         if (this.list.filenamePrefix.startsWith("tree")) {
           this.list = null;
@@ -69,38 +73,14 @@ export class EditorRootScene extends Phaser.Scene {
 
     // grid button
     menu.gridButton.addEventListener('click', () => {
-      if (this.grid != null) {
-        for (let img of this.grid) {
-          img.destroy();
-        }
-        this.grid = null;
-        return;
-      }
-      var grid = []
-      // grid image
-      for(let i = 0; i < 3; i++) {
-        for(let j = 0; j < 3; j++) {
-          let img = new Phaser.GameObjects.Image(this, 0, 0, null);
-          img.scaleX = 2;
-          img.scaleY = 2;
-          img.originX = 0;
-          img.originY = 0;
-          img.setTexture("grid_128_30");
-          img.x = 256 * i;
-          img.y = 256 * j;
-          img.depth = 1000;;
-          this.add.existing(img);    
-          grid.push(img);
-        }
-      }
-      this.grid = grid;
+      this.grid.toggleGrid();
     });
 
     // terrain button
     menu.terrainButton.addEventListener('click', () => {
       if (this.list) {
         this.list.destroy()
-
+        this.cursor.setTexture("cursor");
         // close if pressed again
         if (this.list.filenamePrefix.startsWith("terrain")) {
           this.list = null
@@ -123,7 +103,7 @@ export class EditorRootScene extends Phaser.Scene {
   showExportWindow() {
     var w = new ExportWindow("EXPORT MAP DATA");
     w.show();
-    w.populate(this.children.getAll());
+    w.populate(this.children.getAll(), this.grid.export());
     w.importButton.addEventListener('click', () => {
       // cleanup
       for (let child of this.children.getAll()) {
@@ -132,15 +112,15 @@ export class EditorRootScene extends Phaser.Scene {
           child.destroy()
       }
 
-      // create from config
       let data = JSON.parse(w.getInputText());
-      console.log(data);
-      for (let item of data) {
+      // create grid from config
+      this.grid.import(data.grid);
+      // create objects from config      
+      for (let item of data.objects) {
         this.createObjectFromConfig(item);
       }
     });
   }
-
 
   update(): void {
     this.cursorFollow();
@@ -149,8 +129,6 @@ export class EditorRootScene extends Phaser.Scene {
   }
 
   private cursorTouchHandler() {
-    if (!this.cursor.texture) return;
-
     if (this.input.activePointer.isDown) {
       if (this.cursor.alpha != 0.5) {
         this.cursor.alpha = 0.5;
@@ -158,9 +136,13 @@ export class EditorRootScene extends Phaser.Scene {
     } else {
       if (this.cursor.alpha != 1) {
         this.cursor.alpha = 1;
-        if (this.list != null) {
-          this.createObject();
-          this.cursor.setTexture("tree_" + this.getRandomInt(1, 9))
+        if (this.grid == null) {
+          if (this.list != null) {
+            this.createObject();
+            this.cursor.setTexture("tree_" + this.getRandomInt(1, 9))
+          }
+        } else {
+          this.grid.editTile(this.cursor, 'red');
         }
       }
     }
@@ -169,8 +151,14 @@ export class EditorRootScene extends Phaser.Scene {
   private cursorFollow() {
     let worldPosX = Math.round(this.input.activePointer.x / 2) * 2;
     let worldPosY = Math.round(this.input.activePointer.y / 2) * 2;
-    this.cursor.x = Math.round(worldPosX + this.cameras.main.scrollX);
-    this.cursor.y = Math.round(worldPosY + this.cameras.main.scrollY);
+
+    // snap cursor to grid or pixel perfect follow
+    if (this.grid.visible) {
+      this.grid.cursorFollow(this.cursor);
+    } else {
+      this.cursor.x = Math.round(worldPosX + this.cameras.main.scrollX);
+      this.cursor.y = Math.round(worldPosY + this.cameras.main.scrollY);
+    }
     this.cursor.scaleX = 2;
     this.cursor.scaleY = 2;
     this.toolsPanel.cordLabel.innerHTML = this.cursor.x + ':' + this.cursor.y;

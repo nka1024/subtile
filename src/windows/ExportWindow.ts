@@ -41,16 +41,19 @@ export class ExportWindow extends BaseWindow {
   }
 
 
-  public populate(children: Phaser.GameObjects.GameObject[]) {
-    var result = [];
+  public populate(children: Phaser.GameObjects.GameObject[], gridData:any) {
+    var result = {
+      objects: null,
+      grid: gridData
+    };
+    var objects = [];
 
     for (let child of children) {
       let image = child as Phaser.GameObjects.Image
-      // exclude cursor 
+      // exclude ui layer
       if (image.depth == 1000) continue
 
       let texture = image.texture
-      console.log(texture.key + ' ' + image.x + ':' + image.y);
 
       let childData = {
         texture: texture.key,
@@ -58,9 +61,9 @@ export class ExportWindow extends BaseWindow {
         x: image.x,
         y: image.y
       };
-      result.push(childData);
+      objects.push(childData);
     }
-
+    result.objects = objects;
     this.dataInput.value = JSON.stringify(result);
   }
 
