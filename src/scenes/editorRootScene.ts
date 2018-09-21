@@ -13,7 +13,6 @@ import { WindowManager } from "../windows/WindowManager";
 import { ASSETS, AssetsLoader } from "../AssetsLoader";
 import { ToolsPanel } from "../windows/ToolsPanel";
 import { TileGrid } from "../TileGrid";
-import { js as easystar } from "easystarjs";
 import { Player } from "../actors/Player";
 
 
@@ -47,17 +46,6 @@ export class EditorRootScene extends Phaser.Scene {
     this.cursor.originY = 1;
     this.cursor.setInteractive();
 
-    // var e = new easystar();
-    // e.enableSync();
-    // e.enableDiagonals();
-    // e.setGrid([[0,0,0],[0,0,0],[0,0,0]]);
-    // e.setAcceptableTiles([0]);
-    // console.log('s: ' + e)
-    // e.findPath(0,0,2,2, (path) => {
-    //   console.log('found path: ' + path);
-    // });
-    // e.calculate();
-
     this.importMap(this.cache.json.get('map'));
     
     this.toolsPanel = new ToolsPanel();
@@ -67,10 +55,17 @@ export class EditorRootScene extends Phaser.Scene {
     menu.show();
 
     this.toolsPanel.playButton.addEventListener('click', () => {
-      let player = new Player(this, 444,280);
-      player.depth = player.y+16;
-      this.add.existing(player);
-      this.player = player;
+      if (this.player) {
+        this.player.destroy();
+        this.player = null;
+        this.toolsPanel.playButton.value = "PLAY";
+      } else {
+        let player = new Player(this, 444,280);
+        player.depth = player.y+16;
+        this.add.existing(player);
+        this.player = player;
+        this.toolsPanel.playButton.value = "STOP";
+      }
     });
 
     // objects button
@@ -152,6 +147,7 @@ export class EditorRootScene extends Phaser.Scene {
     this.cursorTouchHandler();
 
     if (this.player) this.player.update();
+    if (this.grid) this.grid.update();
   }
 
   private cursorTouchHandler() {
@@ -162,12 +158,19 @@ export class EditorRootScene extends Phaser.Scene {
     } else {
       if (this.cursor.alpha != 1) {
         this.cursor.alpha = 1;
-        if (!this.grid.visible) {
+        if (this.player != null) {
+          // player movemenet
+          
+          this.player.handleMoveTouch(this.cursor, this.grid);
+          
+        } else if (!this.grid.visible) { 
+          // object placement
           if (this.list != null) {
             this.createObject();
             this.cursor.setTexture("tree_" + this.getRandomInt(1, 9))
           }
-        } else {
+        } else { 
+          // tile placement
           this.grid.editTile(this.cursor, 'red');
         }
       }

@@ -14,7 +14,7 @@ export class ToolsPanel extends BaseWindow {
     // public
     public positionText:HTMLElement;
     public statusText:HTMLElement;
-    public playButton:HTMLElement;
+    public playButton:HTMLInputElement;
     
     constructor() {
         super();

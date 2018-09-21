@@ -1,3 +1,11 @@
+/**
+* @author       Kirill Nepomnyaschiy <nka1024@gmail.com>
+* @copyright    nka1024
+* @description  subtile
+* @license      Apache 2.0
+*/
+
+import { js as easystar } from "easystarjs";
 
 export class TileGrid {
 
@@ -19,6 +27,9 @@ export class TileGrid {
         this.tiles[i][j] = null;
       }
     }
+    
+    this.initPathfinder();
+    this.pathfinder.setGrid(this.data);
   }
 
   public toggleGrid() {
@@ -105,6 +116,9 @@ export class TileGrid {
     let img = this.createTile(gridPos.i, gridPos.j, color);
     this.tiles[gridPos.i][gridPos.j] = img;
     this.data[gridPos.i][gridPos.j] = "red" ? 1 : 0;
+    
+    // todo: optimize?
+    this.pathfinder.setGrid(this.data);
   }
 
   public cursorFollow(cursor: Phaser.GameObjects.Image) {
@@ -124,15 +138,16 @@ export class TileGrid {
 
   public import(grid:any) {
     this.data = grid;
+    this.pathfinder.setGrid(this.data);
   }
 
-  private gridToWorld(i: number, j: number): any {
+  public gridToWorld(i: number, j: number): {x: number,  y: number} {
     return {
       x: j * 32,
       y: i * 32
     };
   }
-  private worldToGrid(x: number, y: number): any {
+  public worldToGrid(x: number, y: number): {i: number, j: number} {
     return {
       i: Math.floor(y / 32),
       j: Math.floor(x / 32)
@@ -146,5 +161,26 @@ export class TileGrid {
 
   get visible() {
     return this.grid != null;
+  }
+
+
+  // Pathfinding with Easystarjs
+
+  private pathfinder:easystar;
+  private initPathfinder() {
+    this.pathfinder = new easystar();
+    this.pathfinder.enableSync();
+    this.pathfinder.enableDiagonals();
+    this.pathfinder.setAcceptableTiles([0]);
+  }
+
+  public findPath(startX: number, startY: number, 
+                  endX: number, endY: number, 
+                  callback: (path: { x: number, y: number }[]) => void): number {
+    return this.pathfinder.findPath(startX, startY,endX, endY,callback);
+  }
+
+  public update() {
+    this.pathfinder.calculate();
   }
 }

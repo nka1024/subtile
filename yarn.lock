@@ -511,10 +511,6 @@ camelcase@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-4.1.0.tgz#d545635be1e33c542649c69173e5de6acfae34dd"
 
-canvasinput@1.2.7:
-  version "1.2.7"
-  resolved "https://registry.yarnpkg.com/canvasinput/-/canvasinput-1.2.7.tgz#299f320bb0932d675b144aba3a172b46b97a9b77"
-
 chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0, chalk@^2.3.0, chalk@^2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.1.tgz#18c49ab16a037b6eb0152cc83e3471338215b66e"
@@ -921,6 +917,12 @@ duplexify@^3.4.2, duplexify@^3.6.0:
     inherits "^2.0.1"
     readable-stream "^2.0.0"
     stream-shift "^1.0.0"
+
+easystarjs@0.4.3:
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/easystarjs/-/easystarjs-0.4.3.tgz#0a33d2db2dd607f30fcf6adbf2c0f832a0a88952"
+  dependencies:
+    heap "0.2.6"
 
 ee-first@1.1.1:
   version "1.1.1"
@@ -1423,6 +1425,10 @@ hash.js@^1.0.0, hash.js@^1.0.3:
   dependencies:
     inherits "^2.0.3"
     minimalistic-assert "^1.0.1"
+
+heap@0.2.6:
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/heap/-/heap-0.2.6.tgz#087e1f10b046932fc8594dd9e6d378afc9d1e5ac"
 
 hmac-drbg@^1.0.0:
   version "1.0.1"
