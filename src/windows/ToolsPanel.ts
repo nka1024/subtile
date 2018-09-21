@@ -12,16 +12,16 @@ export class ToolsPanel extends BaseWindow {
     static innerHtml:string;
 
     // public
-    public cordLabel:HTMLElement;
+    public positionText:HTMLElement;
+    public statusText:HTMLElement;
+    public playButton:HTMLElement;
     
     constructor() {
         super();
 
-        this.cordLabel = this.element.querySelector(".text_cordinates");
-        // this.terrainButton = this.element.querySelector(".terrain_button");
-        // this.objectsButton = this.element.querySelector(".objects_button");
-        // this.gridButton = this.element.querySelector(".grid_button");
-        // this.exportButton = this.element.querySelector(".export_button");
+        this.positionText = this.element.querySelector(".text_cordinates");
+        this.statusText = this.element.querySelector(".text_status");
+        this.playButton = this.element.querySelector(".play_button");
     }
 
     // Window HTML properties

@@ -13,19 +13,19 @@ import { WindowManager } from "../windows/WindowManager";
 import { ASSETS, AssetsLoader } from "../AssetsLoader";
 import { ToolsPanel } from "../windows/ToolsPanel";
 import { TileGrid } from "../TileGrid";
-
-
-/// <reference path="./types/canvasinput.d.ts"/>
+import { js as easystar } from "easystarjs";
+import { Player } from "../actors/Player";
 
 
 export class EditorRootScene extends Phaser.Scene {
-
   
   private grid: TileGrid;
   private list: ObjectsListPanel;
   private toolsPanel: ToolsPanel;
   private cursor: Phaser.GameObjects.Sprite;
 
+  private player: Player;
+  
   constructor() {
     super({
       key: "EditorRootScene"
@@ -47,11 +47,31 @@ export class EditorRootScene extends Phaser.Scene {
     this.cursor.originY = 1;
     this.cursor.setInteractive();
 
+    // var e = new easystar();
+    // e.enableSync();
+    // e.enableDiagonals();
+    // e.setGrid([[0,0,0],[0,0,0],[0,0,0]]);
+    // e.setAcceptableTiles([0]);
+    // console.log('s: ' + e)
+    // e.findPath(0,0,2,2, (path) => {
+    //   console.log('found path: ' + path);
+    // });
+    // e.calculate();
+
+    this.importMap(this.cache.json.get('map'));
+    
     this.toolsPanel = new ToolsPanel();
     this.toolsPanel.show()
 
     var menu = new MenuPanel();
     menu.show();
+
+    this.toolsPanel.playButton.addEventListener('click', () => {
+      let player = new Player(this, 444,280);
+      player.depth = player.y+16;
+      this.add.existing(player);
+      this.player = player;
+    });
 
     // objects button
     menu.objectsButton.addEventListener('click', () => {
@@ -99,26 +119,30 @@ export class EditorRootScene extends Phaser.Scene {
       this.showExportWindow();
     });
   }
+  
+  private importMap(map:any) {
+    // cleanup
+    for (let child of this.children.getAll()) {
+      // exclude cursor
+      if ((child as Phaser.GameObjects.Image).depth != 1000)
+        child.destroy()
+    }
+
+    // create grid from config
+    this.grid.import(map.grid);
+    // create objects from config      
+    for (let item of map.objects) {
+      this.createObjectFromConfig(item);
+    }
+  }
 
   showExportWindow() {
     var w = new ExportWindow("EXPORT MAP DATA");
     w.show();
     w.populate(this.children.getAll(), this.grid.export());
     w.importButton.addEventListener('click', () => {
-      // cleanup
-      for (let child of this.children.getAll()) {
-        // exclude cursor
-        if ((child as Phaser.GameObjects.Image).depth != 1000)
-          child.destroy()
-      }
-
-      let data = JSON.parse(w.getInputText());
-      // create grid from config
-      this.grid.import(data.grid);
-      // create objects from config      
-      for (let item of data.objects) {
-        this.createObjectFromConfig(item);
-      }
+      let map = JSON.parse(w.getInputText());
+      this.importMap(map);
     });
   }
 
@@ -126,6 +150,8 @@ export class EditorRootScene extends Phaser.Scene {
     this.cursorFollow();
     this.cameraDrag();
     this.cursorTouchHandler();
+
+    if (this.player) this.player.update();
   }
 
   private cursorTouchHandler() {
@@ -136,7 +162,7 @@ export class EditorRootScene extends Phaser.Scene {
     } else {
       if (this.cursor.alpha != 1) {
         this.cursor.alpha = 1;
-        if (this.grid == null) {
+        if (!this.grid.visible) {
           if (this.list != null) {
             this.createObject();
             this.cursor.setTexture("tree_" + this.getRandomInt(1, 9))
@@ -161,7 +187,14 @@ export class EditorRootScene extends Phaser.Scene {
     }
     this.cursor.scaleX = 2;
     this.cursor.scaleY = 2;
-    this.toolsPanel.cordLabel.innerHTML = this.cursor.x + ':' + this.cursor.y;
+    this.toolsPanel.positionText.innerHTML = this.cursor.x + ':' + this.cursor.y;
+    let tile = this.grid.getTileXY(this.cursor.x, this.cursor.y);
+    if (tile) {
+      let walkable = tile.walkable ? 'free' : 'blocked';
+      this.toolsPanel.statusText.innerHTML = tile.i + ':' + tile.j + ' ' + walkable;
+    } else {
+      this.toolsPanel.statusText.innerHTML = 'OFF GRID';
+    }
   }
 
   private prevPointerX: number;
@@ -185,10 +218,10 @@ export class EditorRootScene extends Phaser.Scene {
 
   private createObjectFromConfig(data: any) {
     let obj = new Phaser.GameObjects.Image(this, 0, 0, null);
-    obj.scaleX = this.cursor.scaleX;
-    obj.scaleY = this.cursor.scaleY;
-    obj.originX = this.cursor.originX;
-    obj.originY = this.cursor.originY;
+    obj.scaleX = 2;
+    obj.scaleY = 2;
+    obj.originX = 0.5;
+    obj.originY = 1;
     obj.setTexture(data.texture);
     obj.x = data.x;
     obj.y = data.y;

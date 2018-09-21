@@ -11,10 +11,10 @@ export class TileGrid {
 
     this.data = [];
     this.tiles = [];
-    for (let i = 0; i < 46; i++) {
+    for (let i = 0; i < 24; i++) {
       this.data[i] = [];
       this.tiles[i] = [];
-      for (let j = 0; j < 46; j++) {
+      for (let j = 0; j < 24; j++) {
         this.data[i][j] = 0;
         this.tiles[i][j] = null;
       }
@@ -67,11 +67,28 @@ export class TileGrid {
     }
   }
 
+  public getTileXY(x:number, y:number):any {
+    try {
+      if (x < 0 || y < 0) throw('cant be negative')
+      let gridPos = this.worldToGrid(x, y);
+      let tile = this.data[gridPos.i][gridPos.j];
+      return {
+        i: gridPos.i,
+        j: gridPos.j,
+        walkable: tile == 0
+      };
+    } catch (e) {
+      // console.log(e)
+    }
+    return null;
+  }
+
   private createTile(i: number, j: number, color: string):Phaser.GameObjects.Image {
     let img = new Phaser.GameObjects.Image(this.scene, 0, 0, null);
     img.scaleX = 2;
     img.scaleY = 2;
     img.setTexture('grid_tile_' + color + '_16_a50');
+    img.depth = 1000;
     var wc = this.gridToWorld(i, j)
     img.x = wc.x + 16;
     img.y = wc.y + 16;

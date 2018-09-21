@@ -10,7 +10,7 @@
     "webpack": "4.15.0",
     "webpack-cli": "3.0.8",
     "webpack-dev-server": "3.1.4",
-    "canvasinput": "1.2.7"
+    "easystarjs": "0.4.3"
   },
   "dependencies": {
     "phaser": "3.10.1"
