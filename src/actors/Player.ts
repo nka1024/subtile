@@ -14,13 +14,14 @@ export class Player extends Phaser.GameObjects.Sprite {
     constructor(scene: Phaser.Scene, x: number, y: number) {
         
         super(scene, x, y, "player_idle_32x32");
-
+        this.scaleX = 2;
+        this.scaleY = 2;
         this.wKey = scene.input.keyboard.addKey('W');
         this.cursors = scene.input.keyboard.createCursorKeys();
 
         var idleAnim = {
             key: 'player_idle',
-            frames: scene.anims.generateFrameNumbers('player_idle_32x32', { start: 0, end: 4}),
+            frames: scene.anims.generateFrameNumbers('player_idle_32x32', { start: 0, end: 3}),
             frameRate: 5,
             repeat: -1,
             repeatDelay: 0

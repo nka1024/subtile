@@ -1,5 +1,6 @@
 import { BaseWindow } from "./BaseWindow";
 import { CONST } from "../const/const";
+import { ASSETS } from "../AssetsLoader";
 
 /**
 * @author       Kirill Nepomnyaschiy <nka1024@gmail.com>
@@ -16,11 +17,18 @@ export class ObjectsListPanel extends BaseWindow {
     public onObjectClick:Function;
     public filenamePrefix:string;
 
+    public treesButton:HTMLInputElement;
+    public rocksButton:HTMLInputElement;
+    public housesButton:HTMLInputElement;
+
     // private 
+
+    private objContainer:HTMLElement;
+
     private itemWidth:number;
     private itemHeight:number;
     private maxIdx:number
-    private objects:Array<HTMLElement>;
+    private objects:Array<HTMLElement> = [];
     
     constructor(filenamePrefix:string, maxIdx:number, itemWidth:number, itemHeight:number) {
         super();
@@ -30,8 +38,43 @@ export class ObjectsListPanel extends BaseWindow {
         this.itemHeight = itemHeight;
         this.maxIdx = maxIdx;
 
-        this.objects = [];
-        let listParent = this.element.querySelector(".obj_list");
+        this.objContainer = this.element.querySelector(".obj_list");
+        this.treesButton = this.element.querySelector(".trees_button");
+        this.rocksButton = this.element.querySelector(".rocks_button");
+        this.housesButton = this.element.querySelector(".houses_button");
+        this.populate()
+        this.removeAll();
+    
+        this.rocksButton.addEventListener('click', () => {
+            this.filenamePrefix = 'rock';
+            this.maxIdx = ASSETS.ROCK_MAX;
+            this.repopulate();
+        });
+        this.treesButton.addEventListener('click', () => {
+            this.filenamePrefix = 'tree';
+            this.maxIdx = ASSETS.TREE_MAX;
+            this.repopulate();
+        });
+        this.housesButton.addEventListener('click', () => {
+            // this.filenamePrefix == 'tree';
+            // this.maxIdx = ASSETS.TREE_MAX;
+            this.repopulate();
+        });
+    }
+
+    private repopulate() {
+        this.removeAll();
+        this.populate();
+    }
+     
+    private removeAll() {
+        for (let object of this.objects) {
+            this.objContainer.removeChild(object);
+        }
+        this.objects = []
+    }
+
+    private populate() {
         for(let idx = 1; idx <= this.maxIdx; idx++) {
             let filename = this.filenamePrefix + '_' + idx + '.png';
             let element = document.createElement('input');
@@ -48,12 +91,10 @@ export class ObjectsListPanel extends BaseWindow {
                 }
             });
             
-            listParent.appendChild(element);
+            this.objContainer.appendChild(element);
             this.objects.push(element);
         }
     }
-
-     
 
     // Window HTML properties
     protected getWindowName(): string { return "objects_list_window" }

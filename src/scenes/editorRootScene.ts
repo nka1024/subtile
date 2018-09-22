@@ -19,7 +19,7 @@ import { Player } from "../actors/Player";
 export class EditorRootScene extends Phaser.Scene {
   
   private grid: TileGrid;
-  private list: ObjectsListPanel;
+  private objectsListPanel: ObjectsListPanel;
   private toolsPanel: ToolsPanel;
   private cursor: Phaser.GameObjects.Sprite;
 
@@ -70,20 +70,20 @@ export class EditorRootScene extends Phaser.Scene {
 
     // objects button
     menu.objectsButton.addEventListener('click', () => {
-      if (this.list) {
-        this.list.destroy();
+      if (this.objectsListPanel) {
+        this.objectsListPanel.destroy();
         this.cursor.setTexture("cursor");
         // close if pressed again
-        if (this.list.filenamePrefix.startsWith("tree")) {
-          this.list = null;
+        if (this.objectsListPanel.filenamePrefix.startsWith("tree")) {
+          this.objectsListPanel = null;
           return;
         }
       }
-      this.list = new ObjectsListPanel("tree", ASSETS.TREE_MAX, 40, 40);
-      this.list.onObjectClick = (idx: number) => {
-        this.cursor.setTexture("tree_" + idx);
+      this.objectsListPanel = new ObjectsListPanel("tree", ASSETS.TREE_MAX, 40, 40);
+      this.objectsListPanel.onObjectClick = (idx: number) => {
+        this.cursor.setTexture(this.objectsListPanel.filenamePrefix + "_" + idx);
       }
-      this.list.show();
+      this.objectsListPanel.show();
     })
 
     // grid button
@@ -93,20 +93,20 @@ export class EditorRootScene extends Phaser.Scene {
 
     // terrain button
     menu.terrainButton.addEventListener('click', () => {
-      if (this.list) {
-        this.list.destroy()
+      if (this.objectsListPanel) {
+        this.objectsListPanel.destroy()
         this.cursor.setTexture("cursor");
         // close if pressed again
-        if (this.list.filenamePrefix.startsWith("terrain")) {
-          this.list = null
+        if (this.objectsListPanel.filenamePrefix.startsWith("terrain")) {
+          this.objectsListPanel = null
           return
         }
       }
-      this.list = new ObjectsListPanel("terrain", ASSETS.TERRAIN_MAX, 128, 128);
-      this.list.onObjectClick = (idx: number) => {
+      this.objectsListPanel = new ObjectsListPanel("terrain", ASSETS.TERRAIN_MAX, 128, 128);
+      this.objectsListPanel.onObjectClick = (idx: number) => {
         this.cursor.setTexture("terrain_" + idx);
       }
-      this.list.show()
+      this.objectsListPanel.show()
     });
 
     // export button
@@ -165,7 +165,7 @@ export class EditorRootScene extends Phaser.Scene {
           
         } else if (!this.grid.visible) { 
           // object placement
-          if (this.list != null) {
+          if (this.objectsListPanel != null) {
             this.createObject();
             this.cursor.setTexture("tree_" + this.getRandomInt(1, 9))
           }
@@ -242,7 +242,7 @@ export class EditorRootScene extends Phaser.Scene {
     obj.x = this.cursor.x;
     obj.y = this.cursor.y;
     // put terrain underneath everything
-    if (this.list.filenamePrefix.startsWith("terrain")) {
+    if (this.objectsListPanel.filenamePrefix.startsWith("terrain")) {
       obj.depth = -Number.MAX_VALUE;
     } else {
       obj.depth = obj.y;
