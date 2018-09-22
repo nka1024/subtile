@@ -13,6 +13,7 @@ import "phaser";
 
 import { BootScene } from "./scenes/bootScene";
 import { EditorRootScene } from "./scenes/editorRootScene";
+import { GameplayRootScene } from "./scenes/GameplayRootScene";
 
 
 var game = null;
@@ -23,7 +24,6 @@ export class Game extends Phaser.Game {
   }
 }
 
-
 window.onload = () => {
   var c = document.getElementById('canvas_main') as HTMLCanvasElement;
   const config: GameConfig = {
@@ -33,7 +33,7 @@ window.onload = () => {
     type: Phaser.AUTO,
     // type: Phaser.CANVAS,
     parent: "game",
-    scene: [BootScene, EditorRootScene],
+    scene: [BootScene, EditorRootScene, GameplayRootScene],
     input: {
       keyboard: true,
       mouse: true,

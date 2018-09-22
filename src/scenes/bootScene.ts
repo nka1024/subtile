@@ -14,6 +14,10 @@ export class BootScene extends Phaser.Scene {
 
   update(): void {
     console.log("BootScene complete");
-    this.scene.start("EditorRootScene");
+    if (document.baseURI.indexOf("editor.html") != -1) {
+      this.scene.start("EditorRootScene");
+    } else {
+      this.scene.start("GameplayRootScene");
+    }
   }
 }
