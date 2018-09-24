@@ -31,11 +31,12 @@ export class GameplayRootScene extends Phaser.Scene {
     WindowManager.initialize();
 
     this.grid = new TileGrid(this);
-    this.cursor = this.add.sprite(150, 150, "cursor");
+    this.cursor = this.add.sprite(0, 0, "cursor_grid_32x32");
     this.cursor.depth = 1000;
-    this.cursor.originX = 0.5;
+    this.cursor.originX = 1;
     this.cursor.originY = 1;
-    this.cursor.setInteractive();
+    this.cursor.disableInteractive();
+    // this.cursor.setInteractive();
 
     this.importMap(this.cache.json.get('map'));
 
@@ -87,11 +88,17 @@ export class GameplayRootScene extends Phaser.Scene {
     let worldPosX = Math.round(this.input.activePointer.x / 2) * 2;
     let worldPosY = Math.round(this.input.activePointer.y / 2) * 2;
 
-    // snap cursor to grid or pixel perfect follow
-    this.cursor.x = Math.round(worldPosX + this.cameras.main.scrollX);
-    this.cursor.y = Math.round(worldPosY + this.cameras.main.scrollY);
-    this.cursor.scaleX = 2;
-    this.cursor.scaleY = 2;
+    
+    // this.cursor.x = Math.round(worldPosX + this.cameras.main.scrollX);
+    // this.cursor.y = Math.round(worldPosY + this.cameras.main.scrollY);
+    let snap = this.grid.snapToGrid(
+      worldPosX + this.cameras.main.scrollX, 
+      worldPosY + this.cameras.main.scrollY
+    );
+    this.cursor.x = snap.x + 16;
+    this.cursor.y = snap.y + 16;
+    this.cursor.scaleX = 1;
+    this.cursor.scaleY = 1;
 
   }
 

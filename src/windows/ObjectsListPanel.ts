@@ -56,8 +56,8 @@ export class ObjectsListPanel extends BaseWindow {
             this.repopulate();
         });
         this.housesButton.addEventListener('click', () => {
-            // this.filenamePrefix == 'tree';
-            // this.maxIdx = ASSETS.TREE_MAX;
+            this.filenamePrefix = 'house';
+            this.maxIdx = ASSETS.HOUSE_MAX;
             this.repopulate();
         });
     }

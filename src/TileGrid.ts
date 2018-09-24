@@ -154,7 +154,7 @@ export class TileGrid {
     };
   }
 
-  private snapToGrid(x: number, y: number): any {
+  public snapToGrid(x: number, y: number): {x: number,  y: number} {
     let gridPos = this.worldToGrid(x, y);
     return this.gridToWorld(gridPos.i, gridPos.j);
   }
