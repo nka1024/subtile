@@ -8,182 +8,186 @@
 import { TileGrid } from "../TileGrid";
 
 export class Unit extends Phaser.GameObjects.Sprite {
-    constructor(scene: Phaser.Scene, x: number, y: number) {
-        
-        super(scene, x, y, "infantry_1_idle_48x48");
-        
-        var idleAnim = {
-            key: 'unit_idle',
-            frames: scene.anims.generateFrameNumbers('infantry_1_idle_48x48', { start: 0, end: 3}),
-            frameRate: 5,
-            repeat: -1,
-            repeatDelay: 0
-        };
-        scene.anims.create(idleAnim);
-        var walkAnim = {
-            key: 'unit_walk',
-            frames: scene.anims.generateFrameNumbers('infantry_1_walk_48x48', { start: 0, end: 3}),
-            frameRate: 10,
-            repeat: -1,
-            repeatDelay: 0
-        };
-        scene.anims.create(walkAnim);
-        this.originX = 0.5;
-        this.originY = 0.5;
-        
-        this.anims.play("unit_idle");
-        scene.input.keyboard.on('keydown_C', function (event) { console.log('sdds')});
+  private unitType: number = 1;
 
-        this.setInteractive();
-        this.on('pointerdown', () => {
-            console.log('clicked player');
-        });
+  constructor(scene: Phaser.Scene, x: number, y: number, unitType:number) {
+
+    super(scene, x, y, 'infantry_'+unitType+'_idle_48x48');
+
+    this.unitType = unitType;
+
+    for (let idx of [1, 2]) {
+      var idleAnim = {
+        key: 'unit_' + idx + '_idle',
+        frames: scene.anims.generateFrameNumbers('infantry_' + idx + '_idle_48x48', { start: 0, end: 3 }),
+        frameRate: 5,
+        repeat: -1,
+        repeatDelay: 0
+      };
+      scene.anims.create(idleAnim);
+      var walkAnim = {
+        key: 'unit_' + idx + '_walk',
+        frames: scene.anims.generateFrameNumbers('infantry_' + idx + '_walk_48x48', { start: 0, end: 3 }),
+        frameRate: 10,
+        repeat: -1,
+        repeatDelay: 0
+      };
+      scene.anims.create(walkAnim);
     }
 
-    update() {
-        // if (this.cursors.down.isDown) {
-        if (this.nextDest != null){
-            this.anims.play("unit_walk", true);
-        } else {
-            this.anims.play("unit_idle", true);
-        }
+    this.originX = 0.5;
+    this.originY = 0.5;
 
-        if (this.speed.x < 0) this.flipX = true;
-        else if (this.speed.x > 0) this.flipX = false;
+    this.anims.play('unit_'+ unitType +'_idle');
 
-        if (this.nextDest != null) {
-            this.moveNextStep();
-        }
-        this.depth = this.y - 4;
-    }
-    
-    destroy() {
-        this.destroyAllDots();
-        super.destroy()
+    this.setInteractive();
+    this.on('pointerdown', () => {
+      console.log('clicked unit');
+    });
+  }
+
+  update() {
+    // if (this.cursors.down.isDown) {
+    if (this.nextDest != null) {
+      this.anims.play('unit_' + this.unitType + '_walk', true);
+    } else {
+      this.anims.play('unit_' + this.unitType + '_idle', true);
     }
 
-    // Movement
+    if (this.speed.x < 0) this.flipX = true;
+    else if (this.speed.x > 0) this.flipX = false;
 
-    private dest: {i: number, j: number};
-    private path: {x: number, y: number}[];
-    private pathDots: Phaser.GameObjects.Image[];
-    public handleMoveTouch(dest: {x: number, y: number}, grid: TileGrid) {
-        let gridDest = grid.worldToGrid(dest.x, dest.y);
-        let gridPos = grid.worldToGrid(this.x, this.y);
-
-        //  if there's no dest or new dest given, find new path
-        if (this.dest == null || this.dest.i != gridDest.i || this.dest.j != gridDest.j) {
-            this.dest = gridDest;
-            grid.findPath(gridPos.j, gridPos.i, gridDest.j, gridDest.i, (path) => {
-                this.path = path;
-                this.drawPathDots(grid);
-            }); 
-        } else {
-            // destination confirmed, start moving
-            console.log('start moving: ')
- 
-            this.startMoving(grid);
-        }
+    if (this.nextDest != null) {
+      this.moveNextStep();
     }
+    this.depth = this.y - 4;
+  }
 
-    private nextDest: {x: number, y:number};
-    private pathBySteps: {x: number, y:number}[];
-    private speed: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
-    private startMoving(grid: TileGrid) {
-        if (this.path == null) return;
-        
-        this.pathBySteps = [];
-        
-        let start = null
-        for (let step of this.path) {
-            
-            let gridPos = {i: step.y, j: step.x};
-            let worldPos = grid.gridToWorld(gridPos.i, gridPos.j);
-            if (start == null) {
-                start = worldPos
-            } else {
-                this.pathBySteps.push(worldPos);
-            }
-            
-        }
+  destroy() {
+    this.destroyAllDots();
+    super.destroy()
+  }
+
+  // Movement
+
+  private dest: { i: number, j: number };
+  private path: { x: number, y: number }[];
+  private pathDots: Phaser.GameObjects.Image[];
+  public handleMoveTouch(dest: { x: number, y: number }, grid: TileGrid) {
+    let gridDest = grid.worldToGrid(dest.x, dest.y);
+    let gridPos = grid.worldToGrid(this.x, this.y);
+
+    //  if there's no dest or new dest given, find new path
+    if (this.dest == null || this.dest.i != gridDest.i || this.dest.j != gridDest.j) {
+      this.dest = gridDest;
+      grid.findPath(gridPos.j, gridPos.i, gridDest.j, gridDest.i, (path) => {
+        this.path = path;
+        this.drawPathDots(grid);
+      });
+    } else {
+      // destination confirmed, start moving
+      this.startMoving(grid);
+    }
+  }
+
+  private nextDest: { x: number, y: number };
+  private pathBySteps: { x: number, y: number }[];
+  private speed: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
+  private startMoving(grid: TileGrid) {
+    if (this.path == null) return;
+
+    this.pathBySteps = [];
+
+    let start = null
+    for (let step of this.path) {
+
+      let gridPos = { i: step.y, j: step.x };
+      let worldPos = grid.gridToWorld(gridPos.i, gridPos.j);
+      if (start == null) {
+        start = worldPos
+      } else {
+        this.pathBySteps.push(worldPos);
+      }
+
+    }
+    this.nextDest = this.pathBySteps[0];
+    this.destroyNextDot();
+  }
+
+  private moveNextStep() {
+    let distance = 1;
+    let finished = this.stepTowards(this.nextDest.x + 16, this.nextDest.y + 20, distance);
+    if (finished) {
+      // finished stp
+      this.pathBySteps.splice(0, 1);
+      if (this.pathBySteps.length > 0) {
         this.nextDest = this.pathBySteps[0];
+
         this.destroyNextDot();
+      } else {
+        // finished path
+        this.nextDest = null;
+        this.destroyNextDot();
+      }
+    }
+  }
+
+  private stepTowards(x: number, y: number, distance: number): boolean {
+    this.speed.x = x - this.x;
+    this.speed.y = y - this.y;
+    if (this.speed.length() <= distance) {
+      this.x = x;
+      this.y = y;
+      return true;
+    }
+    this.speed = this.normalize(this.speed, distance);
+    this.x += this.speed.x;
+    this.y += this.speed.y;
+    return false;
+  }
+
+  private normalize(vec: Phaser.Math.Vector2, newLen: number): Phaser.Math.Vector2 {
+    var len = vec.x * vec.x + vec.y * vec.y;
+    if (len > 0) {
+      len = newLen / Math.sqrt(len);
+      vec.x = vec.x * len;
+      vec.y = vec.y * len;
+    }
+    return vec;
+  }
+
+
+  // dot path images
+
+  private drawPathDots(grid: TileGrid) {
+    this.destroyAllDots();
+
+    if (this.path == null) {
+      return;
     }
 
-    private moveNextStep() {
-        let distance = 1;
-        let finished = this.stepTowards(this.nextDest.x + 16, this.nextDest.y + 20, distance);
-        if (finished) {
-            // finished stp
-            this.pathBySteps.splice(0, 1);
-            if (this.pathBySteps.length > 0) {
-                this.nextDest = this.pathBySteps[0];
-
-                this.destroyNextDot();
-            } else {
-                // finished path
-                this.nextDest = null;
-                this.destroyNextDot();
-            }
-        }
+    let dots = [];
+    for (let pos of this.path) {
+      let worldPos = grid.gridToWorld(pos.y, pos.x);
+      let img = this.scene.add.image(worldPos.x + 16, worldPos.y + 16, "path_mid_14x14");
+      dots.push(img)
     }
+    this.pathDots = dots;
+  }
 
-    private stepTowards(x: number, y: number, distance: number): boolean {
-        this.speed.x = x - this.x;
-        this.speed.y = y - this.y;
-        if (this.speed.length() <= distance) {
-            this.x = x;
-            this.y = y;
-            return true;
-        }
-        this.speed = this.normalize(this.speed, distance);
-        this.x += this.speed.x;
-        this.y += this.speed.y;
-        return false;
+  private destroyNextDot() {
+    if (this.pathDots.length > 0) {
+      this.pathDots.splice(0, 1)[0].destroy();
     }
+  }
 
-    private normalize(vec: Phaser.Math.Vector2, newLen: number):Phaser.Math.Vector2 {
-        var len = vec.x * vec.x + vec.y * vec.y;
-        if (len > 0) {
-            len = newLen / Math.sqrt(len);
-            vec.x = vec.x * len;
-            vec.y = vec.y * len;
-        }
-        return vec;
+  private destroyAllDots() {
+    if (this.pathDots) {
+      for (let dot of this.pathDots) {
+        dot.destroy()
+      }
+      this.pathDots = null;
     }
-
-
-    // dot path images
-
-    private drawPathDots(grid: TileGrid) {
-        this.destroyAllDots();
-
-        if (this.path == null) {
-            return;
-        }
-
-        let dots = [];
-        for (let pos of this.path) {
-            let worldPos = grid.gridToWorld(pos.y, pos.x);
-            let img = this.scene.add.image(worldPos.x + 16, worldPos.y + 16, "path_mid_14x14");
-            dots.push(img)
-        }
-        this.pathDots = dots;
-    }
-
-    private destroyNextDot() {
-        if (this.pathDots.length > 0) {
-            this.pathDots.splice(0, 1)[0].destroy();
-        }
-    }
-
-    private destroyAllDots() {
-        if (this.pathDots) {
-            for (let dot of this.pathDots) {
-                dot.destroy()
-            }
-            this.pathDots = null;
-        }
-    }
+  }
 
 }

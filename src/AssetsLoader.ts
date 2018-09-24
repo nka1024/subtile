@@ -49,6 +49,16 @@ export class AssetsLoader {
       endFrame: 4
     });
 
+    scene.load.spritesheet('infantry_2_idle_48x48', './assets/sprites/infantry_2_idle_48x48.png', { 
+      frameWidth: 48, 
+      frameHeight: 48, 
+      endFrame: 4
+    });
+    scene.load.spritesheet('infantry_2_walk_48x48', './assets/sprites/infantry_2_walk_48x48.png', { 
+      frameWidth: 48, 
+      frameHeight: 48, 
+      endFrame: 4
+    });
     for (let idx = 1; idx <= ASSETS.TERRAIN_MAX; idx++) {
       scene.load.image("terrain_" + idx, "./assets/tilemap/terrain_" + idx + ".png");
     }

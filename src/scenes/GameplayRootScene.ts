@@ -11,6 +11,7 @@ import { TileGrid } from "../TileGrid";
 import { Player } from "../actors/Player";
 import { Unit } from "../actors/Unit";
 import { UnitsPanel } from "../windows/UnitsPanel";
+import { ContextObjectPopup } from "../windows/ContextObjectWindow";
 
 export class GameplayRootScene extends Phaser.Scene {
 
@@ -20,6 +21,9 @@ export class GameplayRootScene extends Phaser.Scene {
   private unit: Unit;
 
   private selectedUnit:any;
+  private contextWindow:ContextObjectPopup;
+
+  private objectClickedInThisFrame:Boolean;
 
   constructor() {
     super({
@@ -33,6 +37,7 @@ export class GameplayRootScene extends Phaser.Scene {
 
   create(data): void {
     this.cameras.main.setBackgroundColor(0x1f1f1f);
+    
     WindowManager.initialize();
 
     this.grid = new TileGrid(this);
@@ -59,11 +64,40 @@ export class GameplayRootScene extends Phaser.Scene {
       if (!this.unit) {
         let gridPos = this.grid.worldToGrid(this.player.x, this.player.y);
         let worldPos = this.grid.gridToWorld(gridPos.i, gridPos.j - 1);
-        this.unit = new Unit(this, worldPos.x + 16, worldPos.y + 16);
+        this.unit = new Unit(this, worldPos.x + 16, worldPos.y + 16, 1);
         this.add.existing(this.unit)
       }
       this.selectedUnit = this.unit;
     });
+
+    let worldPos = this.grid.gridToWorld(10, 14);
+    let unit2 = new Unit(this, worldPos.x + 16, worldPos.y + 16, 2);
+    this.add.existing(unit2);
+    unit2.on('pointerdown', () => {
+      this.showContextWindowForObject(unit2);
+      this.objectClickedInThisFrame = true;
+    });
+
+  }
+
+  private showContextWindowForObject(object: Phaser.GameObjects.Sprite) {
+    this.destroyContextWindow();
+
+    let x = object.x - this.cameras.main.scrollX;
+    let y = object.y - this.cameras.main.scrollY;
+    this.contextWindow = new ContextObjectPopup(x - ContextObjectPopup.defaultWidth/2, y + 16);
+    this.contextWindow.onDestroy = (w) => {
+      this.contextWindow = null
+    };
+    this.contextWindow.show();
+  }
+
+  private destroyContextWindow() {
+    if (this.contextWindow != null) {
+      this.contextWindow.show();
+      this.contextWindow.destroy();
+      this.contextWindow = null;
+    }
   }
 
   private importMap(map: any) {
@@ -83,17 +117,27 @@ export class GameplayRootScene extends Phaser.Scene {
   }
 
   update(): void {
-    this.cursorFollow();
-    this.cameraDrag();
-    this.cursorTouchHandler();
+    // close context window if clicked outside of it
+    if (this.input.activePointer.justDown && !this.objectClickedInThisFrame) {
+      this.destroyContextWindow();
+    }
+    // dont handle touches if context window is shown
+    if (this.contextWindow == null) {
+      this.cursorFollow();
+      this.cameraDrag();
+      this.cursorTouchHandler();
+    }
 
     if (this.player) this.player.update();
     if (this.unit) this.unit.update();
     if (this.grid) this.grid.update();
+
+    this.objectClickedInThisFrame = false;
   }
 
   private cursorTouchHandler() {
     if (this.input.activePointer.isDown) {
+      // this.destroyContextWindow();
       if (this.cursor.alpha != 0.5) {
         this.cursor.alpha = 0.5;
       }
@@ -117,6 +161,7 @@ export class GameplayRootScene extends Phaser.Scene {
       worldPosX + this.cameras.main.scrollX, 
       worldPosY + this.cameras.main.scrollY
     );
+    let gr = this.grid.worldToGrid(worldPosX, worldPosY);
     this.cursor.x = snap.x + 16;
     this.cursor.y = snap.y + 16;
     this.cursor.scaleX = 1;
@@ -127,7 +172,9 @@ export class GameplayRootScene extends Phaser.Scene {
   private prevPointerY: number;
   private cameraDrag() {
     let ptr = this.input.activePointer;
+
     if (ptr.isDown) {
+      // this.destroyContextWindow();
       if (!ptr.justDown) {
         this.cameras.main.scrollX -= (ptr.x - this.prevPointerX)
         this.cameras.main.scrollY -= (ptr.y - this.prevPointerY)

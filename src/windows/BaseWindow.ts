@@ -10,6 +10,8 @@ export abstract class BaseWindow {
   protected element: HTMLElement;
   protected parent: HTMLElement;
 
+  public onDestroy:(w: BaseWindow) => void;
+
   constructor() {
     var parent = document.querySelector('.window_manager') as HTMLElement;
     this.createDiv(parent, this.getWindowName());
@@ -26,6 +28,9 @@ export abstract class BaseWindow {
 
   public destroy() {
     this.element.parentNode.removeChild(this.element);
+    if (this.onDestroy != null) {
+      this.onDestroy(this);
+    } 
   }
 
   protected static getPrefab(prefabName: string): HTMLElement {

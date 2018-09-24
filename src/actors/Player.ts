@@ -33,7 +33,6 @@ export class Player extends Phaser.GameObjects.Sprite {
         this.originY = 0.5;
         
         this.anims.play("player_idle");
-        scene.input.keyboard.on('keydown_C', function (event) { console.log('sdds')});
 
         this.setInteractive();
         this.on('pointerdown', () => {
@@ -81,8 +80,6 @@ export class Player extends Phaser.GameObjects.Sprite {
             }); 
         } else {
             // destination confirmed, start moving
-            console.log('start moving')
-
             this.startMoving(grid);
         }
     }
