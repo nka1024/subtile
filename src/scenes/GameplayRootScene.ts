@@ -13,19 +13,26 @@ import { SquadUnit } from "../actors/SquadUnit";
 import { UnitsPanel } from "../windows/UnitsPanel";
 import { ContextObjectPopup } from "../windows/ContextObjectWindow";
 import { IUnit } from "../actors/IUnit";
+import { CameraDragModule } from "../modules/CameraDragModule";
+import { SceneCursorModule } from "../modules/SceneCursorModule";
+import { MapImporterModule } from "../modules/MapImporterModule";
 
 export class GameplayRootScene extends Phaser.Scene {
 
   private grid: TileGrid;
-  private cursor: Phaser.GameObjects.Sprite;
   private player: HeroUnit;
   private unit: SquadUnit;
   private enemyUnit: SquadUnit;
 
-  private selectedUnit:IUnit;
-  private contextWindow:ContextObjectPopup;
+  private selectedUnit: IUnit;
+  private contextWindow: ContextObjectPopup;
 
-  private objectClickedInThisFrame:Boolean;
+  private objectClickedInThisFrame: Boolean;
+
+  // modules
+  private cameraDragModule: CameraDragModule;
+  private cursorModule: SceneCursorModule;
+  private mapImporterModule: MapImporterModule;
 
   constructor() {
     super({
@@ -37,19 +44,24 @@ export class GameplayRootScene extends Phaser.Scene {
     AssetsLoader.preload(this);
   }
 
+  injectDependencies() {
+    this.grid = new TileGrid(this);
+    this.cameraDragModule = new CameraDragModule(this);
+    this.cursorModule = new SceneCursorModule(this, this.grid);
+    this.mapImporterModule = new MapImporterModule(this, this.grid);
+  }
+
   create(data): void {
+    this.injectDependencies();
     this.cameras.main.setBackgroundColor(0x1f1f1f);
     
     WindowManager.initialize();
 
-    this.grid = new TileGrid(this);
-    this.cursor = this.add.sprite(0, 0, "cursor_grid_32x32");
-    this.cursor.depth = 1000;
-    this.cursor.originX = 1;
-    this.cursor.originY = 1;
-    this.cursor.disableInteractive();
-
-    this.importMap(this.cache.json.get('map'));
+    this.cursorModule.onClick = (cursor) => {
+      this.selectedUnit.mover.handleMoveTouch(cursor);
+    };
+    
+    this.mapImporterModule.importMap(this.cache.json.get('map'));
 
     let player = new HeroUnit(this, 444, 280, this.grid);
     player.depth = player.y + 16;
@@ -79,8 +91,6 @@ export class GameplayRootScene extends Phaser.Scene {
       this.objectClickedInThisFrame = true;
     });
     this.add.existing(this.enemyUnit);
-
-
   }
 
   private showContextWindowForObject(object: Phaser.GameObjects.Sprite) {
@@ -103,22 +113,6 @@ export class GameplayRootScene extends Phaser.Scene {
     }
   }
 
-  private importMap(map: any) {
-    // cleanup
-    for (let child of this.children.getAll()) {
-      // exclude cursor
-      if ((child as Phaser.GameObjects.Image).depth != 1000)
-        child.destroy()
-    }
-
-    // create grid from config
-    this.grid.import(map.grid);
-    // create objects from config      
-    for (let item of map.objects) {
-      this.createObjectFromConfig(item);
-    }
-  }
-
   update(): void {
     // close context window if clicked outside of it
     if (this.input.activePointer.justDown && !this.objectClickedInThisFrame) {
@@ -126,9 +120,8 @@ export class GameplayRootScene extends Phaser.Scene {
     }
     // dont handle touches if context window is shown
     if (this.contextWindow == null) {
-      this.cursorFollow();
-      this.cameraDrag();
-      this.cursorTouchHandler();
+      this.cursorModule.update();
+      this.cameraDragModule.update();
     }
 
     if (this.player) this.player.update();
@@ -137,66 +130,5 @@ export class GameplayRootScene extends Phaser.Scene {
     if (this.grid) this.grid.update();
 
     this.objectClickedInThisFrame = false;
-  }
-
-  private cursorTouchHandler() {
-    if (this.input.activePointer.isDown) {
-      if (this.cursor.alpha != 0.5) {
-        this.cursor.alpha = 0.5;
-      }
-    } else {
-      if (this.cursor.alpha != 1) {
-        this.cursor.alpha = 1;
-        this.selectedUnit.mover.handleMoveTouch(this.cursor);
-      }
-    }
-  }
-
-  private cursorFollow() {
-    let worldPosX = Math.round(this.input.activePointer.x / 2) * 2;
-    let worldPosY = Math.round(this.input.activePointer.y / 2) * 2;
-
-    let snap = this.grid.snapToGrid(
-      worldPosX + this.cameras.main.scrollX, 
-      worldPosY + this.cameras.main.scrollY
-    );
-    let gr = this.grid.worldToGrid(worldPosX, worldPosY);
-    this.cursor.x = snap.x + 16;
-    this.cursor.y = snap.y + 16;
-    this.cursor.scaleX = 1;
-    this.cursor.scaleY = 1;
-  }
-
-  private prevPointerX: number;
-  private prevPointerY: number;
-  private cameraDrag() {
-    let ptr = this.input.activePointer;
-
-    if (ptr.isDown) {
-      if (!ptr.justDown) {
-        this.cameras.main.scrollX -= (ptr.x - this.prevPointerX)
-        this.cameras.main.scrollY -= (ptr.y - this.prevPointerY)
-      }
-      this.prevPointerX = ptr.x;
-      this.prevPointerY = ptr.y
-    }
-
-    if (ptr.justUp) {
-      this.prevPointerX = 0;
-      this.prevPointerY = 0;
-    }
-  }
-
-  private createObjectFromConfig(data: any) {
-    let obj = new Phaser.GameObjects.Image(this, 0, 0, null);
-    obj.scaleX = 2;
-    obj.scaleY = 2;
-    obj.originX = 0.5;
-    obj.originY = 1;
-    obj.setTexture(data.texture);
-    obj.x = data.x;
-    obj.y = data.y;
-    obj.depth = data.depth;
-    this.add.existing(obj);
   }
 }
