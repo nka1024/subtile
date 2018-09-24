@@ -33,10 +33,19 @@ export class AssetsLoader {
       frameHeight: 32, 
       endFrame: 4
     });
-
     scene.load.spritesheet('player_walk_32x32', './assets/sprites/player_walk_32x32.png', { 
       frameWidth: 32, 
       frameHeight: 32, 
+      endFrame: 4
+    });
+    scene.load.spritesheet('infantry_1_idle_48x48', './assets/sprites/infantry_1_idle_48x48.png', { 
+      frameWidth: 48, 
+      frameHeight: 48, 
+      endFrame: 4
+    });
+    scene.load.spritesheet('infantry_1_walk_48x48', './assets/sprites/infantry_1_walk_48x48.png', { 
+      frameWidth: 48, 
+      frameHeight: 48, 
       endFrame: 4
     });
 

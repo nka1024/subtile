@@ -9,12 +9,17 @@ import { WindowManager } from "../windows/WindowManager";
 import { ASSETS, AssetsLoader } from "../AssetsLoader";
 import { TileGrid } from "../TileGrid";
 import { Player } from "../actors/Player";
+import { Unit } from "../actors/Unit";
+import { UnitsPanel } from "../windows/UnitsPanel";
 
 export class GameplayRootScene extends Phaser.Scene {
 
   private grid: TileGrid;
   private cursor: Phaser.GameObjects.Sprite;
   private player: Player;
+  private unit: Unit;
+
+  private selectedUnit:any;
 
   constructor() {
     super({
@@ -36,7 +41,6 @@ export class GameplayRootScene extends Phaser.Scene {
     this.cursor.originX = 1;
     this.cursor.originY = 1;
     this.cursor.disableInteractive();
-    // this.cursor.setInteractive();
 
     this.importMap(this.cache.json.get('map'));
 
@@ -44,6 +48,22 @@ export class GameplayRootScene extends Phaser.Scene {
     player.depth = player.y + 16;
     this.add.existing(player);
     this.player = player;
+    this.selectedUnit = player;
+
+    let units = new UnitsPanel();
+    units.show();
+    units.playerButton.addEventListener('click', () => {
+      this.selectedUnit = this.player;
+    });
+    units.unit1Button.addEventListener('click', () => {
+      if (!this.unit) {
+        let gridPos = this.grid.worldToGrid(this.player.x, this.player.y);
+        let worldPos = this.grid.gridToWorld(gridPos.i, gridPos.j - 1);
+        this.unit = new Unit(this, worldPos.x + 16, worldPos.y + 16);
+        this.add.existing(this.unit)
+      }
+      this.selectedUnit = this.unit;
+    });
   }
 
   private importMap(map: any) {
@@ -68,6 +88,7 @@ export class GameplayRootScene extends Phaser.Scene {
     this.cursorTouchHandler();
 
     if (this.player) this.player.update();
+    if (this.unit) this.unit.update();
     if (this.grid) this.grid.update();
   }
 
@@ -79,7 +100,11 @@ export class GameplayRootScene extends Phaser.Scene {
     } else {
       if (this.cursor.alpha != 1) {
         this.cursor.alpha = 1;
-        this.player.handleMoveTouch(this.cursor, this.grid);
+        if (this.selectedUnit == this.player) {
+          this.player.handleMoveTouch(this.cursor, this.grid);
+        } else if (this.selectedUnit == this.unit) {
+          this.unit.handleMoveTouch(this.cursor, this.grid);
+        }
       }
     }
   }
@@ -88,9 +113,6 @@ export class GameplayRootScene extends Phaser.Scene {
     let worldPosX = Math.round(this.input.activePointer.x / 2) * 2;
     let worldPosY = Math.round(this.input.activePointer.y / 2) * 2;
 
-    
-    // this.cursor.x = Math.round(worldPosX + this.cameras.main.scrollX);
-    // this.cursor.y = Math.round(worldPosY + this.cameras.main.scrollY);
     let snap = this.grid.snapToGrid(
       worldPosX + this.cameras.main.scrollX, 
       worldPosY + this.cameras.main.scrollY
@@ -99,7 +121,6 @@ export class GameplayRootScene extends Phaser.Scene {
     this.cursor.y = snap.y + 16;
     this.cursor.scaleX = 1;
     this.cursor.scaleY = 1;
-
   }
 
   private prevPointerX: number;

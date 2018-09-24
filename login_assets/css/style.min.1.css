@@ -245,7 +245,7 @@ input[type="checkbox"] {
 }
 
 .submit a.forgot:hover {
-	color: #2980b9
+	color: #63858e
 }
 
 
@@ -268,7 +268,7 @@ input[type="checkbox"] {
 }
 
 .submit .btn-blue {
-	background: #2980b9;
+	background: #63858e;
 	color: #fff;
 	width: 100%
 }
@@ -363,7 +363,7 @@ input[type="checkbox"] {
 }
 
 #new-account a:hover {
-	color: #2980b9
+	color: #63858e
 }
 
 

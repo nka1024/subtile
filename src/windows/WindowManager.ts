@@ -11,6 +11,7 @@ import { MenuPanel } from "./MenuPanel";
 import { ObjectsListPanel } from "./ObjectsListPanel";
 import { ExportWindow } from "../windows/ExportWindow";
 import { ToolsPanel } from "./ToolsPanel";
+import { UnitsPanel } from "./UnitsPanel";
 
 export class WindowManager {
 
@@ -21,5 +22,10 @@ export class WindowManager {
     ObjectsListPanel.initialize();
     ExportWindow.initialize();
     ToolsPanel.initialize();
+    try {
+      UnitsPanel.initialize();
+    } catch (e) {
+      console.log('missing window')
+    }
   }
 }

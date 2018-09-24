@@ -7,23 +7,22 @@
 
 import { TileGrid } from "../TileGrid";
 
-export class Player extends Phaser.GameObjects.Sprite {
-
+export class Unit extends Phaser.GameObjects.Sprite {
     constructor(scene: Phaser.Scene, x: number, y: number) {
         
-        super(scene, x, y, "player_idle_32x32");
+        super(scene, x, y, "infantry_1_idle_48x48");
         
         var idleAnim = {
-            key: 'player_idle',
-            frames: scene.anims.generateFrameNumbers('player_idle_32x32', { start: 0, end: 3}),
+            key: 'unit_idle',
+            frames: scene.anims.generateFrameNumbers('infantry_1_idle_48x48', { start: 0, end: 3}),
             frameRate: 5,
             repeat: -1,
             repeatDelay: 0
         };
         scene.anims.create(idleAnim);
         var walkAnim = {
-            key: 'player_walk',
-            frames: scene.anims.generateFrameNumbers('player_walk_32x32', { start: 0, end: 4}),
+            key: 'unit_walk',
+            frames: scene.anims.generateFrameNumbers('infantry_1_walk_48x48', { start: 0, end: 3}),
             frameRate: 10,
             repeat: -1,
             repeatDelay: 0
@@ -32,7 +31,7 @@ export class Player extends Phaser.GameObjects.Sprite {
         this.originX = 0.5;
         this.originY = 0.5;
         
-        this.anims.play("player_idle");
+        this.anims.play("unit_idle");
         scene.input.keyboard.on('keydown_C', function (event) { console.log('sdds')});
 
         this.setInteractive();
@@ -44,9 +43,9 @@ export class Player extends Phaser.GameObjects.Sprite {
     update() {
         // if (this.cursors.down.isDown) {
         if (this.nextDest != null){
-            this.anims.play("player_walk", true);
+            this.anims.play("unit_walk", true);
         } else {
-            this.anims.play("player_idle", true);
+            this.anims.play("unit_idle", true);
         }
 
         if (this.speed.x < 0) this.flipX = true;
@@ -81,8 +80,8 @@ export class Player extends Phaser.GameObjects.Sprite {
             }); 
         } else {
             // destination confirmed, start moving
-            console.log('start moving')
-
+            console.log('start moving: ')
+ 
             this.startMoving(grid);
         }
     }
@@ -97,6 +96,7 @@ export class Player extends Phaser.GameObjects.Sprite {
         
         let start = null
         for (let step of this.path) {
+            
             let gridPos = {i: step.y, j: step.x};
             let worldPos = grid.gridToWorld(gridPos.i, gridPos.j);
             if (start == null) {
@@ -104,15 +104,15 @@ export class Player extends Phaser.GameObjects.Sprite {
             } else {
                 this.pathBySteps.push(worldPos);
             }
+            
         }
         this.nextDest = this.pathBySteps[0];
-        
         this.destroyNextDot();
     }
 
     private moveNextStep() {
         let distance = 1;
-        let finished = this.stepTowards(this.nextDest.x + 16, this.nextDest.y + 16, distance);
+        let finished = this.stepTowards(this.nextDest.x + 16, this.nextDest.y + 20, distance);
         if (finished) {
             // finished stp
             this.pathBySteps.splice(0, 1);
