@@ -1,81 +1,40 @@
+
 /**
 * @author       Kirill Nepomnyaschiy <nka1024@gmail.com>
 * @copyright    nka1024
 * @description  subtile
 * @license      Apache 2.0
 */
-
 import { TileGrid } from "../TileGrid";
+import { IUnit } from "../actors/IUnit";
 
-export class Unit extends Phaser.GameObjects.Sprite {
-  private unitType: number = 1;
+export class UnitMoverModule {
 
-  constructor(scene: Phaser.Scene, x: number, y: number, unitType:number) {
-
-    super(scene, x, y, 'infantry_'+unitType+'_idle_48x48');
-
-    this.unitType = unitType;
-
-    for (let idx of [1, 2]) {
-      var idleAnim = {
-        key: 'unit_' + idx + '_idle',
-        frames: scene.anims.generateFrameNumbers('infantry_' + idx + '_idle_48x48', { start: 0, end: 3 }),
-        frameRate: 5,
-        repeat: -1,
-        repeatDelay: 0
-      };
-      scene.anims.create(idleAnim);
-      var walkAnim = {
-        key: 'unit_' + idx + '_walk',
-        frames: scene.anims.generateFrameNumbers('infantry_' + idx + '_walk_48x48', { start: 0, end: 3 }),
-        frameRate: 10,
-        repeat: -1,
-        repeatDelay: 0
-      };
-      scene.anims.create(walkAnim);
-    }
-
-    this.originX = 0.5;
-    this.originY = 0.5;
-
-    this.anims.play('unit_'+ unitType +'_idle');
-
-    this.setInteractive();
-    this.on('pointerdown', () => {
-      console.log('clicked unit');
-    });
-  }
-
-  update() {
-    // if (this.cursors.down.isDown) {
-    if (this.nextDest != null) {
-      this.anims.play('unit_' + this.unitType + '_walk', true);
-    } else {
-      this.anims.play('unit_' + this.unitType + '_idle', true);
-    }
-
-    if (this.speed.x < 0) this.flipX = true;
-    else if (this.speed.x > 0) this.flipX = false;
-
-    if (this.nextDest != null) {
-      this.moveNextStep();
-    }
-    this.depth = this.y - 4;
-  }
-
-  destroy() {
-    this.destroyAllDots();
-    super.destroy()
-  }
-
-  // Movement
+  private unit: IUnit;
+  private scene: Phaser.Scene;
+  private grid: TileGrid;
 
   private dest: { i: number, j: number };
   private path: { x: number, y: number }[];
   private pathDots: Phaser.GameObjects.Image[];
-  public handleMoveTouch(dest: { x: number, y: number }, grid: TileGrid) {
+
+  private nextDest: { x: number, y: number };
+  private pathBySteps: { x: number, y: number }[];
+  private speed: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
+
+  constructor(unit: IUnit, scene: Phaser.Scene, grid: TileGrid) {
+    this.unit = unit;
+    this.scene = scene;
+    this.grid = grid;
+  }
+
+
+  // Public
+
+  public handleMoveTouch(dest: { x: number, y: number }) {
+    let grid = this.grid;
     let gridDest = grid.worldToGrid(dest.x, dest.y);
-    let gridPos = grid.worldToGrid(this.x, this.y);
+    let gridPos = grid.worldToGrid(this.unit.x, this.unit.y);
 
     //  if there's no dest or new dest given, find new path
     if (this.dest == null || this.dest.i != gridDest.i || this.dest.j != gridDest.j) {
@@ -90,9 +49,28 @@ export class Unit extends Phaser.GameObjects.Sprite {
     }
   }
 
-  private nextDest: { x: number, y: number };
-  private pathBySteps: { x: number, y: number }[];
-  private speed: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
+  public update() {
+    if (this.nextDest != null) {
+      this.unit.playUnitAnim('walk', true);
+    } else {
+      this.unit.playUnitAnim('idle', true);
+    }
+
+    if (this.speed.x < 0) this.unit.flipX = true;
+    else if (this.speed.x > 0) this.unit.flipX = false;
+
+    if (this.nextDest != null) {
+      this.moveNextStep();
+    }
+  }
+
+  public destroy() {
+    this.destroyAllDots();
+  }
+
+
+  // Private
+
   private startMoving(grid: TileGrid) {
     if (this.path == null) return;
 
@@ -100,7 +78,6 @@ export class Unit extends Phaser.GameObjects.Sprite {
 
     let start = null
     for (let step of this.path) {
-
       let gridPos = { i: step.y, j: step.x };
       let worldPos = grid.gridToWorld(gridPos.i, gridPos.j);
       if (start == null) {
@@ -108,21 +85,20 @@ export class Unit extends Phaser.GameObjects.Sprite {
       } else {
         this.pathBySteps.push(worldPos);
       }
-
     }
     this.nextDest = this.pathBySteps[0];
+
     this.destroyNextDot();
   }
 
   private moveNextStep() {
     let distance = 1;
-    let finished = this.stepTowards(this.nextDest.x + 16, this.nextDest.y + 20, distance);
+    let finished = this.stepTowards(this.nextDest.x + 16, this.nextDest.y + 16, distance);
     if (finished) {
       // finished stp
       this.pathBySteps.splice(0, 1);
       if (this.pathBySteps.length > 0) {
         this.nextDest = this.pathBySteps[0];
-
         this.destroyNextDot();
       } else {
         // finished path
@@ -133,16 +109,16 @@ export class Unit extends Phaser.GameObjects.Sprite {
   }
 
   private stepTowards(x: number, y: number, distance: number): boolean {
-    this.speed.x = x - this.x;
-    this.speed.y = y - this.y;
+    this.speed.x = x - this.unit.x;
+    this.speed.y = y - this.unit.y;
     if (this.speed.length() <= distance) {
-      this.x = x;
-      this.y = y;
+      this.unit.x = x;
+      this.unit.y = y;
       return true;
     }
     this.speed = this.normalize(this.speed, distance);
-    this.x += this.speed.x;
-    this.y += this.speed.y;
+    this.unit.x += this.speed.x;
+    this.unit.y += this.speed.y;
     return false;
   }
 
@@ -155,7 +131,6 @@ export class Unit extends Phaser.GameObjects.Sprite {
     }
     return vec;
   }
-
 
   // dot path images
 

@@ -8,19 +8,21 @@
 import { WindowManager } from "../windows/WindowManager";
 import { ASSETS, AssetsLoader } from "../AssetsLoader";
 import { TileGrid } from "../TileGrid";
-import { Player } from "../actors/Player";
-import { Unit } from "../actors/Unit";
+import { HeroUnit } from "../actors/HeroUnit";
+import { SquadUnit } from "../actors/SquadUnit";
 import { UnitsPanel } from "../windows/UnitsPanel";
 import { ContextObjectPopup } from "../windows/ContextObjectWindow";
+import { IUnit } from "../actors/IUnit";
 
 export class GameplayRootScene extends Phaser.Scene {
 
   private grid: TileGrid;
   private cursor: Phaser.GameObjects.Sprite;
-  private player: Player;
-  private unit: Unit;
+  private player: HeroUnit;
+  private unit: SquadUnit;
+  private enemyUnit: SquadUnit;
 
-  private selectedUnit:any;
+  private selectedUnit:IUnit;
   private contextWindow:ContextObjectPopup;
 
   private objectClickedInThisFrame:Boolean;
@@ -49,7 +51,7 @@ export class GameplayRootScene extends Phaser.Scene {
 
     this.importMap(this.cache.json.get('map'));
 
-    let player = new Player(this, 444, 280);
+    let player = new HeroUnit(this, 444, 280, this.grid);
     player.depth = player.y + 16;
     this.add.existing(player);
     this.player = player;
@@ -64,19 +66,20 @@ export class GameplayRootScene extends Phaser.Scene {
       if (!this.unit) {
         let gridPos = this.grid.worldToGrid(this.player.x, this.player.y);
         let worldPos = this.grid.gridToWorld(gridPos.i, gridPos.j - 1);
-        this.unit = new Unit(this, worldPos.x + 16, worldPos.y + 16, 1);
+        this.unit = new SquadUnit(this, worldPos.x + 16, worldPos.y + 16, this.grid, 1);
         this.add.existing(this.unit)
       }
       this.selectedUnit = this.unit;
     });
 
     let worldPos = this.grid.gridToWorld(10, 14);
-    let unit2 = new Unit(this, worldPos.x + 16, worldPos.y + 16, 2);
-    this.add.existing(unit2);
-    unit2.on('pointerdown', () => {
-      this.showContextWindowForObject(unit2);
+    this.enemyUnit = new SquadUnit(this, worldPos.x + 16, worldPos.y + 16, this.grid, 2);
+    this.enemyUnit.on('pointerdown', () => {
+      this.showContextWindowForObject(this.enemyUnit);
       this.objectClickedInThisFrame = true;
     });
+    this.add.existing(this.enemyUnit);
+
 
   }
 
@@ -130,6 +133,7 @@ export class GameplayRootScene extends Phaser.Scene {
 
     if (this.player) this.player.update();
     if (this.unit) this.unit.update();
+    if (this.enemyUnit) this.enemyUnit.update();
     if (this.grid) this.grid.update();
 
     this.objectClickedInThisFrame = false;
@@ -137,18 +141,13 @@ export class GameplayRootScene extends Phaser.Scene {
 
   private cursorTouchHandler() {
     if (this.input.activePointer.isDown) {
-      // this.destroyContextWindow();
       if (this.cursor.alpha != 0.5) {
         this.cursor.alpha = 0.5;
       }
     } else {
       if (this.cursor.alpha != 1) {
         this.cursor.alpha = 1;
-        if (this.selectedUnit == this.player) {
-          this.player.handleMoveTouch(this.cursor, this.grid);
-        } else if (this.selectedUnit == this.unit) {
-          this.unit.handleMoveTouch(this.cursor, this.grid);
-        }
+        this.selectedUnit.mover.handleMoveTouch(this.cursor);
       }
     }
   }
@@ -174,7 +173,6 @@ export class GameplayRootScene extends Phaser.Scene {
     let ptr = this.input.activePointer;
 
     if (ptr.isDown) {
-      // this.destroyContextWindow();
       if (!ptr.justDown) {
         this.cameras.main.scrollX -= (ptr.x - this.prevPointerX)
         this.cameras.main.scrollY -= (ptr.y - this.prevPointerY)
@@ -201,5 +199,4 @@ export class GameplayRootScene extends Phaser.Scene {
     obj.depth = data.depth;
     this.add.existing(obj);
   }
-
 }

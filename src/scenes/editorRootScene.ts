@@ -13,7 +13,7 @@ import { WindowManager } from "../windows/WindowManager";
 import { ASSETS, AssetsLoader } from "../AssetsLoader";
 import { ToolsPanel } from "../windows/ToolsPanel";
 import { TileGrid } from "../TileGrid";
-import { Player } from "../actors/Player";
+import { HeroUnit } from "../actors/HeroUnit";
 
 
 export class EditorRootScene extends Phaser.Scene {
@@ -23,7 +23,7 @@ export class EditorRootScene extends Phaser.Scene {
   private toolsPanel: ToolsPanel;
   private cursor: Phaser.GameObjects.Sprite;
 
-  private player: Player;
+  private player: HeroUnit;
   
   constructor() {
     super({
@@ -60,7 +60,7 @@ export class EditorRootScene extends Phaser.Scene {
         this.player = null;
         this.toolsPanel.playButton.value = "PLAY";
       } else {
-        let player = new Player(this, 444,280);
+        let player = new HeroUnit(this, 444, 280, this.grid);
         player.depth = player.y+16;
         this.add.existing(player);
         this.player = player;
@@ -160,9 +160,7 @@ export class EditorRootScene extends Phaser.Scene {
         this.cursor.alpha = 1;
         if (this.player != null) {
           // player movemenet
-          
-          this.player.handleMoveTouch(this.cursor, this.grid);
-          
+          this.player.mover.handleMoveTouch(this.cursor);
         } else if (!this.grid.visible) { 
           // object placement
           if (this.objectsListPanel != null) {

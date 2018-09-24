@@ -8,10 +8,11 @@
 import { BaseWindow } from "./BaseWindow";
 
 export class ContextObjectPopup extends BaseWindow {
-    public static defaultWidth:number = 100;
     public width:number = 100;
+    
     // static
-    static innerHtml: string;
+    private static innerHtml: string;
+    public static defaultWidth:number = 100;
 
     // public
     public reconButton: HTMLInputElement;
