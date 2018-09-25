@@ -1,4 +1,4 @@
-import { TileGrid } from "../TileGrid";
+import { TileGrid } from "../../TileGrid";
 
 /**
 * @author       Kirill Nepomnyaschiy <nka1024@gmail.com>

@@ -6,7 +6,7 @@
 */
 
 import { TileGrid } from "../TileGrid";
-import { UnitMoverModule } from "../modules/UnitMoverModule";
+import { UnitMoverModule } from "../modules/unit/UnitMoverModule";
 import { IUnit } from "./IUnit";
 
 export class SquadUnit extends Phaser.GameObjects.Sprite implements IUnit {
@@ -16,8 +16,9 @@ export class SquadUnit extends Phaser.GameObjects.Sprite implements IUnit {
 
   constructor(scene: Phaser.Scene, x: number, y: number, grid:TileGrid, squadType:number) {
     super(scene, x, y, 'infantry_'+squadType+'_idle_48x48');
-    this.squadType = squadType;
 
+    this.squadType = squadType;
+    this.setInteractive();
     this.mover = new UnitMoverModule(this, scene, grid);
 
     for (let idx of [1, 2]) {
@@ -39,21 +40,12 @@ export class SquadUnit extends Phaser.GameObjects.Sprite implements IUnit {
       scene.anims.create(walkAnim);
     }
 
-    this.originX = 0.5;
-    this.originY = 0.5;
-
     this.playUnitAnim('idle', true);
-
-    this.setInteractive();
-    this.on('pointerdown', () => {
-      console.log('clicked unit');
-    });
   }
 
   public playUnitAnim(key:string, ignoreIfPlaying:boolean) {
     let anim = 'unit_'+ this.squadType +'_' + key;
     this.anims.play(anim, ignoreIfPlaying);
-
   }
 
   update() {
@@ -66,7 +58,5 @@ export class SquadUnit extends Phaser.GameObjects.Sprite implements IUnit {
     this.mover.destroy();;
     super.destroy()
   }
-
-
 
 }

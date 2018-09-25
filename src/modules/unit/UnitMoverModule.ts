@@ -5,12 +5,17 @@
 * @description  subtile
 * @license      Apache 2.0
 */
-import { TileGrid } from "../TileGrid";
-import { IUnit } from "../actors/IUnit";
+import { TileGrid } from "../../TileGrid";
+import { IUnit } from "../../actors/IUnit";
 
 export class UnitMoverModule {
 
-  private unit: IUnit;
+  // public
+  public onStepComplete: () => {};
+  public onPathComplete: () => {};
+  
+  // private
+  public unit: IUnit;
   private scene: Phaser.Scene;
   private grid: TileGrid;
 
@@ -100,10 +105,16 @@ export class UnitMoverModule {
       if (this.pathBySteps.length > 0) {
         this.nextDest = this.pathBySteps[0];
         this.destroyNextDot();
+        if (this.onStepComplete != null) {
+          this.onStepComplete();
+        }
       } else {
         // finished path
         this.nextDest = null;
         this.destroyNextDot();
+        if (this.onPathComplete != null) {
+          this.onPathComplete();
+        }
       }
     }
   }

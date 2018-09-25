@@ -7,7 +7,7 @@
 
 import { TileGrid } from "../TileGrid";
 import { IUnit } from "../actors/IUnit"
-import { UnitMoverModule } from "../modules/UnitMoverModule";
+import { UnitMoverModule } from "../modules/unit/UnitMoverModule";
 
 export class HeroUnit extends Phaser.GameObjects.Sprite implements IUnit {
 
@@ -16,7 +16,9 @@ export class HeroUnit extends Phaser.GameObjects.Sprite implements IUnit {
     constructor(scene: Phaser.Scene, x: number, y: number, grid:TileGrid) {
         super(scene, x, y, "player_idle_32x32");
         
+        this.setInteractive();
         this.mover = new UnitMoverModule(this, scene, grid);
+
         var idleAnim = {
             key: 'player_idle',
             frames: scene.anims.generateFrameNumbers('player_idle_32x32', { start: 0, end: 3}),
@@ -34,15 +36,7 @@ export class HeroUnit extends Phaser.GameObjects.Sprite implements IUnit {
         };
         scene.anims.create(walkAnim);
 
-        this.originX = 0.5;
-        this.originY = 0.5;
-        
         this.anims.play("player_idle");
-
-        this.setInteractive();
-        this.on('pointerdown', () => {
-            console.log('clicked player');
-        });
     }
 
     update() {

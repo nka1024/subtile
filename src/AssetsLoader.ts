@@ -59,6 +59,13 @@ export class AssetsLoader {
       frameHeight: 48, 
       endFrame: 4
     });
+
+    scene.load.spritesheet('anim_scout_eagle_32x32', './assets/sprites/anim_scout_eagle_32x32.png', { 
+      frameWidth: 32, 
+      frameHeight: 32, 
+      endFrame: 6
+    });
+    
     for (let idx = 1; idx <= ASSETS.TERRAIN_MAX; idx++) {
       scene.load.image("terrain_" + idx, "./assets/tilemap/terrain_" + idx + ".png");
     }

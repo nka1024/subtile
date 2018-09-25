@@ -5,7 +5,7 @@
 * @license      Apache 2.0
 */
 
-import { UnitMoverModule } from "../modules/UnitMoverModule";
+import { UnitMoverModule } from "../modules/unit/UnitMoverModule";
 
 export interface IUnit extends Phaser.GameObjects.Sprite {
     mover:UnitMoverModule;
