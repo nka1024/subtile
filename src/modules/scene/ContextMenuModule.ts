@@ -15,6 +15,7 @@ export class ContextMenuModule {
   private scene: Phaser.Scene;
   private groups: Array<Phaser.GameObjects.Group>;
 
+  // flag used to destroy current context window when clicked outside of it
   private objectClickedInThisFrame: Boolean;
 
   
@@ -63,6 +64,8 @@ export class ContextMenuModule {
   }
 
 
+  // Private
+
   private showContextWindowForObject(object: Phaser.GameObjects.Sprite) {
     this.destroyContextWindow();
 
@@ -82,9 +85,6 @@ export class ContextMenuModule {
       this.contextWindow = null;
     }
   }
-
-
-  // Private
 
   private handleClick(object: Phaser.GameObjects.GameObject) {
     this.showContextWindowForObject(object as Phaser.GameObjects.Sprite);
