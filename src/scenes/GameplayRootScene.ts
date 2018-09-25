@@ -78,7 +78,9 @@ export class GameplayRootScene extends Phaser.Scene {
     zoomPanel.show();
 
     this.cursorModule.onClick = (cursor) => {
-      this.selectedUnit.mover.moveTo(cursor);
+      if (!this.cameraDragModule.isDrag) {
+        this.selectedUnit.mover.moveTo(cursor);
+      }
     };
     
     this.mapImporterModule.importMap(this.cache.json.get('map'));
