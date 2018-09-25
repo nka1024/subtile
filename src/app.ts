@@ -69,22 +69,15 @@ function reverse(n) {          // Reverse the order of the children of Node n
   }
 }
 
-
-
 // prevent page scrolling on mobile
 document.ontouchmove = function (event) {
   event.preventDefault();
 }
 
-
 // handle window resizing
-// window.addEventListener('resize', () => {
-//   resize(window.innerWidth, window.innerHeight);
-// }, false);
-
-// function create() {
-//   this.events.on('resize', this.parent.resize, this);
-// }
+window.addEventListener('resize', () => {
+  resize(window.innerWidth, window.innerHeight);
+}, false);
 
 function resize(width, height) {
   console.log("resize " + width + ' ' + height)

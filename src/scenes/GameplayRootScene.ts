@@ -63,6 +63,9 @@ export class GameplayRootScene extends Phaser.Scene {
     this.injectDependencies();
     this.cameras.main.setBackgroundColor(0x1f1f1f);
     
+    this.events.on('resize', (h: number, w: number) => {
+      this.cameras.main.setSize(h, w);
+    });
     WindowManager.initialize();
 
     let zoomPanel = new ZoomPanel();
