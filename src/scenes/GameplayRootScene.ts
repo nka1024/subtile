@@ -21,6 +21,7 @@ import { CameraDragModule } from "../modules/scene/CameraDragModule";
 import { SceneCursorModule } from "../modules/scene/SceneCursorModule";
 import { MapImporterModule } from "../modules/scene/MapImporterModule";
 import { ContextMenuModule } from "../modules/scene/ContextMenuModule";
+import { ZoomPanel } from "../windows/ZoomPanel";
 
 
 export class GameplayRootScene extends Phaser.Scene {
@@ -58,14 +59,20 @@ export class GameplayRootScene extends Phaser.Scene {
     this.mapImporterModule = new MapImporterModule(this, this.grid);
   }
 
-  create(data): void {
-    this.cameras.main.zoom = 2;
-    
+  create(data): void {    
     this.injectDependencies();
     this.cameras.main.setBackgroundColor(0x1f1f1f);
-
     
     WindowManager.initialize();
+
+    let zoomPanel = new ZoomPanel();
+    zoomPanel.zoomInButton.addEventListener('click', () => {
+      this.cameras.main.zoom += 1;
+    });
+    zoomPanel.zoomOutButton.addEventListener('click', () => {
+      this.cameras.main.zoom -= 1;
+    });
+    zoomPanel.show();
 
     this.cursorModule.onClick = (cursor) => {
       this.selectedUnit.mover.moveTo(cursor);

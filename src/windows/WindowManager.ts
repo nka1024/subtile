@@ -13,6 +13,7 @@ import { ExportWindow } from "../windows/ExportWindow";
 import { ToolsPanel } from "./ToolsPanel";
 import { UnitsPanel } from "./UnitsPanel";
 import { ContextObjectPopup } from "./ContextObjectWindow";
+import { ZoomPanel } from "./ZoomPanel";
 
 export class WindowManager {
 
@@ -26,6 +27,7 @@ export class WindowManager {
     try {
       UnitsPanel.initialize();
       ContextObjectPopup.initialize();
+      ZoomPanel.initialize();
     } catch (e) {
       console.log('missing window')
     }
