@@ -2,3 +2,8 @@ node_modules
 .vscode
 *.pem
 .DS_Store
+build/bundle.js
+
+deploy-all.sh
+deploy-server.sh
+ssh.sh
