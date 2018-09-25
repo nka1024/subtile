@@ -69,12 +69,22 @@ export class ContextMenuModule {
 
   // Private
 
+  private worldToScreen(p:{x: number, y:number}):{x: number, y: number} {
+    let camera = this.scene.cameras.main;
+    let x = (p.x - camera.midPoint.x) * camera.zoom;
+    let y = (p.y - camera.midPoint.y) * camera.zoom;
+    let halfW = camera.width / 2;
+    let halfH = camera.height / 2;
+    
+    return {x: halfW + x, y: halfH + y};
+  }
+
   private showContextWindowForObject(object: Phaser.GameObjects.Sprite) {
     this.destroyContextWindow();
 
-    let x = object.x - this.scene.cameras.main.scrollX - ContextObjectPopup.defaultWidth / 2;
-    let y = object.y - this.scene.cameras.main.scrollY + 16;
-    this.contextWindow = new ContextObjectPopup(x, y);
+    let p = this.worldToScreen({x: object.x, y: object.y});
+
+    this.contextWindow = new ContextObjectPopup(p.x - ContextObjectPopup.defaultWidth / 2, p.y + 16);
     this.contextWindow.reconButton.addEventListener('click', () => {
       if (this.onReconClicked) {
         this.onReconClicked(object);

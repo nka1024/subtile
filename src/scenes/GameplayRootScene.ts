@@ -59,14 +59,11 @@ export class GameplayRootScene extends Phaser.Scene {
   }
 
   create(data): void {
-    // this.cameras.main.zoom = 2;
-    
-    
-    
+    this.cameras.main.zoom = 2;
     
     this.injectDependencies();
     this.cameras.main.setBackgroundColor(0x1f1f1f);
-    
+
     
     WindowManager.initialize();
 
