@@ -5,18 +5,23 @@
 * @license      Apache 2.0
 */
 
+import { IUnit } from "../actors/IUnit";
+import { IScoutable } from "../actors/IScouteable";
+
 import { WindowManager } from "../windows/WindowManager";
 import { ASSETS, AssetsLoader } from "../AssetsLoader";
 import { TileGrid } from "../TileGrid";
+import { UnitsPanel } from "../windows/UnitsPanel";
+
 import { HeroUnit } from "../actors/HeroUnit";
 import { SquadUnit } from "../actors/SquadUnit";
-import { UnitsPanel } from "../windows/UnitsPanel";
-import { IUnit } from "../actors/IUnit";
+import { ScoutUnit } from "../actors/ScoutUnit";
+
 import { CameraDragModule } from "../modules/scene/CameraDragModule";
 import { SceneCursorModule } from "../modules/scene/SceneCursorModule";
 import { MapImporterModule } from "../modules/scene/MapImporterModule";
 import { ContextMenuModule } from "../modules/scene/ContextMenuModule";
-import { ScoutUnit } from "../actors/ScoutUnit";
+
 
 export class GameplayRootScene extends Phaser.Scene {
 
@@ -98,13 +103,17 @@ export class GameplayRootScene extends Phaser.Scene {
     this.unitsGrp.add(this.enemyUnit);
 
     this.contextMenuModule.onReconClicked = (object: Phaser.GameObjects.Sprite) => {
-      console.log('reon')
       let from = this.grid.snapToGrid(player.x, player.y);
       let to = this.grid.snapToGrid(object.x, object.y);
       let scout = new ScoutUnit(this, from.x + 16, from.y + 16, this.grid);
       scout.mover.onPathComplete = () => {
         this.unitsGrp.remove(scout);
         scout.needsDestroy = true;
+        if ('scoutee' in object) {
+          (object as IScoutable).scoutee.beginScout(0.01, () => {
+            console.log('scouting complete');
+          })
+      }
       };
       scout.mover.moveTo(to, true);
       

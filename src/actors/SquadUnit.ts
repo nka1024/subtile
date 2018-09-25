@@ -5,13 +5,21 @@
 * @license      Apache 2.0
 */
 
+import { IUnit } from "./IUnit";
+import { IScoutable } from "./IScouteable";
+
 import { TileGrid } from "../TileGrid";
 import { UnitMoverModule } from "../modules/unit/UnitMoverModule";
-import { IUnit } from "./IUnit";
+import { ProgressModule } from "../modules/unit/ProgressModule";
+import { ScouteeModule } from "../modules/unit/ScouteeModule";
+import { UnitModuleCore } from "../modules/UnitModuleCore";
 
-export class SquadUnit extends Phaser.GameObjects.Sprite implements IUnit {
+export class SquadUnit extends Phaser.GameObjects.Sprite implements IUnit, IScoutable {
   public mover: UnitMoverModule;
+  public progress: ProgressModule;
+  public scoutee: ScouteeModule;
 
+  private core: UnitModuleCore;
   private squadType: number = 1;
 
   constructor(scene: Phaser.Scene, x: number, y: number, grid:TileGrid, squadType:number) {
@@ -20,6 +28,9 @@ export class SquadUnit extends Phaser.GameObjects.Sprite implements IUnit {
     this.squadType = squadType;
     this.setInteractive();
     this.mover = new UnitMoverModule(this, scene, grid);
+    this.progress = new ProgressModule(this, scene);
+    this.scoutee = new ScouteeModule(this.progress);
+    this.core = new UnitModuleCore([this.mover, this.progress, this.scoutee]);
 
     for (let idx of [1, 2]) {
       var idleAnim = {
@@ -49,13 +60,17 @@ export class SquadUnit extends Phaser.GameObjects.Sprite implements IUnit {
   }
 
   update() {
-    // if (this.cursors.down.isDown) {
-    this.mover.update();
+    this.core.update();
+
     this.depth = this.y - 4;
   }
 
   destroy() {
-    this.mover.destroy();;
+    this.core.destroy();
+    this.core = null;
+    this.mover = null;
+    this.scoutee = null;
+    this.progress = null;
     super.destroy()
   }
 

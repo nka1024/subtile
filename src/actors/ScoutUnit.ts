@@ -1,6 +1,8 @@
 import { IUnit } from "./IUnit";
 import { TileGrid } from "../TileGrid";
 import { UnitMoverModule } from "../modules/unit/UnitMoverModule";
+import { ScouteeModule } from "../modules/unit/ScouteeModule";
+import { ProgressModule } from "../modules/unit/ProgressModule";
 
 /**
 * @author       Kirill Nepomnyaschiy <nka1024@gmail.com>
@@ -12,7 +14,8 @@ import { UnitMoverModule } from "../modules/unit/UnitMoverModule";
 export class ScoutUnit extends Phaser.GameObjects.Sprite implements IUnit {
 
   public mover: UnitMoverModule;
-
+  public progress: ProgressModule;
+  public scoutee: ScouteeModule
   // gameobject can only be destroyed at the end of update()
   public needsDestroy: boolean;
 

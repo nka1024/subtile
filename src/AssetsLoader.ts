@@ -28,44 +28,58 @@ export class AssetsLoader {
     scene.load.image("cursor", "./assets/cursor.png");
     scene.load.image("cursor_grid_32x32", "./assets/cursor_grid_32x32.png");
 
-    scene.load.spritesheet('player_idle_32x32', './assets/sprites/player_idle_32x32.png', { 
-      frameWidth: 32, 
-      frameHeight: 32, 
+    scene.load.bitmapFont('hello-world-16-white',
+      './assets/fonts/hello-world/hello-world-16-white.png',
+      './assets/fonts/hello-world/hello-world-16.fnt');
+    scene.load.bitmapFont('hello-world-16-shadow',
+      './assets/fonts/hello-world/hello-world-16-shadow.png',
+      './assets/fonts/hello-world/hello-world-16.fnt');
+
+    scene.load.bitmapFont('pokemon-8-white',
+      './assets/fonts/pokemon/pokemon-8-white.png',
+      './assets/fonts/pokemon/pokemon-8.fnt');
+    scene.load.bitmapFont('pokemon-8-shadow',
+      './assets/fonts/pokemon/pokemon-8-shadow.png',
+      './assets/fonts/pokemon/pokemon-8.fnt');
+
+    scene.load.spritesheet('player_idle_32x32', './assets/sprites/player_idle_32x32.png', {
+      frameWidth: 32,
+      frameHeight: 32,
       endFrame: 4
     });
-    scene.load.spritesheet('player_walk_32x32', './assets/sprites/player_walk_32x32.png', { 
-      frameWidth: 32, 
-      frameHeight: 32, 
+    scene.load.spritesheet('player_walk_32x32', './assets/sprites/player_walk_32x32.png', {
+      frameWidth: 32,
+      frameHeight: 32,
       endFrame: 4
     });
-    scene.load.spritesheet('infantry_1_idle_48x48', './assets/sprites/infantry_1_idle_48x48.png', { 
-      frameWidth: 48, 
-      frameHeight: 48, 
+    scene.load.spritesheet('infantry_1_idle_48x48', './assets/sprites/infantry_1_idle_48x48.png', {
+      frameWidth: 48,
+      frameHeight: 48,
       endFrame: 4
     });
-    scene.load.spritesheet('infantry_1_walk_48x48', './assets/sprites/infantry_1_walk_48x48.png', { 
-      frameWidth: 48, 
-      frameHeight: 48, 
+    scene.load.spritesheet('infantry_1_walk_48x48', './assets/sprites/infantry_1_walk_48x48.png', {
+      frameWidth: 48,
+      frameHeight: 48,
       endFrame: 4
     });
 
-    scene.load.spritesheet('infantry_2_idle_48x48', './assets/sprites/infantry_2_idle_48x48.png', { 
-      frameWidth: 48, 
-      frameHeight: 48, 
+    scene.load.spritesheet('infantry_2_idle_48x48', './assets/sprites/infantry_2_idle_48x48.png', {
+      frameWidth: 48,
+      frameHeight: 48,
       endFrame: 4
     });
-    scene.load.spritesheet('infantry_2_walk_48x48', './assets/sprites/infantry_2_walk_48x48.png', { 
-      frameWidth: 48, 
-      frameHeight: 48, 
+    scene.load.spritesheet('infantry_2_walk_48x48', './assets/sprites/infantry_2_walk_48x48.png', {
+      frameWidth: 48,
+      frameHeight: 48,
       endFrame: 4
     });
 
-    scene.load.spritesheet('anim_scout_eagle_32x32', './assets/sprites/anim_scout_eagle_32x32.png', { 
-      frameWidth: 32, 
-      frameHeight: 32, 
+    scene.load.spritesheet('anim_scout_eagle_32x32', './assets/sprites/anim_scout_eagle_32x32.png', {
+      frameWidth: 32,
+      frameHeight: 32,
       endFrame: 6
     });
-    
+
     for (let idx = 1; idx <= ASSETS.TERRAIN_MAX; idx++) {
       scene.load.image("terrain_" + idx, "./assets/tilemap/terrain_" + idx + ".png");
     }

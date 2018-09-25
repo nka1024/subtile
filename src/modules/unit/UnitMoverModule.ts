@@ -7,8 +7,9 @@
 */
 import { TileGrid } from "../../TileGrid";
 import { IUnit } from "../../actors/IUnit";
+import { IUnitModule } from "../interface/IUnitModule";
 
-export class UnitMoverModule {
+export class UnitMoverModule implements IUnitModule {
 
   private moveSpeed:number = 0.5;
 
