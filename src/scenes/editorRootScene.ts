@@ -160,7 +160,7 @@ export class EditorRootScene extends Phaser.Scene {
         this.cursor.alpha = 1;
         if (this.player != null) {
           // player movemenet
-          this.player.mover.handleMoveTouch(this.cursor);
+          this.player.mover.moveTo(this.cursor);
         } else if (!this.grid.visible) { 
           // object placement
           if (this.objectsListPanel != null) {

@@ -8,8 +8,6 @@
 /// <reference path="./phaser.d.ts"/>
 /// <reference path="../node_modules/easystarjs/index.d.ts"/>
 import "phaser";
-// import "../node_modules/phaser/dist/phaser.js";
-// import "../node_modules/easystarjs/bin/easystar-0.4.3.min.js";
 
 import { BootScene } from "./scenes/bootScene";
 import { EditorRootScene } from "./scenes/editorRootScene";

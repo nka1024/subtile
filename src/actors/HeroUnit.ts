@@ -36,7 +36,7 @@ export class HeroUnit extends Phaser.GameObjects.Sprite implements IUnit {
         };
         scene.anims.create(walkAnim);
 
-        this.anims.play("player_idle");
+        this.playUnitAnim('idle', true);
     }
 
     update() {

@@ -10,9 +10,11 @@ import { IUnit } from "../../actors/IUnit";
 
 export class UnitMoverModule {
 
+  private moveSpeed:number = 0.5;
+
   // public
-  public onStepComplete: () => {};
-  public onPathComplete: () => {};
+  public onStepComplete: () => void;
+  public onPathComplete: () => void;
   
   // private
   public unit: IUnit;
@@ -36,7 +38,7 @@ export class UnitMoverModule {
 
   // Public
 
-  public handleMoveTouch(dest: { x: number, y: number }) {
+  public moveTo(dest: { x: number, y: number }, immediateStart: boolean = false) {
     let grid = this.grid;
     let gridDest = grid.worldToGrid(dest.x, dest.y);
     let gridPos = grid.worldToGrid(this.unit.x, this.unit.y);
@@ -47,6 +49,9 @@ export class UnitMoverModule {
       grid.findPath(gridPos.j, gridPos.i, gridDest.j, gridDest.i, (path) => {
         this.path = path;
         this.drawPathDots(grid);
+        if (immediateStart) {
+          this.startMoving(grid);
+        }    
       });
     } else {
       // destination confirmed, start moving
@@ -97,7 +102,7 @@ export class UnitMoverModule {
   }
 
   private moveNextStep() {
-    let distance = 1;
+    let distance = this.moveSpeed;
     let finished = this.stepTowards(this.nextDest.x + 16, this.nextDest.y + 16, distance);
     if (finished) {
       // finished stp

@@ -8,7 +8,7 @@
 import { BaseWindow } from "./BaseWindow";
 
 export class ContextObjectPopup extends BaseWindow {
-    public width:number = 100;
+    public width: number = 100;
     
     // static
     private static innerHtml: string;

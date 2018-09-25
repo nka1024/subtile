@@ -11,6 +11,10 @@ import { ContextObjectPopup } from "../../windows/ContextObjectWindow";
 
 export class ContextMenuModule {
 
+  // Public
+  public onReconClicked: (object: Phaser.GameObjects.Sprite) => void;
+  
+  // Private
   private contextWindow: ContextObjectPopup;
   private scene: Phaser.Scene;
   private groups: Array<Phaser.GameObjects.Group>;
@@ -18,7 +22,6 @@ export class ContextMenuModule {
   // flag used to destroy current context window when clicked outside of it
   private objectClickedInThisFrame: Boolean;
 
-  
   constructor(scene: Phaser.Scene) {
     this.groups = [];
     this.scene = scene;
@@ -72,6 +75,11 @@ export class ContextMenuModule {
     let x = object.x - this.scene.cameras.main.scrollX - ContextObjectPopup.defaultWidth / 2;
     let y = object.y - this.scene.cameras.main.scrollY + 16;
     this.contextWindow = new ContextObjectPopup(x, y);
+    this.contextWindow.reconButton.addEventListener('click', () => {
+      if (this.onReconClicked) {
+        this.onReconClicked(object);
+      }
+    });
     this.contextWindow.onDestroy = (w) => {
       this.contextWindow = null
     };

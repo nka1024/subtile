@@ -16,6 +16,7 @@ import { CameraDragModule } from "../modules/scene/CameraDragModule";
 import { SceneCursorModule } from "../modules/scene/SceneCursorModule";
 import { MapImporterModule } from "../modules/scene/MapImporterModule";
 import { ContextMenuModule } from "../modules/scene/ContextMenuModule";
+import { ScoutUnit } from "../actors/ScoutUnit";
 
 export class GameplayRootScene extends Phaser.Scene {
 
@@ -26,7 +27,7 @@ export class GameplayRootScene extends Phaser.Scene {
   private player: HeroUnit;
   private unit: SquadUnit;
   private enemyUnit: SquadUnit;
-  private unitsGrp:Phaser.GameObjects.Group;
+  private unitsGrp: Phaser.GameObjects.Group;
 
   // modules
   private cameraDragModule: CameraDragModule;
@@ -59,7 +60,7 @@ export class GameplayRootScene extends Phaser.Scene {
     WindowManager.initialize();
 
     this.cursorModule.onClick = (cursor) => {
-      this.selectedUnit.mover.handleMoveTouch(cursor);
+      this.selectedUnit.mover.moveTo(cursor);
     };
     
     this.mapImporterModule.importMap(this.cache.json.get('map'));
@@ -95,6 +96,21 @@ export class GameplayRootScene extends Phaser.Scene {
     this.enemyUnit = new SquadUnit(this, worldPos.x + 16, worldPos.y + 16, this.grid, 2);
     this.add.existing(this.enemyUnit);
     this.unitsGrp.add(this.enemyUnit);
+
+    this.contextMenuModule.onReconClicked = (object: Phaser.GameObjects.Sprite) => {
+      console.log('reon')
+      let from = this.grid.snapToGrid(player.x, player.y);
+      let to = this.grid.snapToGrid(object.x, object.y);
+      let scout = new ScoutUnit(this, from.x + 16, from.y + 16, this.grid);
+      scout.mover.onPathComplete = () => {
+        this.unitsGrp.remove(scout);
+        scout.needsDestroy = true;
+      };
+      scout.mover.moveTo(to, true);
+      
+      this.add.existing(scout);
+      this.unitsGrp.add(scout);
+    };
   }
 
 
