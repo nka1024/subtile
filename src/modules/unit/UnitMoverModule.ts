@@ -95,10 +95,11 @@ export class UnitMoverModule implements IUnitModule {
         start = worldPos
       } else {
         this.pathBySteps.push(worldPos);
+        
       }
     }
     this.nextDest = this.pathBySteps[0];
-
+    
     this.destroyNextDot();
   }
 

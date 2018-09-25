@@ -28,6 +28,9 @@ export class AssetsLoader {
     scene.load.image("cursor", "./assets/cursor.png");
     scene.load.image("cursor_grid_32x32", "./assets/cursor_grid_32x32.png");
 
+    scene.load.image("progress_yellow_50x2", "./assets/progress_yellow_50x2.png");
+    scene.load.image("progress_black_50x2", "./assets/progress_black_50x2.png");
+
     scene.load.bitmapFont('hello-world-16-white',
       './assets/fonts/hello-world/hello-world-16-white.png',
       './assets/fonts/hello-world/hello-world-16.fnt');

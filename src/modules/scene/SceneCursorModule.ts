@@ -10,7 +10,7 @@ import { TileGrid } from "../../TileGrid";
 export class SceneCursorModule {
 
   public cursor: Phaser.GameObjects.Sprite;
-  public onClick:(cursor: Phaser.GameObjects.Sprite) => void;
+  public onClick: (cursor: Phaser.GameObjects.Sprite) => void;
 
   private scene: Phaser.Scene;
   private grid: TileGrid;
@@ -18,7 +18,7 @@ export class SceneCursorModule {
   constructor(scene: Phaser.Scene, grid: TileGrid) {
     this.scene = scene;
     this.grid = grid;
-    
+
     this.cursor = this.scene.add.sprite(0, 0, "cursor_grid_32x32");
     this.cursor.depth = 1000;
     this.cursor.originX = 1;
@@ -47,13 +47,11 @@ export class SceneCursorModule {
   }
 
   private cursorFollow() {
-    let worldPosX = Math.round(this.scene.input.activePointer.x / 2) * 2;
-    let worldPosY = Math.round(this.scene.input.activePointer.y / 2) * 2;
+    let ptrX = Math.round(this.scene.input.activePointer.x / 2) * 2;
+    let ptrY = Math.round(this.scene.input.activePointer.y / 2) * 2;
+    let worldPtr = this.scene.cameras.main.getWorldPoint(ptrX, ptrY)
 
-    let snap = this.grid.snapToGrid(
-      worldPosX + this.scene.cameras.main.scrollX, 
-      worldPosY + this.scene.cameras.main.scrollY
-    );
+    let snap = this.grid.snapToGrid(worldPtr.x, worldPtr.y);
     this.cursor.x = snap.x + 16;
     this.cursor.y = snap.y + 16;
     this.cursor.scaleX = 1;

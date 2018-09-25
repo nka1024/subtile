@@ -15,8 +15,6 @@ export class ProgressModule implements IUnitModule {
   public progress: number = 0;
   public width: number = 50;
   public text: string;
-  public lineColor: integer = 0xf3bd2f;
-  public lineColorBg: integer = 0x222222;
 
   // Private 
   private unit: IUnit;
@@ -25,7 +23,8 @@ export class ProgressModule implements IUnitModule {
   private textMain: Phaser.GameObjects.BitmapText;
   private textShadow2: Phaser.GameObjects.BitmapText;
   private textShadow1: Phaser.GameObjects.BitmapText;
-  private line: Phaser.GameObjects.Graphics;
+  private lineFg: Phaser.GameObjects.Image;
+  private lineBg: Phaser.GameObjects.Image;
 
   constructor(unit: IUnit, scene: Scene) {
     this.unit = unit;
@@ -61,7 +60,7 @@ export class ProgressModule implements IUnitModule {
 
   private createText() {
     let txt = this.text;
-    let spacing = -2;
+    let spacing = -1;
 
     if (!this.textShadow1 && !this.textShadow2) {
       this.textShadow2 = this.scene.add.bitmapText(0, 0, 'pokemon-8-shadow', txt);
@@ -77,9 +76,8 @@ export class ProgressModule implements IUnitModule {
   }
 
   private createLine() {
-    if (!this.line){
-      this.line = this.scene.add.graphics();
-    }
+    if (!this.lineBg) this.lineBg = this.scene.add.image(0, 0, 'progress_black_50x2');
+    if (!this.lineFg) this.lineFg = this.scene.add.image(0, 0, 'progress_yellow_50x2');
   }
 
   private updateText() {
@@ -106,23 +104,14 @@ export class ProgressModule implements IUnitModule {
   }
 
   private updateLine(progress: number) {
-    if (this.line) {
-      this.line.depth = this.unit.depth + 1;;
-      this.line.x = this.unit.x - 25;
-      this.line.y = this.unit.y - 15;
+    if (this.lineBg && this.lineFg) {
+      for (let line of [this.lineFg, this.lineBg]) {
+        line.depth = this.unit.depth + 1;
+        line.x = this.unit.x;
+        line.y = this.unit.y - 15;
+      }
 
-      let line = this.line;
-      line.clear();
-      line.lineStyle(2, this.lineColorBg);
-      line.moveTo(0, 0);
-      line.lineTo(this.width, 0);
-      line.closePath();
-      line.strokePath();
-      line.lineStyle(2, this.lineColor);
-      line.moveTo(0, 0);
-      line.lineTo(this.width * progress, 0);
-      line.closePath();
-      line.strokePath();
+      this.lineFg.scaleX = progress;
     }
   }
 
@@ -142,9 +131,9 @@ export class ProgressModule implements IUnitModule {
   }
 
   private destroyLine() {
-    if (this.line) {
-      this.line.destroy();
-      this.line = null;
-    }
+    if (this.lineFg) this.lineFg.destroy();
+    if (this.lineBg) this.lineBg.destroy();
+    this.lineBg = null;
+    this.lineFg = null;
   }
 }

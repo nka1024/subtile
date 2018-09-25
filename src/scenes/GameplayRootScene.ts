@@ -59,8 +59,14 @@ export class GameplayRootScene extends Phaser.Scene {
   }
 
   create(data): void {
+    // this.cameras.main.zoom = 2;
+    
+    
+    
+    
     this.injectDependencies();
     this.cameras.main.setBackgroundColor(0x1f1f1f);
+    
     
     WindowManager.initialize();
 
@@ -74,11 +80,16 @@ export class GameplayRootScene extends Phaser.Scene {
     this.unitsGrp.runChildUpdate = true;
     this.contextMenuModule.addObjectsGroup(this.unitsGrp);
     
-    let player = new HeroUnit(this, 444, 280, this.grid);
+
+    let player = new HeroUnit(this, 400, 280, this.grid);
     player.depth = player.y + 16;
+    
     this.add.existing(player);
     this.player = player;
     this.selectedUnit = player;
+
+    player.mover.moveTo({x: 444, y: 280}, true);
+    this.cameras.main.centerOn(444, 280);
 
     this.unitsGrp.add(this.player);
     let units = new UnitsPanel();

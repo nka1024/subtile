@@ -25,11 +25,12 @@ export class Game extends Phaser.Game {
 window.onload = () => {
   var c = document.getElementById('canvas_main') as HTMLCanvasElement;
   const config: GameConfig = {
-    title: "subtile",
+    title: "subtile2",
     url: "https://github.com/nka1024/subtile",
     version: "1.0",
-    type: Phaser.AUTO,
-    // type: Phaser.CANVAS,
+    // type: Phaser.AUTO,
+    type: Phaser.CANVAS,
+    // type: Phaser.WEBGL,
     parent: "game",
     scene: [BootScene, EditorRootScene, GameplayRootScene],
     input: {
@@ -43,9 +44,11 @@ window.onload = () => {
     backgroundColor: "#000000",
     // backgroundColor: "#0c0f12",
     // backgroundColor: "#b8b021",
-
-    pixelArt: true,
-    antialias: false,
+    render: {
+      pixelArt: true,
+      antialias: false,
+      roundPixels: true
+    },
     canvas: c,
     canvasStyle: "position: fixed; top: 0; left: 0"
   };
@@ -75,14 +78,15 @@ document.ontouchmove = function (event) {
 
 
 // handle window resizing
-window.addEventListener('resize', () => {
-  resize(window.innerWidth, window.innerHeight);
-}, false);
+// window.addEventListener('resize', () => {
+//   resize(window.innerWidth, window.innerHeight);
+// }, false);
 
-function create() {
-  this.events.on('resize', this.parent.resize, this);
-}
+// function create() {
+//   this.events.on('resize', this.parent.resize, this);
+// }
 
 function resize(width, height) {
+  console.log("resize " + width + ' ' + height)
   game.resize(width, height);
 }
