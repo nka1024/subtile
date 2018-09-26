@@ -43,7 +43,6 @@ export class UnitSelectionModule implements IUnitModule {
   }
 
   public showSoft() {
-    this.destroyHard();
     if (!this.softFrame) {
       this.softFrame = this.scene.add.image(0, 0, 'target_select_36x36');
       this.softFrame.depth = UI_DEPTH.SELECTION_SOFT;
@@ -51,7 +50,6 @@ export class UnitSelectionModule implements IUnitModule {
     }
   }
   public showHard() {
-    this.destroySoft();
     if (!this.hardFrame) {
       this.hardFrame = this.scene.add.image(0, 0, 'target_select_40x40');
       this.hardFrame.depth = UI_DEPTH.SELECTION_HARD;
