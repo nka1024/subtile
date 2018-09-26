@@ -4,7 +4,7 @@
 	border: 0;
 	font-size: 100%;
 	font: inherit;
-	vertical-align: baseline
+	vertical-align: baseline;
 }
 
 body,
@@ -61,7 +61,8 @@ h1,
 .submit input {
 	-webkit-font-smoothing: antialiased;
 	font-family: "Shentox-Medium", Arial;
-	text-transform: uppercase
+	text-transform: uppercase;
+	border-radius: 3px
 }
 
 #container {
@@ -78,6 +79,10 @@ h1,
 .lefted {
 	left: 0; 
 	margin-left: auto; 
+}
+.righted {
+	right: 0; 
+	margin-right: auto; 
 }
 #main {
 	background: rgba(30, 30, 30, .8);
@@ -255,11 +260,12 @@ input[type="checkbox"] {
 	font-family: "Shentox-Medium", Arial;
 	letter-spacing: 1.3px;
 	font-size: 16px;
-	border-radius: 0;
+	border-radius: 0px;
 	border: none;
 	padding: 20px 0;
 	text-shadow: none;
-	transition: all ease-in 100ms
+	transition: all ease-in 100ms;
+	outline: none
 }
 
 .btn:hover {

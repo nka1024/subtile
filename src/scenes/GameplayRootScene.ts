@@ -24,6 +24,7 @@ import { ContextMenuModule } from "../modules/scene/ContextMenuModule";
 import { ZoomPanel } from "../windows/ZoomPanel";
 import { ISelectable } from "../actors/ISelectable";
 import { GameobjectClicksModule } from "../modules/scene/GameobjectClicksModule";
+import { TargetListPanel } from "../windows/TargetsListPanel";
 
 
 export class GameplayRootScene extends Phaser.Scene {
@@ -103,7 +104,6 @@ export class GameplayRootScene extends Phaser.Scene {
 
     player.mover.moveTo({x: 444, y: 280}, true);
     this.cameras.main.centerOn(444, 280);
-
     this.unitsGrp.add(this.player);
     let units = new UnitsPanel();
     units.show();
@@ -120,6 +120,9 @@ export class GameplayRootScene extends Phaser.Scene {
       }
     });
 
+    let targetListPanel = new TargetListPanel();
+    targetListPanel.show();
+    targetListPanel.populate();
     this.clicksTracker.on('click', (object: Phaser.GameObjects.GameObject) => {
       if ("selection" in this.selectedUnit) {
         console.log('hide selection');

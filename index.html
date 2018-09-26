@@ -18,8 +18,44 @@
   <div class="window_manager">
   </div>
 
+
+  <!-- TARGETS FORM -->
+  <div class="target_list_panel_prefab" hidden=true>
+    <div id="container" class="menu_container righted" hidden=false style="display: block; position: absolute; width: 64px; top: 0">
+      <section id="main" style="padding: 5px;">
+        <form action="./" method="post">
+          <div id="loginForm">
+            <h2 class="text_status" style="text-align: center;font-size: 10px;">Targets</h2>
+            <div class="obj_list" style="vertical-align: middle; text-align: center">
+
+              <div style="border: white; border-radius: 3px; border-color: #fff; border-style: solid; outline: none; font-size: 0px">
+                <input style="border-radius: 0px; image-rendering: pixelated; width: 48px; height: 48px; background: url('/assets/infantry_1_icon.png') center center no-repeat rgb(184, 176, 33);  outline: none;"
+                  type="button" />
+                <div style="height: 1px; margin: 0 auto;"></div>
+                <div style="background-color: #a6e13f; height: 4px; width: 48px; margin: 0 auto;"></div>
+                <h2 style="font-size: 10px">120k</h2>
+              </div>
+
+              <div style="height: 5px; margin: 0 auto;"></div>
+
+              <div style="border-radius: 3px; outline: none; font-size: 0px">
+                <input style="border-radius: 0px; image-rendering: pixelated; width: 48px; height: 48px; background: url('/assets/infantry_2_icon.png') center center no-repeat rgb(184, 176, 33);  outline: none;"
+                  type="button" />
+                <div style="height: 1px; margin: 0 auto;"></div>
+                <div style="background-color: #a6e13f; height: 4px; width: 48px; margin: 0 auto;"></div>
+                <h2 style="font-size: 10px">120k</h2>
+              </div>
+
+            </div>
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
+
+
   <!-- ZOOM FORM -->
-  <div class="zoom_panel_prefab">
+  <div class="zoom_panel_prefab" hidden=true>
     <div id="container" class="zoom_container lefted" hidden=false style="display: block; position: absolute; width: 70px; margin-top: 0px">
       <section id="main" style="padding: 0px; padding-bottom: 5px">
         <div id="loginForm">
@@ -31,7 +67,6 @@
               <input class="btn btn-blue zoom_in_button" style="height: 30px; width: 30px; padding: 0px; font-size: 16px;"
                 type="button" value="+" />
             </div>
-
             </fieldset>
         </div>
         </form>
@@ -42,12 +77,13 @@
   </div>
 
 
-<!-- CONTEXT OBJECT FORM -->
-<div class="context_object_popup_prefab">
+  <!-- CONTEXT OBJECT FORM -->
+  <div class="context_object_popup_prefab" hidden=true>
     <div id="container" class="context_object_container lefted" hidden=false style="display: block; position: absolute; width: 100%; ">
       <section id="main" style="padding: 0px; margin: 0px; vertical-align: middle; ">
         <div id="loginForm" class="submit" style="text-align: center; padding:0px; display: flex">
-            <input class="btn btn-blue recon_button" style="margin: 5px; height: 30px; padding: 0px; padding-left:10px; padding-right:10px; font-size: 12px; vertical-align: middle;" type="button" value="Recon" />
+          <input class="btn btn-blue recon_button" style="margin: 5px; height: 30px; padding: 0px; padding-left:10px; padding-right:10px; font-size: 12px; vertical-align: middle;"
+            type="button" value="Recon" />
         </div>
       </section>
     </div>
@@ -55,13 +91,16 @@
 
 
   <!-- UNITS FORM -->
-  <div class="units_panel_prefab">
+  <div class="units_panel_prefab" hidden=true>
     <div id="container" class="units_container lefted" hidden=false style="display: block; position: absolute; width: 800px; bottom: 0px;  ">
       <section id="main" style="padding: 00px; margin: 0px; vertical-align: middle; padding-bottom: 10px">
         <div id="loginForm" class="submit" style="text-align: left">
-            <input class="btn btn-blue player_button" style="margin-left: 5px; margin-top: 5px; height: 30px; width: 40px;  font-size: 10px; vertical-align: middle; padding: 5px" type="button" value="Hero" />
-            <input class="btn btn-blue unit_1_button" style="margin-left: 5px; margin-top: 5px; height: 30px;  width: 60px;  font-size: 10px; vertical-align: middle; padding: 5px" type="button" value="Infantry" />
-            <input class="btn btn-blue unit_2_button" style="margin-left: 5px; margin-top: 5px; height: 30px;  width: 60px;  font-size: 10px; vertical-align: middle; padding: 5px" type="button" value="Archers" />
+          <input class="btn btn-blue player_button" style="margin-left: 5px; margin-top: 5px; height: 30px; width: 40px;  font-size: 10px; vertical-align: middle; padding: 5px"
+            type="button" value="Hero" />
+          <input class="btn btn-blue unit_1_button" style="margin-left: 5px; margin-top: 5px; height: 30px;  width: 60px;  font-size: 10px; vertical-align: middle; padding: 5px"
+            type="button" value="Infantry" />
+          <input class="btn btn-blue unit_2_button" style="margin-left: 5px; margin-top: 5px; height: 30px;  width: 60px;  font-size: 10px; vertical-align: middle; padding: 5px"
+            type="button" value="Archers" />
         </div>
       </section>
     </div>
@@ -69,13 +108,16 @@
 
 
   <!-- OBJECTS FORM -->
-  <div class="objects_list_window_prefab">
+  <div class="objects_list_window_prefab" hidden=true>
     <div id="container" class="objects_container lefted" hidden=false style="display: block; position: absolute; width: 800px; left: 100px; ">
       <section id="main" style="padding: 00px; margin: 0px; vertical-align: middle;">
         <div id="loginForm" class="submit" style="text-align: left">
-            <input class="btn btn-blue trees_button" style="margin-left: 5px; margin-top: 5px; width: 50px;  font-size: 10px; vertical-align: middle; padding: 5px" id="treesButton" type="button" value="Trees" />
-            <input class="btn btn-blue rocks_button" style="margin-left: 5px; margin-top: 5px; width: 50px;  font-size: 10px; vertical-align: middle; padding: 5px" id="rocksButton" type="button" value="Rocks" />
-            <input class="btn btn-blue houses_button" style="margin-left: 5px; margin-top: 5px; width: 60px;  font-size: 10px; vertical-align: middle; padding: 5px" id="housesButton" type="button" value="Houses" />
+          <input class="btn btn-blue trees_button" style="margin-left: 5px; margin-top: 5px; width: 50px;  font-size: 10px; vertical-align: middle; padding: 5px"
+            id="treesButton" type="button" value="Trees" />
+          <input class="btn btn-blue rocks_button" style="margin-left: 5px; margin-top: 5px; width: 50px;  font-size: 10px; vertical-align: middle; padding: 5px"
+            id="rocksButton" type="button" value="Rocks" />
+          <input class="btn btn-blue houses_button" style="margin-left: 5px; margin-top: 5px; width: 60px;  font-size: 10px; vertical-align: middle; padding: 5px"
+            id="housesButton" type="button" value="Houses" />
         </div>
       </section>
       <section id="main" style="padding: 10px; padding-left:5px; vertical-align: middle ">
@@ -87,7 +129,7 @@
   </div>
 
   <!-- TOOLS FORM -->
-  <div class="tools_panel_prefab">
+  <div class="tools_panel_prefab" hidden=true>
     <div id="container" class="tools_container lefted" hidden=false style="display: block; position: absolute; width: 100px; margin-top: 283px">
       <section id="main" style="padding: 5px;">
         <div id="loginForm">
@@ -107,7 +149,8 @@
                 type="button" value="A" />
             </div>
             <div class="submit" style="text-align: center">
-              <input class="btn btn-blue play_button" style="height: 30px; padding: 5px; font-size: 10px;" type="button" value="Play" />
+              <input class="btn btn-blue play_button" style="height: 30px; padding: 5px; font-size: 10px;" type="button"
+                value="Play" />
             </div>
             </fieldset>
         </div>
@@ -119,7 +162,7 @@
   </div>
 
   <!-- MENU FORM -->
-  <div class="menu_window_prefab">
+  <div class="menu_window_prefab" hidden=true>
     <div id="container" class="menu_container lefted" hidden=false style="display: block; position: absolute; width: 100px;">
       <section id="main" style="padding: 5px;">
         <div id="loginForm">
@@ -146,7 +189,7 @@
   </div>
 
   <!-- EXPORT FORM -->
-  <div class="export_window_prefab">
+  <div class="export_window_prefab" hidden=true>
     <div id="container" class="export_container centered" hidden=false style="display: block; position: absolute;">
       <header>
         <br><br>
@@ -177,78 +220,8 @@
     </div>
   </div>
 
-  <!-- LOGIN FORM -->
-  <div class="newmap_window_prefab">
-    <div id="container" class="newmap_container centered" hidden=false style="display: block; position: absolute;">
-      <header>
-        <a href="#" class="logo">
-          <img src="/login_assets/css/subtile-logo7.png" /><span> </span>
-        </a>
-      </header>
-      <section id="main">
-        <div id="loginForm">
-          <h1 class="text_title">create new tilemap</h1>
-          <div id="ValidationContaiarcparcner"></div>
-          <form action="./" method="post">
-            <input name="__RequestVerificationToken" type="hidden" value="" />
-            <div id="PasswordHidden" style="display: none;">
-            </div>
-
-            <div id="PasswordVisible">
-              <fieldset>
-                <legend class="visuallyhidden">Account Information</legend>
-
-                <div class="field" style="text-align:center">
-                  <!-- <div style="background-color: #111111; width:10%"> -->
-                  <div style=" width:150px; margin:auto;">
-                    &nbsp;&nbsp;
-                    <label for="UserName" style="width:40%; text-align: center">Width</label>
-                    &nbsp;&nbsp;&nbsp;
-                    <label for="UserName" style="width:40%; text-align: center">Height</label>
-                    &nbsp;&nbsp;
-                    <br>
-                    <input id="width" name="width" class="width_input" type="text" value="32" style="width:40%;  text-align: center" />
-                    &nbsp;&nbsp;&nbsp;&nbsp;
-                    <input id="height" name="height" class="height_input" type="text" value="32" style="width:40%; text-align: center" />
-                  </div>
-                  <!-- </div> -->
-                  <!-- <div style="background-color: #111111; width:10%"> -->
-                  <!-- <label for="UserName">Tilemap name</label> -->
-                </div>
-
-                <div class="field" style="text-align:center">
-                  <label for="tilemap_name">Tilemap name</label>
-                  <br>
-                  <input id="tilemap_name" class="map_name_input" name="tilemap_name" type="text" value="" style="width:100%; text-align: center" />
-                </div>
-            </div>
-
-
-            <div class="submit">
-              <input class="btn btn-blue submit_button" id="submitButton" type="button" value="Create" />
-              <a class="forgot" href="https://secure.eveonline.com/forgotpassword.aspx">Readme.md</a>
-            </div>
-            </fieldset>
-        </div>
-        </form>
-
-        <section id="new-account">
-          <div class="create-account">
-            <p>
-              New to Subtile?
-              <a href="https://secure.eveonline.com/signup/">Create account</a>
-            </p>
-          </div>
-        </section>
-
-      </section>
-      <footer>
-      </footer>
-    </div>
-  </div>
-
   <!-- OK_POPUP prefab-->
-  <div class="ok_popup_prefab">
+  <div class="ok_popup_prefab" hidden=true>
     <div id="container" class="empty_container centered" style="position: absolute; top: 150px;">
       <section id="main">
         <div id="loginForm">
