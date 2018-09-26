@@ -80,6 +80,9 @@ window.addEventListener('resize', () => {
 }, false);
 
 function resize(width, height) {
-  console.log("resize " + width + ' ' + height)
-  game.resize(width, height);
+  let evenW = Phaser.Math.FloorTo(width/2)*2;
+  let evenH = Phaser.Math.FloorTo(height/2)*2;
+  console.log("resize " + width + ' ' + height);
+  console.log("resize even " + evenW + ' ' + evenH);
+  game.resize(evenW, evenH);
 }
