@@ -129,6 +129,7 @@ export class GameplayRootScene extends Phaser.Scene {
         else obj.selection.hideHard();
       }
     };
+    this.contextMenuModule.injectDependencies(this.targetListPanel);
 
     this.clicksTracker.on('click', (object: Phaser.GameObjects.GameObject) => {
       // deselect old

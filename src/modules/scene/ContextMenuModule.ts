@@ -8,6 +8,7 @@
 
 import { ContextObjectPopup } from "../../windows/ContextObjectWindow";
 import { GameobjectClicksModule } from "./GameobjectClicksModule";
+import { TargetListPanel } from "../../windows/TargetsListPanel";
 
 export class ContextMenuModule {
 
@@ -16,7 +17,10 @@ export class ContextMenuModule {
   
   // Private
   private contextWindow: ContextObjectPopup;
+  
+  // Dependencies 
   private scene: Phaser.Scene;
+  private targetList: TargetListPanel;
   private clicksTracker: GameobjectClicksModule;
 
   // flag used to destroy current context window when clicked outside of it
@@ -36,6 +40,10 @@ export class ContextMenuModule {
 
   // Public
 
+  public injectDependencies(targetList: TargetListPanel) {
+    this.targetList = targetList;
+  }
+
   public update() {
     // close context window if clicked outside of it
     if (this.scene.input.activePointer.justDown && !this.objectClickedInThisFrame) {
@@ -50,7 +58,9 @@ export class ContextMenuModule {
   // Private
 
   private handleClick(object: Phaser.GameObjects.GameObject) {
-    this.showContextWindowForObject(object as Phaser.GameObjects.Sprite);
+    if (!this.targetList.isTargeted(object)) {
+      this.showContextWindowForObject(object as Phaser.GameObjects.Sprite);
+    }
     this.objectClickedInThisFrame = true;
   }
 

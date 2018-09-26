@@ -71,6 +71,37 @@ export class TargetListPanel extends BaseWindow {
     this.selectedItem = null;
   }
 
+
+
+  // Private 
+
+  private removeAll() {
+    let children = Array.from(this.objContainer.children);
+    for (let object of children) {
+      this.objContainer.removeChild(object);
+    }
+    this.items = [];
+  }
+
+  private onElementClick(element: HTMLElement) {
+    // skip if already selected
+    if (this.selectedItem && this.selectedItem.element == element) {
+      return;
+    }
+
+    if (this.selectedItem) {
+      this.deselectTarget(this.selectedItem.target);
+    }
+    this.selectTarget(this.itemByElement(element).target)
+  }
+
+  private notifyTargetSelectionChange(target:any, selected: boolean) {
+    if (!this.onObjectSelectionChange) {
+      return
+    }
+    this.onObjectSelectionChange(target, selected);
+  }
+
   private setTargetSelected(target: any, selected: boolean) {
     let item = this.itemByTarget(target)
     if (item) {
@@ -78,7 +109,6 @@ export class TargetListPanel extends BaseWindow {
         this.notifyTargetSelectionChange(target, selected);
     }
   }
-
 
   private itemByTarget(target: any):TargetItem {
     for (let item of this.items) {
@@ -98,40 +128,7 @@ export class TargetListPanel extends BaseWindow {
     return null;
   }
 
-  // Private 
-
-  private removeAll() {
-    let children = Array.from(this.objContainer.children);
-    for (let object of children) {
-      this.objContainer.removeChild(object);
-    }
-    this.items = [];
-  }
   
-  // private selectElement(element: HTMLElement) {
-  //   for (let item of this.items) {
-  //     this.setElementBorderHTML(item.element, item.element == element)
-  //   }
-  // }
-
-  private onElementClick(element: HTMLElement) {
-    if (this.selectedItem && this.selectedItem.element == element) {
-      return;
-    }
-
-    if (this.selectedItem) {
-      this.deselectTarget(this.selectedItem.target);
-    }
-    this.selectTarget(this.itemByElement(element).target)
-  }
-
-  private notifyTargetSelectionChange(target:any, selected: boolean) {
-    if (!this.onObjectSelectionChange) {
-      return
-    }
-    this.onObjectSelectionChange(target, selected);
-  }
-
   // HTML routines
 
   private addMarginElement(): HTMLElement {
