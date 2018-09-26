@@ -14,6 +14,7 @@ import { ASSETS, AssetsLoader } from "../AssetsLoader";
 import { ToolsPanel } from "../windows/ToolsPanel";
 import { TileGrid } from "../TileGrid";
 import { HeroUnit } from "../actors/HeroUnit";
+import { UI_DEPTH } from "../const/const";
 
 
 export class EditorRootScene extends Phaser.Scene {
@@ -41,7 +42,7 @@ export class EditorRootScene extends Phaser.Scene {
 
     this.grid = new TileGrid(this);
     this.cursor = this.add.sprite(150, 150, "cursor");
-    this.cursor.depth = 1000;
+    this.cursor.depth = UI_DEPTH.CURSOR;
     this.cursor.originX = 0.5;
     this.cursor.originY = 1;
     this.cursor.setInteractive();
@@ -119,7 +120,7 @@ export class EditorRootScene extends Phaser.Scene {
     // cleanup
     for (let child of this.children.getAll()) {
       // exclude cursor
-      if ((child as Phaser.GameObjects.Image).depth != 1000)
+      if ((child as Phaser.GameObjects.Image).depth != UI_DEPTH.CURSOR)
         child.destroy()
     }
 

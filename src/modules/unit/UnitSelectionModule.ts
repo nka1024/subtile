@@ -8,13 +8,16 @@
 import { IUnitModule } from "../interface/IUnitModule";
 import { IUnit } from "../../actors/IUnit";
 import { Scene } from "phaser";
+import { UI_DEPTH } from "../../const/const";
+
 
 export class UnitSelectionModule implements IUnitModule {
 
   private unit: IUnit;
   private scene: Scene;
 
-  private img: Phaser.GameObjects.Image;
+  private softFrame: Phaser.GameObjects.Image;
+  private hardFrame: Phaser.GameObjects.Image;
 
   constructor(unit: IUnit, scene: Scene) {
     this.unit = unit;
@@ -22,32 +25,58 @@ export class UnitSelectionModule implements IUnitModule {
   }
 
   update() {
-    if (this.img) {
-      this.img.x = this.unit.x;
-      this.img.y = this.unit.y;
+    if (this.softFrame) {
+      this.softFrame.x = this.unit.x;
+      this.softFrame.y = this.unit.y;
+    }
+    if (this.hardFrame) {
+      this.hardFrame.x = this.unit.x;
+      this.hardFrame.y = this.unit.y;
     }
   }
 
   destroy() {
-    this.destroySelectionImage();
+    this.destroySoft();
+    this.destroyHard();
     this.unit = null;
     this.scene = null;
   }
 
-  public show() {
-    if (!this.img) {
-      this.img = this.scene.add.image(0, 0, 'target_select_36x36');
+  public showSoft() {
+    this.destroyHard();
+    if (!this.softFrame) {
+      this.softFrame = this.scene.add.image(0, 0, 'target_select_36x36');
+      this.softFrame.depth = UI_DEPTH.SELECTION_SOFT;
+      
+    }
+  }
+  public showHard() {
+    this.destroySoft();
+    if (!this.hardFrame) {
+      this.hardFrame = this.scene.add.image(0, 0, 'target_select_40x40');
+      this.hardFrame.depth = UI_DEPTH.SELECTION_HARD;
     }
   }
 
-  public hide() {
-    this.destroySelectionImage();
+  public hideSoft() {
+    this.destroySoft();
   }
 
-  private destroySelectionImage() {
-    if (this.img) {
-      this.img.destroy();
-      this.img = null;
+  public hideHard() {
+    this.destroyHard();
+  }
+
+  private destroySoft() {
+    if (this.softFrame) {
+      this.softFrame.destroy();
+      this.softFrame = null;
+    }
+  }
+
+  private destroyHard() {
+    if (this.hardFrame) {
+      this.hardFrame.destroy();
+      this.hardFrame = null;
     }
   }
 }

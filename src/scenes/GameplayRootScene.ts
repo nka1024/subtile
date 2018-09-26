@@ -38,6 +38,9 @@ export class GameplayRootScene extends Phaser.Scene {
   private enemyUnit: SquadUnit;
   private unitsGrp: Phaser.GameObjects.Group;
 
+  // windows
+  private targetListPanel: TargetListPanel;
+
   // modules
   private cameraDragModule: CameraDragModule;
   private mapImporterModule: MapImporterModule;
@@ -102,14 +105,11 @@ export class GameplayRootScene extends Phaser.Scene {
     this.player = player;
     this.selectedUnit = player;
 
-    player.mover.moveTo({x: 444, y: 280}, true);
+    player.mover.moveTo({ x: 444, y: 280 }, true);
     this.cameras.main.centerOn(444, 280);
     this.unitsGrp.add(this.player);
     let units = new UnitsPanel();
     units.show();
-    units.playerButton.addEventListener('click', () => {
-      this.selectedUnit = this.player;
-    });
     units.unit1Button.addEventListener('click', () => {
       if (!this.unit) {
         let gridPos = this.grid.worldToGrid(this.player.x, this.player.y);
@@ -120,21 +120,27 @@ export class GameplayRootScene extends Phaser.Scene {
       }
     });
 
-    let targetListPanel = new TargetListPanel();
-    targetListPanel.show();
-  
+    this.targetListPanel = new TargetListPanel();
+    this.targetListPanel.show();
+    this.targetListPanel.onObjectSelectionChange = (object: any, selected: boolean) => {
+      if ("selection" in object) {
+        let obj = object as ISelectable;
+        if (selected) obj.selection.showHard();
+        else obj.selection.hideHard();
+      }
+    };
 
     this.clicksTracker.on('click', (object: Phaser.GameObjects.GameObject) => {
-      if ("selection" in this.selectedUnit) {
-        console.log('hide selection');
-        (this.selectedUnit as ISelectable).selection.hide();
-      }
-      this.selectedUnit = object as IUnit;
-      if ("selection" in this.selectedUnit) {
-        console.log('show selection');
-        (this.selectedUnit as ISelectable).selection.show();
+      // deselect old
+      if (this.targetListPanel.isTargeted(this.selectedUnit)) {
+        this.targetListPanel.deselectTarget(this.selectedUnit);
       }
 
+      // select new
+      this.selectedUnit = object as IUnit;
+      if (this.targetListPanel.isTargeted(object)) {
+        this.targetListPanel.selectTarget(object);
+      }
     });
 
     let worldPos = this.grid.gridToWorld(10, 14);
@@ -142,18 +148,26 @@ export class GameplayRootScene extends Phaser.Scene {
     this.add.existing(this.enemyUnit);
     this.unitsGrp.add(this.enemyUnit);
 
+
+    // Show context menu on object click
     this.contextMenuModule.onReconClicked = (object: Phaser.GameObjects.Sprite) => {
+      // Send scouts to that object
       let from = this.grid.snapToGrid(player.x, player.y);
       let to = this.grid.snapToGrid(object.x, object.y);
       let scout = new ScoutUnit(this, from.x + 16, from.y + 16, this.grid);
+
+      // Start scouting when scouts arrive to object
       scout.mover.onPathComplete = () => {
-        this.unitsGrp.remove(scout);
-        scout.needsDestroy = true;
+        this.destroyScout(scout);
         if ('scoutee' in object) {
           (object as IScoutable).scoutee.beginScout(0.01, () => {
-            console.log('scouting complete');
-            targetListPanel.addTarget(object, 'infantry_1_icon');
-          })
+            // Add object to target list 
+            this.targetListPanel.addTarget(object, 'infantry_1_icon');
+            // Show selection frame aroud object
+            if ("selection" in object) {
+              (object as ISelectable).selection.showSoft();
+            }
+          });
       }
       };
       scout.mover.moveTo(to, true);
@@ -163,6 +177,10 @@ export class GameplayRootScene extends Phaser.Scene {
     };
   }
 
+  private destroyScout(scout: ScoutUnit) {
+    this.unitsGrp.remove(scout);
+    scout.needsDestroy = true;
+  }
 
   update(): void {
     this.contextMenuModule.update();

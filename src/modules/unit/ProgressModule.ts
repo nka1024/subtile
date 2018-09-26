@@ -8,6 +8,7 @@
 import { IUnit } from "../../actors/IUnit";
 import { Scene } from "phaser";
 import { IUnitModule } from "../interface/IUnitModule";
+import { UI_DEPTH } from "../../const/const";
 
 export class ProgressModule implements IUnitModule {
 
@@ -67,24 +68,31 @@ export class ProgressModule implements IUnitModule {
       this.textShadow1 = this.scene.add.bitmapText(0, 0, 'pokemon-8-shadow', txt);
       this.textShadow2.letterSpacing = spacing;
       this.textShadow1.letterSpacing = spacing;
+      this.textShadow1.depth = UI_DEPTH.PROGRESS;
+      this.textShadow2.depth = UI_DEPTH.PROGRESS;
     }
 
     if (!this.textMain) {
       this.textMain = this.scene.add.bitmapText(0, 0, 'pokemon-8-white', txt);
       this.textMain.letterSpacing = spacing;
+      this.textMain.depth = UI_DEPTH.PROGRESS;
     }
   }
 
   private createLine() {
-    if (!this.lineBg) this.lineBg = this.scene.add.image(0, 0, 'progress_black_50x2');
-    if (!this.lineFg) this.lineFg = this.scene.add.image(0, 0, 'progress_yellow_50x2');
+    if (!this.lineFg) {
+      this.lineFg = this.scene.add.image(0, 0, 'progress_yellow_50x2');
+      this.lineFg.depth = UI_DEPTH.PROGRESS + 1;
+    }
+
+    if (!this.lineBg) {
+      this.lineBg = this.scene.add.image(0, 0, 'progress_black_50x2');
+      this.lineBg.depth = UI_DEPTH.PROGRESS;
+    }
   }
 
   private updateText() {
-    let depth = this.unit.depth + 1;
-
     if (this.textMain) {
-      this.textMain.depth = depth;
       this.textMain.text = this.text;
       this.textMain.x = this.unit.x - 25;
       this.textMain.y = this.unit.y - 30;
@@ -92,12 +100,10 @@ export class ProgressModule implements IUnitModule {
 
     if (this.textShadow1 && this.textShadow2) {
       this.textShadow1.text = this.text;
-      this.textShadow1.depth = depth;
       this.textShadow1.x = this.textMain.x + 1;
       this.textShadow1.y = this.textMain.y;
 
       this.textShadow2.text = this.text;
-      this.textShadow2.depth = depth;
       this.textShadow2.x = this.textMain.x;
       this.textShadow2.y = this.textMain.y + 1;
     }
@@ -106,7 +112,6 @@ export class ProgressModule implements IUnitModule {
   private updateLine(progress: number) {
     if (this.lineBg && this.lineFg) {
       for (let line of [this.lineFg, this.lineBg]) {
-        line.depth = this.unit.depth + 1;
         line.x = this.unit.x;
         line.y = this.unit.y - 15;
       }

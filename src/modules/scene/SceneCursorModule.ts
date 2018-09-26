@@ -1,4 +1,5 @@
 import { TileGrid } from "../../TileGrid";
+import { UI_DEPTH } from "../../const/const";
 
 /**
 * @author       Kirill Nepomnyaschiy <nka1024@gmail.com>
@@ -20,7 +21,7 @@ export class SceneCursorModule {
     this.grid = grid;
 
     this.cursor = this.scene.add.sprite(0, 0, "cursor_grid_2x_32x32");
-    this.cursor.depth = 1000;
+    this.cursor.depth = UI_DEPTH.CURSOR;
     this.cursor.originX = 1;
     this.cursor.originY = 1;
     this.cursor.disableInteractive();

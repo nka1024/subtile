@@ -6,6 +6,7 @@
 */
 
 import { js as easystar } from "easystarjs";
+import { UI_DEPTH } from "./const/const";
 
 export class TileGrid {
 
@@ -61,7 +62,7 @@ export class TileGrid {
         img.setTexture("grid_128_30");
         img.x = 256 * i;
         img.y = 256 * j;
-        img.depth = 1000;;
+        img.depth = UI_DEPTH.EDITOR_GRID_FRAME;
         this.scene.add.existing(img);
         grid.push(img);
       }
@@ -99,7 +100,7 @@ export class TileGrid {
     img.scaleX = 2;
     img.scaleY = 2;
     img.setTexture('grid_tile_' + color + '_16_a50');
-    img.depth = 1000;
+    img.depth = UI_DEPTH.EDITOR_GRID_TILE;
     var wc = this.gridToWorld(i, j)
     img.x = wc.x + 16;
     img.y = wc.y + 16;

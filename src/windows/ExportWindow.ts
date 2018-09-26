@@ -1,4 +1,5 @@
 import { BaseWindow } from "./BaseWindow";
+import { UI_DEPTH } from "../const/const";
 
 /**
 * @author       Kirill Nepomnyaschiy <nka1024@gmail.com>
@@ -51,7 +52,9 @@ export class ExportWindow extends BaseWindow {
     for (let child of children) {
       let image = child as Phaser.GameObjects.Image
       // exclude ui layer
-      if (image.depth == 1000) continue
+      if (image.depth == UI_DEPTH.EDITOR_GRID_FRAME) continue
+      if (image.depth == UI_DEPTH.EDITOR_GRID_TILE) continue
+      if (image.depth == UI_DEPTH.CURSOR) continue
 
       let texture = image.texture
 

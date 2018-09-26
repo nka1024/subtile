@@ -1,11 +1,12 @@
-import { TileGrid } from "../../TileGrid";
-
 /**
 * @author       Kirill Nepomnyaschiy <nka1024@gmail.com>
 * @copyright    nka1024
 * @description  subtile
 * @license      Apache 2.0
 */
+
+import { TileGrid } from "../../TileGrid";
+import { UI_DEPTH } from "../../const/const";
 
 export class MapImporterModule {
   private scene: Phaser.Scene;
@@ -19,9 +20,15 @@ export class MapImporterModule {
   public importMap(map: any) {
     // cleanup
     for (let child of this.scene.children.getAll()) {
-      // exclude cursor
-      if ((child as Phaser.GameObjects.Image).depth != 1000)
+      // exclude UI
+      let depth = (child as Phaser.GameObjects.Image).depth;
+      if (![
+        UI_DEPTH.CURSOR, 
+        UI_DEPTH.EDITOR_GRID_FRAME, 
+        UI_DEPTH.EDITOR_GRID_TILE
+      ].includes(depth)) {
         child.destroy()
+      }
     }
 
     // create grid from config

@@ -19,12 +19,12 @@ export class TargetListPanel extends BaseWindow {
   static innerHtml: string;
 
   // public
-  public onObjectClick: Function;
+  public onObjectSelectionChange: (object: any, selected:boolean) => void;
 
   // private 
 
   private objContainer: HTMLElement;
-
+  private selectedItem: TargetItem;
   private items: Array<TargetItem> = [];
 
   constructor() {
@@ -45,6 +45,59 @@ export class TargetListPanel extends BaseWindow {
     });
   }
 
+  public isTargeted(target: any):boolean {
+    for (let item of this.items) {
+      if (item.target == target)
+        return true;
+    }
+    return false;
+  }
+
+  public selectTarget(target: object) {
+    // skip if item is already selected
+    if (this.selectedItem && this.selectedItem.target == target) {
+      return;
+    }
+    this.setTargetSelected(target, true);
+    this.selectedItem = this.itemByTarget(target);
+  }
+
+  public deselectTarget(target: object) {
+    // skip if item not selected
+    if (!this.selectedItem || this.selectedItem.target != target) {
+      return;
+    }
+    this.setTargetSelected(target, false);
+    this.selectedItem = null;
+  }
+
+  private setTargetSelected(target: any, selected: boolean) {
+    let item = this.itemByTarget(target)
+    if (item) {
+        this.setElementBorderHTML(item.element, selected);
+        this.notifyTargetSelectionChange(target, selected);
+    }
+  }
+
+
+  private itemByTarget(target: any):TargetItem {
+    for (let item of this.items) {
+      if (item.target == target) {
+        return item;
+      }
+    }
+    return null;
+  }
+
+  private itemByElement(element: HTMLElement):TargetItem {
+    for (let item of this.items) {
+      if (item.element == element) {
+        return item;
+      }
+    }
+    return null;
+  }
+
   // Private 
 
   private removeAll() {
@@ -55,12 +108,29 @@ export class TargetListPanel extends BaseWindow {
     this.items = [];
   }
   
-  private selectElement(element: HTMLElement) {
-    for (let item of this.items) {
-      this.setElementBorderHTML(item.element, item.element == element)
+  // private selectElement(element: HTMLElement) {
+  //   for (let item of this.items) {
+  //     this.setElementBorderHTML(item.element, item.element == element)
+  //   }
+  // }
+
+  private onElementClick(element: HTMLElement) {
+    if (this.selectedItem && this.selectedItem.element == element) {
+      return;
     }
+
+    if (this.selectedItem) {
+      this.deselectTarget(this.selectedItem.target);
+    }
+    this.selectTarget(this.itemByElement(element).target)
   }
 
+  private notifyTargetSelectionChange(target:any, selected: boolean) {
+    if (!this.onObjectSelectionChange) {
+      return
+    }
+    this.onObjectSelectionChange(target, selected);
+  }
 
   // HTML routines
 
@@ -93,7 +163,7 @@ export class TargetListPanel extends BaseWindow {
     element.innerHTML = innerHtml;
     this.setElementBorderHTML(element, conf.selected);
     element.addEventListener('click', () => {
-      this.selectElement(element);
+      this.onElementClick(element);
     });
 
     this.objContainer.appendChild(element);
