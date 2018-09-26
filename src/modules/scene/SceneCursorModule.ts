@@ -19,7 +19,7 @@ export class SceneCursorModule {
     this.scene = scene;
     this.grid = grid;
 
-    this.cursor = this.scene.add.sprite(0, 0, "cursor_grid_32x32");
+    this.cursor = this.scene.add.sprite(0, 0, "cursor_grid_2x_32x32");
     this.cursor.depth = 1000;
     this.cursor.originX = 1;
     this.cursor.originY = 1;

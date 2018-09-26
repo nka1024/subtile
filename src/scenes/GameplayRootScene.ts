@@ -22,6 +22,8 @@ import { SceneCursorModule } from "../modules/scene/SceneCursorModule";
 import { MapImporterModule } from "../modules/scene/MapImporterModule";
 import { ContextMenuModule } from "../modules/scene/ContextMenuModule";
 import { ZoomPanel } from "../windows/ZoomPanel";
+import { ISelectable } from "../actors/ISelectable";
+import { GameobjectClicksModule } from "../modules/scene/GameobjectClicksModule";
 
 
 export class GameplayRootScene extends Phaser.Scene {
@@ -40,6 +42,7 @@ export class GameplayRootScene extends Phaser.Scene {
   private mapImporterModule: MapImporterModule;
   private contextMenuModule: ContextMenuModule;
   private cursorModule: SceneCursorModule;
+  private clicksTracker: GameobjectClicksModule;
 
   constructor() {
     super({
@@ -54,7 +57,8 @@ export class GameplayRootScene extends Phaser.Scene {
   injectDependencies() {
     this.grid = new TileGrid(this);
     this.cameraDragModule = new CameraDragModule(this);
-    this.contextMenuModule = new ContextMenuModule(this);
+    this.clicksTracker = new GameobjectClicksModule(this);
+    this.contextMenuModule = new ContextMenuModule(this, this.clicksTracker);
     this.cursorModule = new SceneCursorModule(this, this.grid);
     this.mapImporterModule = new MapImporterModule(this, this.grid);
   }
@@ -87,7 +91,7 @@ export class GameplayRootScene extends Phaser.Scene {
 
     this.unitsGrp = this.add.group();
     this.unitsGrp.runChildUpdate = true;
-    this.contextMenuModule.addObjectsGroup(this.unitsGrp);
+    this.clicksTracker.addObjectsGroup(this.unitsGrp);
     
 
     let player = new HeroUnit(this, 400, 280, this.grid);
@@ -114,7 +118,19 @@ export class GameplayRootScene extends Phaser.Scene {
         this.add.existing(this.unit)
         this.unitsGrp.add(this.unit);
       }
-      this.selectedUnit = this.unit;
+    });
+
+    this.clicksTracker.on('click', (object: Phaser.GameObjects.GameObject) => {
+      if ("selection" in this.selectedUnit) {
+        console.log('hide selection');
+        (this.selectedUnit as ISelectable).selection.hide();
+      }
+      this.selectedUnit = object as IUnit;
+      if ("selection" in this.selectedUnit) {
+        console.log('show selection');
+        (this.selectedUnit as ISelectable).selection.show();
+      }
+
     });
 
     let worldPos = this.grid.gridToWorld(10, 14);

@@ -19,7 +19,6 @@ export class WindowManager {
 
   public static initialize() {
     OkPopup.initialize();
-    NewmapWindow.initialize();
     MenuPanel.initialize();
     ObjectsListPanel.initialize();
     ExportWindow.initialize();
@@ -28,6 +27,7 @@ export class WindowManager {
       UnitsPanel.initialize();
       ContextObjectPopup.initialize();
       ZoomPanel.initialize();
+      NewmapWindow.initialize();
     } catch (e) {
       console.log('missing window')
     }

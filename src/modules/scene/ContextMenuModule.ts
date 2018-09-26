@@ -7,7 +7,7 @@
 */
 
 import { ContextObjectPopup } from "../../windows/ContextObjectWindow";
-
+import { GameobjectClicksModule } from "./GameobjectClicksModule";
 
 export class ContextMenuModule {
 
@@ -17,14 +17,17 @@ export class ContextMenuModule {
   // Private
   private contextWindow: ContextObjectPopup;
   private scene: Phaser.Scene;
-  private groups: Array<Phaser.GameObjects.Group>;
+  private clicksTracker: GameobjectClicksModule;
 
   // flag used to destroy current context window when clicked outside of it
   private objectClickedInThisFrame: Boolean;
 
-  constructor(scene: Phaser.Scene) {
-    this.groups = [];
+  constructor(scene: Phaser.Scene, clicksTracker: GameobjectClicksModule) {
     this.scene = scene;
+    this.clicksTracker = clicksTracker;
+    this.clicksTracker.on('click', (object: Phaser.GameObjects.GameObject) => {
+      this.handleClick(object);
+    });
     this.scene.events.on('postupdate', (time, delta) => {
       this.objectClickedInThisFrame = false;
     });
@@ -44,30 +47,12 @@ export class ContextMenuModule {
     return this.contextWindow != null;
   }
 
-  public addObjectsGroup(group: Phaser.GameObjects.Group) {
-    this.groups.push(group);
-
-    group.createCallback = (item: Phaser.GameObjects.GameObject) => {
-      this.trackClicks(item);
-    };
-    group.removeCallback = (item: Phaser.GameObjects.GameObject) => {
-      this.untrackClicks(item);
-    };
-  }
-
-  public removeObjectsGroup(group: Phaser.GameObjects.Group) {
-    // remove listeners from all objects in group
-    for (let object of group.children.entries) {
-      this.untrackClicks(object);
-    }
-    // remove group from groups array
-    this.groups = this.groups.filter((grp, idx, array) => {
-      return grp != group;
-    });
-  }
-
-
   // Private
+
+  private handleClick(object: Phaser.GameObjects.GameObject) {
+    this.showContextWindowForObject(object as Phaser.GameObjects.Sprite);
+    this.objectClickedInThisFrame = true;
+  }
 
   private worldToScreen(p:{x: number, y:number}):{x: number, y: number} {
     let camera = this.scene.cameras.main;
@@ -102,21 +87,6 @@ export class ContextMenuModule {
       this.contextWindow.destroy();
       this.contextWindow = null;
     }
-  }
-
-  private handleClick(object: Phaser.GameObjects.GameObject) {
-    this.showContextWindowForObject(object as Phaser.GameObjects.Sprite);
-    this.objectClickedInThisFrame = true;
-  }
-
-  private trackClicks(object: Phaser.GameObjects.GameObject) {
-    object.on('pointerdown', () => {
-      this.handleClick(object);
-    })
-  }
-
-  private untrackClicks(object: Phaser.GameObjects.GameObject) {
-    object.off('pointerdown', null, null, false);
   }
 
 }

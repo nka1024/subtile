@@ -27,6 +27,8 @@ export class AssetsLoader {
     scene.load.image("grid_tile_red_16_a50", "./assets/grid_tile_red_16_a50.png");
     scene.load.image("cursor", "./assets/cursor.png");
     scene.load.image("cursor_grid_32x32", "./assets/cursor_grid_32x32.png");
+    scene.load.image("cursor_grid_2x_32x32", "./assets/cursor_grid_2x_32x32.png");
+    scene.load.image("target_select_36x36", "./assets/target_select_36x36.png");
 
     scene.load.image("progress_yellow_50x2", "./assets/progress_yellow_50x2.png");
     scene.load.image("progress_black_50x2", "./assets/progress_black_50x2.png");
