@@ -122,7 +122,8 @@ export class GameplayRootScene extends Phaser.Scene {
 
     let targetListPanel = new TargetListPanel();
     targetListPanel.show();
-    targetListPanel.populate();
+  
+
     this.clicksTracker.on('click', (object: Phaser.GameObjects.GameObject) => {
       if ("selection" in this.selectedUnit) {
         console.log('hide selection');
@@ -151,6 +152,7 @@ export class GameplayRootScene extends Phaser.Scene {
         if ('scoutee' in object) {
           (object as IScoutable).scoutee.beginScout(0.01, () => {
             console.log('scouting complete');
+            targetListPanel.addTarget(object, 'infantry_1_icon');
           })
       }
       };
