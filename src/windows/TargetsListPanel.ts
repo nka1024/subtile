@@ -145,9 +145,11 @@ export class TargetListPanel extends BaseWindow {
       "image-rendering: pixelated; " +
       "width: 48px; height: 48px; background: url('$_FILENAME_$') " +
       "center center no-repeat rgb(184, 176, 33);  outline: none;\" type=\"button\" />" +
+      "<div style=\"position: relative\">" +
+      "<h2 class=\"unit_item_quantity\" style=\"font-size: 10px; background-color: rgba(0,0,0,0.5); padding-left: 5px; position: absolute; right: 3px; top: -48px\">60</h2></div>" +
       "<div style=\"height: 1px; margin: 0 auto;\"></div>" +
       "<div style=\"background-color: #a6e13f; height: 4px; width: 48px; margin: 0 auto;\"></div>" +
-      "<h2 style=\"font-size: 10px\">120k</h2>";
+      "<h2 style=\"font-size: 10px\">Scouts</h2>";
 
     let filename = '/assets/' + conf.texture + '.png';
     let element = document.createElement('div');
