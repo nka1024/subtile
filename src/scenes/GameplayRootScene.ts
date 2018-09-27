@@ -108,8 +108,8 @@ export class GameplayRootScene extends Phaser.Scene {
     player.mover.moveTo({ x: 444, y: 280 }, true);
     this.cameras.main.centerOn(444, 280);
     this.unitsGrp.add(this.player);
-    // let units = new UnitsPanel();
-    // units.show();
+    let units = new UnitsPanel();
+    units.show();
     // units.unit1Button.addEventListener('click', () => {
     //   if (!this.unit) {
     //     let gridPos = this.grid.worldToGrid(this.player.x, this.player.y);
