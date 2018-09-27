@@ -148,7 +148,7 @@ export class TargetListPanel extends BaseWindow {
       "<div style=\"position: relative\">" +
       "<h2 class=\"unit_item_quantity\" style=\"font-size: 10px; background-color: rgba(0,0,0,0.5); padding-left: 5px; position: absolute; right: 3px; top: -48px\">60</h2></div>" +
       "<div style=\"height: 1px; margin: 0 auto;\"></div>" +
-      "<div style=\"background-color: #a6e13f; height: 4px; width: 48px; margin: 0 auto;\"></div>" +
+      "<div style=\"background-color: #a6e13f; border-radius: 1px; height: 4px; width: 48px; margin: 0 auto;\"></div>" +
       "<h2 style=\"font-size: 10px\">Scouts</h2>";
 
     let filename = '/assets/' + conf.texture + '.png';
