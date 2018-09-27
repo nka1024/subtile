@@ -19,6 +19,7 @@ declare type UnitTypeConfig = {
   name: string;
   units: Array<UnitConfig>;
 }
+
 export class UnitsPanel extends BaseWindow {
   // static
   static innerHtml: string;
@@ -27,14 +28,14 @@ export class UnitsPanel extends BaseWindow {
   public onObjectClick: Function;
   public filenamePrefix: string;
 
-  // 
-  private unitTypesList: HTMLElement;
-  private refUnitTypeItem: HTMLElement;
-  
-  private refUnitItem: HTMLElement;
-  
+  // private
   private allUnitTypes: Array<HTMLElement> = [];
   private allActionLists: Array<HTMLElement> = [];
+
+  // template elements
+  private unitTypesList: HTMLElement;
+  private refUnitTypeItem: HTMLElement;
+  private refUnitItem: HTMLElement;
 
   constructor() {
     super();
@@ -44,6 +45,11 @@ export class UnitsPanel extends BaseWindow {
     this.refUnitItem = this.element.querySelector(".unit_item");
     this.unitTypesList.innerHTML = "";
     
+    this.populateTestConfig();
+  }
+
+  private populateTestConfig() {
+    // test data
     let typeItem = this.makeUnitTypeItem({
       icon: "infantry_1_icon",
       name: "Infantry",
@@ -123,7 +129,6 @@ export class UnitsPanel extends BaseWindow {
       unitsList.appendChild(unit);
     }
   }
-
   
   private setAllUnitListsHidden() {
     for (let unitType of this.allUnitTypes) {
