@@ -108,17 +108,17 @@ export class GameplayRootScene extends Phaser.Scene {
     player.mover.moveTo({ x: 444, y: 280 }, true);
     this.cameras.main.centerOn(444, 280);
     this.unitsGrp.add(this.player);
-    let units = new UnitsPanel();
-    units.show();
-    units.unit1Button.addEventListener('click', () => {
-      if (!this.unit) {
-        let gridPos = this.grid.worldToGrid(this.player.x, this.player.y);
-        let worldPos = this.grid.gridToWorld(gridPos.i, gridPos.j - 1);
-        this.unit = new SquadUnit(this, worldPos.x + 16, worldPos.y + 16, this.grid, 1);
-        this.add.existing(this.unit)
-        this.unitsGrp.add(this.unit);
-      }
-    });
+    // let units = new UnitsPanel();
+    // units.show();
+    // units.unit1Button.addEventListener('click', () => {
+    //   if (!this.unit) {
+    //     let gridPos = this.grid.worldToGrid(this.player.x, this.player.y);
+    //     let worldPos = this.grid.gridToWorld(gridPos.i, gridPos.j - 1);
+    //     this.unit = new SquadUnit(this, worldPos.x + 16, worldPos.y + 16, this.grid, 1);
+    //     this.add.existing(this.unit)
+    //     this.unitsGrp.add(this.unit);
+    //   }
+    // });
 
     this.targetListPanel = new TargetListPanel();
     this.targetListPanel.show();

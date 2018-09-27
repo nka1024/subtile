@@ -1,12 +1,12 @@
-import { TileGrid } from "../../TileGrid";
-import { UI_DEPTH } from "../../const/const";
-
 /**
 * @author       Kirill Nepomnyaschiy <nka1024@gmail.com>
 * @copyright    nka1024
 * @description  subtile
 * @license      Apache 2.0
 */
+
+import { TileGrid } from "../../TileGrid";
+import { UI_DEPTH } from "../../const/const";
 
 export class SceneCursorModule {
 
