@@ -95,6 +95,10 @@ export class TileGrid {
     return null;
   }
 
+  public isFree(i: number, j: number) {
+    return this.data[i][j] == 0;
+  }
+  
   private createTile(i: number, j: number, color: string):Phaser.GameObjects.Image {
     let img = new Phaser.GameObjects.Image(this.scene, 0, 0, null);
     img.scaleX = 2;

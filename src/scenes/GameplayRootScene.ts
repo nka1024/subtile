@@ -25,12 +25,13 @@ import { ZoomPanel } from "../windows/ZoomPanel";
 import { ISelectable } from "../actors/ISelectable";
 import { GameobjectClicksModule } from "../modules/scene/GameobjectClicksModule";
 import { TargetListPanel } from "../windows/TargetsListPanel";
+import { BaseUnit } from "../actors/BaseUnit";
 
 
 export class GameplayRootScene extends Phaser.Scene {
 
   private grid: TileGrid;
-  private selectedUnit: IUnit;
+  private selectedUnit: BaseUnit;
 
   // objects
   private player: HeroUnit;
@@ -111,18 +112,26 @@ export class GameplayRootScene extends Phaser.Scene {
     let units = new UnitsPanel();
     units.show();
     units.onUnitAttack = (unitId: string) => {
-      let from = this.grid.snapToGrid(this.player.x, player.y);
-      let to = this.grid.snapToGrid(this.selectedUnit.x, this.selectedUnit.y);
+      let target = this.selectedUnit;
+      let from = this.grid.snapToGrid(this.player.x, this.player.y);
+      let to = this.grid.snapToGrid(target.x, target.y);
       let squad = new SquadUnit(this, from.x + 16, from.y + 16, this.grid, 1);
       squad.id = unitId;
       this.add.existing(squad);
       this.unitsGrp.add(squad);
       this.squads.push(squad);
 
-      squad.mover.moveTo(to, true);      
-      squad.mover.onPathComplete = () => {
-        console.log('starting attack');
+      let onPathComplete = () => {
+        if (target.isSpotFree(squad.x, squad.y)) {
+          target.claimSpot(squad.x, squad.y);
+          console.log('starting attack');
+        } else {
+          squad.mover.moveTo(target.findEmptySpot(), true);
+          squad.mover.onPathComplete = onPathComplete;
+        }
       };
+      squad.mover.moveTo(to, true);
+      squad.mover.onPathComplete = onPathComplete;
     }
     units.onUnitReturn = (unitId: string) => {
       for (let squad of this.squads) {
@@ -130,8 +139,8 @@ export class GameplayRootScene extends Phaser.Scene {
           squad.mover.moveTo(this.player, true);
           squad.mover.onPathComplete = () => {
             console.log('returned');
-            this.destroyUnit(squad);
-            this.squads = this.squads.filter((o, i, arr) => {return o != squad});
+            this.unitsGrp.remove(squad, true);
+            this.squads = this.squads.filter((o, i, arr) => { return o != squad });
           };
         }
       }
@@ -155,7 +164,7 @@ export class GameplayRootScene extends Phaser.Scene {
       }
 
       // select new
-      this.selectedUnit = object as IUnit;
+      this.selectedUnit = object as BaseUnit;
       if (this.targetListPanel.isTargeted(object)) {
         this.targetListPanel.selectTarget(object);
       }
@@ -176,7 +185,7 @@ export class GameplayRootScene extends Phaser.Scene {
 
       // Start scouting when scouts arrive to object
       scout.mover.onPathComplete = () => {
-        this.destroyUnit(scout);
+        this.unitsGrp.remove(scout, true);
         if ('scoutee' in object) {
           (object as IScoutable).scoutee.beginScout(0.01, () => {
             // Add object to target list 
@@ -193,11 +202,6 @@ export class GameplayRootScene extends Phaser.Scene {
       this.add.existing(scout);
       this.unitsGrp.add(scout);
     };
-  }
-
-  private destroyUnit(unit: IUnit) {
-    this.unitsGrp.remove(unit);
-    unit.toDestroy = true;
   }
 
   update(): void {
