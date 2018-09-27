@@ -118,6 +118,7 @@ export class UnitMoverModule implements IUnitModule {
       } else {
         // finished path
         this.nextDest = null;
+        this.path = null;
         this.destroyNextDot();
         if (this.onPathComplete != null) {
           let callback = this.onPathComplete;
