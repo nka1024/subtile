@@ -8,6 +8,7 @@
 import { BaseWindow } from "./BaseWindow";
 
 declare type UnitConfig = {
+  id: string;
   icon: string;
   health: number;
   energy: number;
@@ -19,13 +20,14 @@ declare type UnitTypeConfig = {
   name: string;
   units: Array<UnitConfig>;
 }
-
-export class UnitsPanel extends BaseWindow {
+  
+  export class UnitsPanel extends BaseWindow {
   // static
   static innerHtml: string;
 
   // public
-  public onObjectClick: Function;
+  public onUnitAttack: (unitId: string) => void;
+  public onUnitReturn: (unitId: string) => void;
   public filenamePrefix: string;
 
   // private
@@ -55,12 +57,14 @@ export class UnitsPanel extends BaseWindow {
       name: "Infantry",
       units: [
         {
+          id: "type_1_unit_1",
           icon: "infantry_1_icon",
           health: 1,
           energy: 1,
           quantity: 99
         },
         {
+          id: "type_1_unit_2",
           icon: "infantry_1_icon",
           health: 0.5,
           energy: 0.9,
@@ -78,12 +82,14 @@ export class UnitsPanel extends BaseWindow {
         name: "Archers",
         units: [
           {
+            id: 'type_' + (i + 2) +'_unit_1',
             icon: "infantry_1_icon",
             health: Math.random(),
             energy: Math.random(),
             quantity: Math.floor(Math.random()*10)*10 
           },
           {
+            id: 'type_' + (i + 2) +'_unit_2',
             icon: "infantry_1_icon",
             health: Math.random(),
             energy: Math.random(),
@@ -165,11 +171,15 @@ export class UnitsPanel extends BaseWindow {
 
     unitAction1.addEventListener('click', () => {
       this.hideAllActionLists();
-      console.log('attack!');
+      if (this.onUnitAttack) {
+        this.onUnitAttack(conf.id);
+      }
     })
     unitAction2.addEventListener('click', () => {
       this.hideAllActionLists();
-      console.log('return!');
+      if (this.onUnitReturn) {
+        this.onUnitReturn(conf.id);
+      }
     })
   }
 

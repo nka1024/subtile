@@ -17,6 +17,10 @@ import { UnitModuleCore } from "../modules/UnitModuleCore";
 
 export class HeroUnit extends Phaser.GameObjects.Sprite implements IUnit, IScoutable {
 
+  public id: string;
+  // gameobject can only be destroyed at the end of update()
+  public toDestroy: boolean;
+
   public mover: UnitMoverModule;
   public progress: ProgressModule;
   public scoutee: ScouteeModule;
@@ -55,6 +59,10 @@ export class HeroUnit extends Phaser.GameObjects.Sprite implements IUnit, IScout
   update() {
     this.core.update();
     this.depth = this.y - 4;
+
+    if (this.toDestroy) {
+      this.destroy();
+    }
   }
 
   destroy() {

@@ -20,6 +20,10 @@ export class SquadUnit
   extends Phaser.GameObjects.Sprite
   implements IUnit, IScoutable, ISelectable {
 
+  public id: string;
+  // gameobject can only be destroyed at the end of update()
+  public toDestroy: boolean;
+
   public mover: UnitMoverModule;
   public selection: UnitSelectionModule;
   public progress: ProgressModule;
@@ -79,6 +83,10 @@ export class SquadUnit
     this.core.update();
 
     this.depth = this.y - 4;
+
+    if (this.toDestroy) {
+      this.destroy();
+    }
   }
 
   destroy() {

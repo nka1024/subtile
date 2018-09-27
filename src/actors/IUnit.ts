@@ -9,6 +9,8 @@ import { UnitMoverModule } from "../modules/unit/UnitMoverModule";
 import { ProgressModule } from "../modules/unit/ProgressModule";
 
 export interface IUnit extends Phaser.GameObjects.Sprite {
+    id: string;
+    toDestroy: boolean;
     mover: UnitMoverModule;
     progress: ProgressModule
 

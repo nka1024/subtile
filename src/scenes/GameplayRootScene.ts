@@ -34,9 +34,9 @@ export class GameplayRootScene extends Phaser.Scene {
 
   // objects
   private player: HeroUnit;
-  private unit: SquadUnit;
   private enemyUnit: SquadUnit;
   private unitsGrp: Phaser.GameObjects.Group;
+  private squads: Array<SquadUnit> = [];
 
   // windows
   private targetListPanel: TargetListPanel;
@@ -67,10 +67,10 @@ export class GameplayRootScene extends Phaser.Scene {
     this.mapImporterModule = new MapImporterModule(this, this.grid);
   }
 
-  create(data): void {    
+  create(data): void {
     this.injectDependencies();
     this.cameras.main.setBackgroundColor(0x1f1f1f);
-    
+
     this.events.on('resize', (h: number, w: number) => {
       this.cameras.main.setSize(h, w);
     });
@@ -90,17 +90,17 @@ export class GameplayRootScene extends Phaser.Scene {
         this.selectedUnit.mover.moveTo(cursor);
       }
     };
-    
+
     this.mapImporterModule.importMap(this.cache.json.get('map'));
 
     this.unitsGrp = this.add.group();
     this.unitsGrp.runChildUpdate = true;
     this.clicksTracker.addObjectsGroup(this.unitsGrp);
-    
+
 
     let player = new HeroUnit(this, 400, 280, this.grid);
     player.depth = player.y + 16;
-    
+
     this.add.existing(player);
     this.player = player;
     this.selectedUnit = player;
@@ -110,15 +110,32 @@ export class GameplayRootScene extends Phaser.Scene {
     this.unitsGrp.add(this.player);
     let units = new UnitsPanel();
     units.show();
-    // units.unit1Button.addEventListener('click', () => {
-    //   if (!this.unit) {
-    //     let gridPos = this.grid.worldToGrid(this.player.x, this.player.y);
-    //     let worldPos = this.grid.gridToWorld(gridPos.i, gridPos.j - 1);
-    //     this.unit = new SquadUnit(this, worldPos.x + 16, worldPos.y + 16, this.grid, 1);
-    //     this.add.existing(this.unit)
-    //     this.unitsGrp.add(this.unit);
-    //   }
-    // });
+    units.onUnitAttack = (unitId: string) => {
+      let from = this.grid.snapToGrid(this.player.x, player.y);
+      let to = this.grid.snapToGrid(this.selectedUnit.x, this.selectedUnit.y);
+      let squad = new SquadUnit(this, from.x + 16, from.y + 16, this.grid, 1);
+      squad.id = unitId;
+      this.add.existing(squad);
+      this.unitsGrp.add(squad);
+      this.squads.push(squad);
+
+      squad.mover.moveTo(to, true);      
+      squad.mover.onPathComplete = () => {
+        console.log('starting attack');
+      };
+    }
+    units.onUnitReturn = (unitId: string) => {
+      for (let squad of this.squads) {
+        if (squad.id == unitId) {
+          squad.mover.moveTo(this.player, true);
+          squad.mover.onPathComplete = () => {
+            console.log('returned');
+            this.destroyUnit(squad);
+            this.squads = this.squads.filter((o, i, arr) => {return o != squad});
+          };
+        }
+      }
+    }
 
     this.targetListPanel = new TargetListPanel();
     this.targetListPanel.show();
@@ -159,7 +176,7 @@ export class GameplayRootScene extends Phaser.Scene {
 
       // Start scouting when scouts arrive to object
       scout.mover.onPathComplete = () => {
-        this.destroyScout(scout);
+        this.destroyUnit(scout);
         if ('scoutee' in object) {
           (object as IScoutable).scoutee.beginScout(0.01, () => {
             // Add object to target list 
@@ -169,18 +186,18 @@ export class GameplayRootScene extends Phaser.Scene {
               (object as ISelectable).selection.showSoft();
             }
           });
-      }
+        }
       };
       scout.mover.moveTo(to, true);
-      
+
       this.add.existing(scout);
       this.unitsGrp.add(scout);
     };
   }
 
-  private destroyScout(scout: ScoutUnit) {
-    this.unitsGrp.remove(scout);
-    scout.needsDestroy = true;
+  private destroyUnit(unit: IUnit) {
+    this.unitsGrp.remove(unit);
+    unit.toDestroy = true;
   }
 
   update(): void {

@@ -6,7 +6,6 @@
 */
 
 import { OkPopup } from "../windows/OkPopup";
-import { NewmapWindow } from "../windows/NewmapWindow";
 import { MenuPanel } from "./MenuPanel";
 import { ObjectsListPanel } from "./ObjectsListPanel";
 import { ExportWindow } from "../windows/ExportWindow";

@@ -121,6 +121,7 @@ export class UnitMoverModule implements IUnitModule {
         this.destroyNextDot();
         if (this.onPathComplete != null) {
           this.onPathComplete();
+          this.onPathComplete = null;
         }
       }
     }

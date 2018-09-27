@@ -13,11 +13,13 @@ import { ProgressModule } from "../modules/unit/ProgressModule";
 
 export class ScoutUnit extends Phaser.GameObjects.Sprite implements IUnit {
 
+  public id: string;
+  // gameobject can only be destroyed at the end of update()
+  public toDestroy: boolean;
+  
   public mover: UnitMoverModule;
   public progress: ProgressModule;
-  public scoutee: ScouteeModule
-  // gameobject can only be destroyed at the end of update()
-  public needsDestroy: boolean;
+  public scoutee: ScouteeModule;
 
   constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid) {
     super(scene, x, y, 'anim_scout_eagle_32x32');
@@ -43,7 +45,7 @@ export class ScoutUnit extends Phaser.GameObjects.Sprite implements IUnit {
     this.mover.update();
     this.depth = this.y + 20;
 
-    if (this.needsDestroy) {
+    if (this.toDestroy) {
       this.destroy()
     }
   }
