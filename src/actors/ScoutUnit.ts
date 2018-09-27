@@ -1,13 +1,13 @@
-import { IUnit } from "./IUnit";
-import { TileGrid } from "../TileGrid";
-import { BaseUnit } from "./BaseUnit";
-
 /**
 * @author       Kirill Nepomnyaschiy <nka1024@gmail.com>
 * @copyright    nka1024
 * @description  subtile
 * @license      Apache 2.0
 */
+
+import { IUnit } from "./IUnit";
+import { TileGrid } from "../TileGrid";
+import { BaseUnit } from "./BaseUnit";
 
 export class ScoutUnit extends BaseUnit implements IUnit {
 
