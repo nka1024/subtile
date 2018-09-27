@@ -14,7 +14,7 @@ export class UnitMoverModule implements IUnitModule {
   private moveSpeed:number = 0.5;
 
   // public
-  public onStepComplete: () => void;
+  public onStepComplete: (stepsToGo: number, nextStep: {x: number, y: number}) => void;
   public onPathComplete: () => void;
   
   // private
@@ -44,6 +44,11 @@ export class UnitMoverModule implements IUnitModule {
     let gridDest = grid.worldToGrid(dest.x, dest.y);
     let gridPos = grid.worldToGrid(this.unit.x, this.unit.y);
 
+    if (gridDest.i == gridPos.i && gridDest.j == gridPos.j) {
+      console.log('already there');
+      this.finishPath();
+      return;
+    }
     //  if there's no dest or new dest given, find new path
     if (this.dest == null || this.dest.i != gridDest.i || this.dest.j != gridDest.j) {
       this.dest = gridDest;
@@ -113,19 +118,24 @@ export class UnitMoverModule implements IUnitModule {
         this.nextDest = this.pathBySteps[0];
         this.destroyNextDot();
         if (this.onStepComplete != null) {
-          this.onStepComplete();
+          this.onStepComplete(this.pathBySteps.length, this.nextDest);
         }
       } else {
-        // finished path
-        this.nextDest = null;
-        this.path = null;
-        this.destroyNextDot();
-        if (this.onPathComplete != null) {
-          let callback = this.onPathComplete;
-          this.onPathComplete = null;
-          callback();
-        }
+        this.finishPath();
       }
+    }
+  }
+
+  private finishPath() {
+    // finished path
+    this.nextDest = null;
+    this.path = null;
+    this.pathBySteps = null;
+    this.destroyNextDot();
+    if (this.onPathComplete != null) {
+      let callback = this.onPathComplete;
+      this.onPathComplete = null;
+      callback();
     }
   }
 
@@ -172,7 +182,7 @@ export class UnitMoverModule implements IUnitModule {
   }
 
   private destroyNextDot() {
-    if (this.pathDots.length > 0) {
+    if (this.path && this.pathDots.length > 0) {
       this.pathDots.splice(0, 1)[0].destroy();
     }
   }
