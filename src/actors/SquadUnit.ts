@@ -5,45 +5,30 @@
 * @license      Apache 2.0
 */
 
-import { IUnit } from "./IUnit";
 import { IScoutable } from "./IScouteable";
 
 import { TileGrid } from "../TileGrid";
-import { UnitMoverModule } from "../modules/unit/UnitMoverModule";
-import { ProgressModule } from "../modules/unit/ProgressModule";
 import { ScouteeModule } from "../modules/unit/ScouteeModule";
-import { UnitModuleCore } from "../modules/UnitModuleCore";
 import { UnitSelectionModule } from "../modules/unit/UnitSelectionModule";
 import { ISelectable } from "./ISelectable";
+import { BaseUnit } from "./BaseUnit";
 
-export class SquadUnit
-  extends Phaser.GameObjects.Sprite
-  implements IUnit, IScoutable, ISelectable {
+export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
 
-  public id: string;
-  // gameobject can only be destroyed at the end of update()
-  public toDestroy: boolean;
-
-  public mover: UnitMoverModule;
   public selection: UnitSelectionModule;
-  public progress: ProgressModule;
   public scoutee: ScouteeModule;
 
-  private core: UnitModuleCore;
   private squadType: number = 1;
 
   private static initialized: boolean = false;
 
   constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid, squadType: number) {
-    super(scene, x, y, 'infantry_' + squadType + '_idle_48x48');
+    super(scene, x, y, grid, 'infantry_' + squadType + '_idle_48x48');
 
     this.squadType = squadType;
-    this.setInteractive();
-    this.mover = new UnitMoverModule(this, scene, grid);
     this.selection = new UnitSelectionModule(this, scene);
-    this.progress = new ProgressModule(this, scene);
     this.scoutee = new ScouteeModule(this.progress);
-    this.core = new UnitModuleCore([this.mover, this.progress, this.scoutee, this.selection]);
+    this.core.addModules([this.scoutee, this.selection])
 
     this.initializeOnce();
 
@@ -80,19 +65,12 @@ export class SquadUnit
   }
 
   update() {
-    this.core.update();
-
     this.depth = this.y - 4;
 
-    if (this.toDestroy) {
-      this.destroy();
-    }
+    super.update();
   }
 
   destroy() {
-    this.core.destroy();
-    this.core = null;
-    this.mover = null;
     this.scoutee = null;
     this.progress = null;
     this.selection = null;

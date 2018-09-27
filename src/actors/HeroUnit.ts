@@ -14,8 +14,9 @@ import { UnitMoverModule } from "../modules/unit/UnitMoverModule";
 import { ProgressModule } from "../modules/unit/ProgressModule";
 import { ScouteeModule } from "../modules/unit/ScouteeModule";
 import { UnitModuleCore } from "../modules/UnitModuleCore";
+import { BaseUnit } from "./BaseUnit";
 
-export class HeroUnit extends Phaser.GameObjects.Sprite implements IUnit, IScoutable {
+export class HeroUnit extends BaseUnit implements IUnit, IScoutable {
 
   public id: string;
   // gameobject can only be destroyed at the end of update()
@@ -27,14 +28,10 @@ export class HeroUnit extends Phaser.GameObjects.Sprite implements IUnit, IScout
   public core: UnitModuleCore;
 
   constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid) {
-    super(scene, x, y, "player_idle_32x32");
+    super(scene, x, y, grid, "player_idle_32x32");
 
-    this.setInteractive();
-
-    this.mover = new UnitMoverModule(this, scene, grid);
-    this.progress = new ProgressModule(this, scene);
     this.scoutee = new ScouteeModule(this.progress);
-    this.core = new UnitModuleCore([this.mover, this.progress]);
+    this.core.addModule(this.scoutee)
 
     var idleAnim = {
       key: 'player_idle',
@@ -56,27 +53,25 @@ export class HeroUnit extends Phaser.GameObjects.Sprite implements IUnit, IScout
     this.playUnitAnim('idle', true);
   }
 
+  public playUnitAnim(key: string, ignoreIfPlaying: boolean) {
+    let anim = 'player_' + key;
+    this.anims.play(anim, ignoreIfPlaying);
+  }
+
   update() {
-    this.core.update();
     this.depth = this.y - 4;
 
-    if (this.toDestroy) {
-      this.destroy();
-    }
+    super.update();
   }
 
   destroy() {
+    super.destroy();
     this.core.destroy();
     this.core = null;
     this.mover = null;
     this.progress = null;
     this.scoutee = null;
     super.destroy()
-  }
-
-  public playUnitAnim(key: string, ignoreIfPlaying: boolean) {
-    let anim = 'player_' + key;
-    this.anims.play(anim, ignoreIfPlaying);
   }
 
 }

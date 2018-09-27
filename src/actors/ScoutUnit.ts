@@ -1,8 +1,6 @@
 import { IUnit } from "./IUnit";
 import { TileGrid } from "../TileGrid";
-import { UnitMoverModule } from "../modules/unit/UnitMoverModule";
-import { ScouteeModule } from "../modules/unit/ScouteeModule";
-import { ProgressModule } from "../modules/unit/ProgressModule";
+import { BaseUnit } from "./BaseUnit";
 
 /**
 * @author       Kirill Nepomnyaschiy <nka1024@gmail.com>
@@ -11,19 +9,10 @@ import { ProgressModule } from "../modules/unit/ProgressModule";
 * @license      Apache 2.0
 */
 
-export class ScoutUnit extends Phaser.GameObjects.Sprite implements IUnit {
-
-  public id: string;
-  // gameobject can only be destroyed at the end of update()
-  public toDestroy: boolean;
-  
-  public mover: UnitMoverModule;
-  public progress: ProgressModule;
-  public scoutee: ScouteeModule;
+export class ScoutUnit extends BaseUnit implements IUnit {
 
   constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid) {
-    super(scene, x, y, 'anim_scout_eagle_32x32');
-    this.mover = new UnitMoverModule(this, scene, grid);
+    super(scene, x, y, grid, 'anim_scout_eagle_32x32');
 
     var anim = {
       key: 'scout_move',
@@ -37,21 +26,15 @@ export class ScoutUnit extends Phaser.GameObjects.Sprite implements IUnit {
   }
 
   public playUnitAnim(key: string, ignoreIfPlayeing: boolean) {
-    // scout has only one animation so far
     this.anims.play('scout_move', ignoreIfPlayeing);
   }
 
   update() {
-    this.mover.update();
     this.depth = this.y + 20;
-
-    if (this.toDestroy) {
-      this.destroy()
-    }
+    super.update();
   }
 
   destroy() {
-    this.mover.destroy();
     super.destroy()
   }
 }
