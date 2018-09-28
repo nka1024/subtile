@@ -26,7 +26,7 @@ export class UnitPerimeterModule implements IUnitModule {
 
   // Public
 
-  public isSpotFree(x: number, y: number):boolean {
+  public isSpotFree(x: number, y: number): boolean {
     let p = this.findPerimeterPos(x, y);
     return this.perimeter[p.i][p.j] == 0;
   }
@@ -41,33 +41,11 @@ export class UnitPerimeterModule implements IUnitModule {
     this.perimeter[p.i][p.j] = 0;
   }
 
-  public findEmptySpot():{x: number, y: number} {
-    let p = this.grid.worldToGrid(this.unit.x, this.unit.y);
 
-    let checkOrder = [
-      {i: 0, j: 1},
-      {i: 0, j: -1},
-      {i: - 1, j: 0},
-      {i: 1, j: 0},
-      {i: -1, j: -1},
-      {i: -1, j: 1},
-      {i: 1, j: -1},
-      {i: 1, j: 1}
-    ];
-
-    // check if nearby spot is free on map and not occupied by another attacking unit
-    for (let c of checkOrder) {
-      if (this.grid.isFree(p.i + c.i, p.j + c.j) && this.perimeter[1 + c.i][1 + c.j] == 0) {
-        return this.grid.gridToWorld(p.i + c.i, p.j + c.j);
-      }
-    }
-    
-    return null;
-  }
 
 
   // Private
-  
+
   public findPerimeterPos(x: number, y: number): { i: number, j: number } {
     let a = this.grid.worldToGrid(x, y);
     let b = this.grid.worldToGrid(this.unit.x, this.unit.y);
@@ -90,5 +68,389 @@ export class UnitPerimeterModule implements IUnitModule {
 
   destroy() {
     this.grid = null;
+  }
+
+
+
+
+  public findEmptySpot(startPos: { x: number, y: number }): { x: number, y: number } {
+    let p = this.grid.worldToGrid(this.unit.x, this.unit.y);
+    let s = this.grid.worldToGrid(startPos.x, startPos.y);
+
+    let checkOrder = [];
+
+    if (s.i == p.i && s.j == p.j) {
+      checkOrder = [
+        { i: 0, j: 1 },
+        { i: 0, j: -1 },
+        { i: - 1, j: 0 },
+        { i: 1, j: 0 },
+        { i: -1, j: -1 },
+        { i: -1, j: 1 },
+        { i: 1, j: -1 },
+        { i: 1, j: 1 }
+      ];
+    }
+
+    if (s.i < p.i && s.j < p.j) {
+      checkOrder = [
+        // x 0 0
+        // 0   0
+        // 0 0 0
+        { i: -1, j: -1 },
+
+        // 0 x 0
+        // 0   0
+        // 0 0 0
+        { i: - 1, j: 0 },
+
+        // 0 0 0
+        // x   0
+        // 0 0 0
+        { i: 0, j: -1 },
+
+        // 0 0 x
+        // 0   0
+        // 0 0 0
+        { i: -1, j: 1 },
+
+        // 0 0 0
+        // 0   0
+        // x 0 0
+        { i: 1, j: -1 },
+
+        // 0 0 0
+        // 0   x
+        // 0 0 0
+        { i: 0, j: 1 },
+
+        // 0 0 0
+        // 0   0
+        // 0 x 0
+        { i: 1, j: 0 },
+
+        // 0 0 0
+        // 0   0
+        // 0 0 x
+        { i: 1, j: 1 }
+      ];
+    }
+
+    if (s.i < p.i && s.j == p.j) {
+      checkOrder = [
+        // 0 x 0
+        // 0   0
+        // 0 0 0
+        { i: - 1, j: 0 },
+
+        // x 0 0
+        // 0   0
+        // 0 0 0
+        { i: -1, j: -1 },
+
+        // 0 0 x
+        // 0   0
+        // 0 0 0
+        { i: -1, j: 1 },
+
+        // 0 0 0
+        // x   0
+        // 0 0 0
+        { i: 0, j: -1 },
+
+        // 0 0 0
+        // 0   x
+        // 0 0 0
+        { i: 0, j: 1 },
+
+        // 0 0 0
+        // 0   0
+        // x 0 0
+        { i: 1, j: -1 },
+
+        // 0 0 0
+        // 0   0
+        // 0 0 x
+        { i: 1, j: 1 },
+
+        // 0 0 0
+        // 0   0
+        // 0 x 0
+        { i: 1, j: 0 },
+      ];
+    }
+
+    if (s.i < p.i && s.j > p.j) {
+      checkOrder = [
+        // 0 0 x
+        // 0   0
+        // 0 0 0
+        { i: -1, j: 1 },
+
+        // 0 x 0
+        // 0   0
+        // 0 0 0
+        { i: - 1, j: 0 },
+
+        // 0 0 0
+        // 0   x
+        // 0 0 0
+        { i: 0, j: 1 },
+
+        // x 0 0
+        // 0   0
+        // 0 0 0
+        { i: -1, j: -1 },
+
+        // 0 0 0
+        // 0   0
+        // 0 0 x
+        { i: 1, j: 1 },
+
+        // 0 0 0
+        // x   0
+        // 0 0 0
+        { i: 0, j: -1 },
+
+        // 0 0 0
+        // 0   0
+        // 0 x 0
+        { i: 1, j: 0 },
+
+        // 0 0 0
+        // 0   0
+        // x 0 0
+        { i: 1, j: -1 },
+      ];
+    }
+
+    if (s.i == p.i && s.j < p.j) {
+      checkOrder = [
+        // 0 0 0
+        // x   0
+        // 0 0 0
+        { i: 0, j: -1 },
+
+        // x 0 0
+        // 0   0
+        // 0 0 0
+        { i: -1, j: -1 },
+
+        // 0 0 0
+        // 0   0
+        // x 0 0
+        { i: 1, j: -1 },
+
+        // 0 x 0
+        // 0   0
+        // 0 0 0
+        { i: - 1, j: 0 },
+
+        // 0 0 0
+        // 0   0
+        // 0 x 0
+        { i: 1, j: 0 },
+
+        // 0 0 0
+        // 0   x
+        // 0 0 0
+        { i: 0, j: 1 },
+
+        // 0 0 x
+        // 0   0
+        // 0 0 0
+        { i: -1, j: 1 },
+
+        // 0 0 0
+        // 0   0
+        // 0 0 x
+        { i: 1, j: 1 },
+      ];
+    }
+
+    if (s.i == p.i && s.j > p.j) {
+      checkOrder = [
+        // 0 0 0
+        // 0   x
+        // 0 0 0
+        { i: 0, j: 1 },
+        
+        // 0 0 0
+        // 0   0
+        // 0 0 x
+        { i: 1, j: 1 },
+
+        // 0 0 x
+        // 0   0
+        // 0 0 0
+        { i: -1, j: 1 },
+
+        // 0 x 0
+        // 0   0
+        // 0 0 0
+        { i: - 1, j: 0 },
+
+        // 0 0 0
+        // 0   0
+        // 0 x 0
+        { i: 1, j: 0 },
+
+        // 0 0 0
+        // x   0
+        // 0 0 0
+        { i: 0, j: -1 },
+
+        // x 0 0
+        // 0   0
+        // 0 0 0
+        { i: -1, j: -1 },
+
+        // 0 0 0
+        // 0   0
+        // x 0 0
+        { i: 1, j: -1 },
+      ];
+    }
+
+    if (s.i > p.i && s.j < p.j) {
+      checkOrder = [
+        // 0 0 0
+        // 0   0
+        // x 0 0
+        { i: 1, j: -1 },
+
+        // 0 0 0
+        // x   0
+        // 0 0 0
+        { i: 0, j: -1 },
+
+        // 0 0 0
+        // 0   0
+        // 0 x 0
+        { i: 1, j: 0 },
+
+        // x 0 0
+        // 0   0
+        // 0 0 0
+        { i: -1, j: -1 },
+        
+        // 0 0 0
+        // 0   0
+        // 0 0 x
+        { i: 1, j: 1 },
+
+        // 0 x 0
+        // 0   0
+        // 0 0 0
+        { i: - 1, j: 0 },
+
+        // 0 0 0
+        // 0   x
+        // 0 0 0
+        { i: 0, j: 1 },
+
+        // 0 0 x
+        // 0   0
+        // 0 0 0
+        { i: -1, j: 1 },
+      ];
+    }
+
+    if (s.i > p.i && s.j == p.j) {
+      checkOrder = [
+        // 0 0 0
+        // 0   0
+        // 0 x 0
+        { i: 1, j: 0 },
+
+        // 0 0 0
+        // 0   0
+        // x 0 0
+        { i: 1, j: -1 },
+
+        // 0 0 0
+        // 0   0
+        // 0 0 x
+        { i: 1, j: 1 },
+
+        // 0 0 0
+        // x   0
+        // 0 0 0
+        { i: 0, j: -1 },
+
+        // 0 0 0
+        // 0   x
+        // 0 0 0
+        { i: 0, j: 1 },
+
+        // 0 0 x
+        // 0   0
+        // 0 0 0
+        { i: -1, j: 1 },
+
+        // x 0 0
+        // 0   0
+        // 0 0 0
+        { i: -1, j: -1 },
+
+        // 0 x 0
+        // 0   0
+        // 0 0 0
+        { i: - 1, j: 0 },
+      ];
+    }
+
+    if (s.i > p.i && s.j > p.j) {
+      checkOrder = [
+        // 0 0 0
+        // 0   0
+        // 0 0 x
+        { i: 1, j: 1 },
+
+        // 0 0 0
+        // 0   x
+        // 0 0 0
+        { i: 0, j: 1 },
+
+        // 0 0 0
+        // 0   0
+        // 0 x 0
+        { i: 1, j: 0 },
+
+        // 0 0 0
+        // 0   0
+        // x 0 0
+        { i: 1, j: -1 },
+        
+        // 0 0 x
+        // 0   0
+        // 0 0 0
+        { i: -1, j: 1 },
+        
+        // 0 0 0
+        // x   0
+        // 0 0 0
+        { i: 0, j: -1 },
+
+        // 0 x 0
+        // 0   0
+        // 0 0 0
+        { i: - 1, j: 0 },
+
+        // x 0 0
+        // 0   0
+        // 0 0 0
+        { i: -1, j: -1 },
+      ];
+    }
+    
+    // check if nearby spot is free on map and not occupied by another attacking unit
+    for (let c of checkOrder) {
+      if (this.grid.isFree(p.i + c.i, p.j + c.j) && this.perimeter[1 + c.i][1 + c.j] == 0) {
+        return this.grid.gridToWorld(p.i + c.i, p.j + c.j);
+      }
+    }
+
+    return null;
   }
 }

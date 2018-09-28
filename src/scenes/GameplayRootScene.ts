@@ -131,7 +131,7 @@ export class GameplayRootScene extends Phaser.Scene {
           if (!target.perimeter.isSpotFree(nextDest.x, nextDest.y)){
             squad.mover.onStepComplete = onStepComplete;
             squad.mover.onPathComplete = onPathComplete;
-            squad.mover.moveTo(target.perimeter.findEmptySpot(), true);
+            squad.mover.moveTo(target.perimeter.findEmptySpot(squad), true);
           }
         }
       }
@@ -144,7 +144,7 @@ export class GameplayRootScene extends Phaser.Scene {
         } else {
           squad.mover.onStepComplete = onStepComplete;
           squad.mover.onPathComplete = onPathComplete;
-          squad.mover.moveTo(target.perimeter.findEmptySpot(), true);
+          squad.mover.moveTo(target.perimeter.findEmptySpot(squad), true);
         }
       };
       squad.mover.onStepComplete = onStepComplete;
@@ -209,7 +209,7 @@ export class GameplayRootScene extends Phaser.Scene {
         this.unitsGrp.remove(scout, true);
         scout.destroy();
         if ('scoutee' in object) {
-          (object as IScoutable).scoutee.beginScout(0.01, () => {
+          (object as IScoutable).scoutee.beginScout(0.1, () => {
             // Add object to target list 
             this.targetListPanel.addTarget(object);
 
