@@ -28,6 +28,7 @@ import { TargetListPanel } from "../windows/TargetsListPanel";
 import { BaseUnit } from "../actors/BaseUnit";
 import { Hero, UnitData } from "../Hero";
 import { OkPopup } from "../windows/OkPopup";
+import { FloatingText } from "../FloatingText";
 
 
 export class GameplayRootScene extends Phaser.Scene {
@@ -94,6 +95,7 @@ export class GameplayRootScene extends Phaser.Scene {
     this.cursorModule.onClick = (cursor) => {
       if (!this.cameraDragModule.isDrag) {
         player.mover.moveTo(cursor);
+        // let floaty = new FloatingText(this, cursor.x, cursor.y, '10');
       }
     };
 

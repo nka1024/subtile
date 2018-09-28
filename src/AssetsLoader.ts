@@ -47,6 +47,9 @@ export class AssetsLoader {
     scene.load.bitmapFont('pokemon-8-shadow',
       './assets/fonts/pokemon/pokemon-8-shadow.png',
       './assets/fonts/pokemon/pokemon-8.fnt');
+    scene.load.bitmapFont('pokemon-8-red',
+      './assets/fonts/pokemon/pokemon-8-red.png',
+      './assets/fonts/pokemon/pokemon-8.fnt');
 
     scene.load.spritesheet('player_idle_32x32', './assets/sprites/player_idle_32x32.png', {
       frameWidth: 32,

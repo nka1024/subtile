@@ -13,6 +13,7 @@ import { UnitSelectionModule } from "../modules/unit/UnitSelectionModule";
 import { ISelectable } from "./ISelectable";
 import { BaseUnit } from "./BaseUnit";
 import { UnitData } from "../Hero";
+import { FloatingText } from "../FloatingText";
 
 export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
 
@@ -135,6 +136,13 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     } else {
       this.fightTarget.sufferAttack({ attacker: this, damage: 0.1 });
       console.log('performing attack');
+
+      // floaty text
+      let damage = Math.floor((Math.random() * 100)) + Math.floor((Math.random() * 10));
+      let floatyX = this.x + Math.random()*10 - 5;
+      let floatyY = this.y - Math.random()*10 - 10;
+      let white = this.conf.id.indexOf('enemy') == -1;
+      new FloatingText(this.scene, floatyX, floatyY, damage.toString(), white);
     }
   }
 
