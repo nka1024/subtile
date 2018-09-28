@@ -27,8 +27,8 @@ export class UnitTargetItem {
     this.conf = conf;
     let backgroundStyle = 'url(\'/assets/' + conf.icon + '.png\') center center no-repeat rgb(184, 176, 33)';
     this.icon.style.background = backgroundStyle;
-    this.quantity.innerHTML = conf.quantity.toString();
-
+    this.quantity.innerHTML = (Math.floor(conf.quantity*conf.health)).toString();
+    
     this.configureProgress(this.health, conf.health);
   }
 

@@ -134,15 +134,16 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
       console.log('stopping attack: target is dead');
       this.stopFight()
     } else {
-      this.fightTarget.sufferAttack({ attacker: this, damage: 0.1 });
+      let damage = Math.random()/100 + Math.random()/50;
+      this.fightTarget.sufferAttack({ attacker: this, damage: damage });
       console.log('performing attack');
 
       // floaty text
-      let damage = Math.floor((Math.random() * 100)) + Math.floor((Math.random() * 10));
-      let floatyX = this.fightTarget.x + Math.random()*10 - 5;
-      let floatyY = this.fightTarget.y - Math.random()*10 - 10;
+      
+      let floatyX = this.fightTarget.x + Math.random() * 10 - 5;
+      let floatyY = this.fightTarget.y - Math.random() * 10 - 10;
       let white = this.conf.id.indexOf('enemy') != -1;
-      new FloatingText(this.scene, floatyX, floatyY, damage.toString(), white);
+      new FloatingText(this.scene, floatyX, floatyY, Math.floor(damage*1000).toString(), white);
     }
   }
 
