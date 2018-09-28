@@ -68,7 +68,7 @@ export class UnitPerimeterModule implements IUnitModule {
 
   // Private
   
-  private findPerimeterPos(x: number, y: number): { i: number, j: number } {
+  public findPerimeterPos(x: number, y: number): { i: number, j: number } {
     let a = this.grid.worldToGrid(x, y);
     let b = this.grid.worldToGrid(this.unit.x, this.unit.y);
     let i = 0;

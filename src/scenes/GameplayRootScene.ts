@@ -135,7 +135,7 @@ export class GameplayRootScene extends Phaser.Scene {
           target.perimeter.claimSpot(squad.x, squad.y);
           squad.mover.onStepComplete = null;
           squad.mover.onPathComplete = null;
-          console.log('starting attack');
+          squad.startFight(target);
         } else {
           squad.mover.moveTo(target.perimeter.findEmptySpot(), true);
           squad.mover.onStepComplete = onStepComplete;

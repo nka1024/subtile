@@ -29,6 +29,7 @@ export class UnitMoverModule implements IUnitModule {
   private nextDest: { x: number, y: number };
   private pathBySteps: { x: number, y: number }[];
   private speed: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
+  private updatesPaused: boolean;
 
   constructor(unit: IUnit, scene: Phaser.Scene, grid: TileGrid) {
     this.unit = unit;
@@ -66,6 +67,9 @@ export class UnitMoverModule implements IUnitModule {
   }
 
   public update() {
+    if (this.updatesPaused) {
+      return;
+    }
     if (this.nextDest != null) {
       this.unit.playUnitAnim('walk', true);
     } else {
@@ -78,6 +82,10 @@ export class UnitMoverModule implements IUnitModule {
     if (this.nextDest != null) {
       this.moveNextStep();
     }
+  }
+
+  public pauseUpdates(pause: boolean) {
+    this.updatesPaused = pause;
   }
 
   public destroy() {

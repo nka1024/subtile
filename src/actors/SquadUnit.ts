@@ -55,6 +55,14 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
           repeatDelay: 0
         };
         this.scene.anims.create(walkAnim);
+        var fightAnim = {
+          key: 'unit_' + idx + '_fight',
+          frames: this.scene.anims.generateFrameNumbers('infantry_' + idx + '_fight_48x48', { start: 0, end: 7 }),
+          frameRate: 10,
+          repeat: -1,
+          repeatDelay: 0
+        };
+        this.scene.anims.create(fightAnim);
       }
     }
   }
@@ -62,6 +70,13 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
   public playUnitAnim(key: string, ignoreIfPlaying: boolean) {
     let anim = 'unit_' + this.squadType + '_' + key;
     this.anims.play(anim, ignoreIfPlaying);
+  }
+
+  public startFight(target: BaseUnit) {
+    let direction = this.perimeter.findPerimeterPos(target.x, target.y);
+    this.flipX = direction.j == 0;
+    this.mover.pauseUpdates(true);
+    this.playUnitAnim('fight', true);
   }
 
   update() {
