@@ -15,8 +15,8 @@ export class UnitsPanel extends BaseWindow {
   static innerHtml: string;
 
   // public
-  public onUnitAttack: (unitId: string) => void;
-  public onUnitReturn: (unitId: string) => void;
+  public onUnitAttack: (conf: UnitData) => void;
+  public onUnitReturn: (conf: UnitData) => void;
   public filenamePrefix: string;
 
   // private
@@ -134,13 +134,13 @@ export class UnitsPanel extends BaseWindow {
     item.action1.addEventListener('click', () => {
       this.hideAllActionLists();
       if (this.onUnitAttack) {
-        this.onUnitAttack(conf.id);
+        this.onUnitAttack(conf);
       }
     })
     item.action2.addEventListener('click', () => {
       this.hideAllActionLists();
       if (this.onUnitReturn) {
-        this.onUnitReturn(conf.id);
+        this.onUnitReturn(conf);
       }
     })
   }

@@ -72,10 +72,13 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     this.anims.play(anim, ignoreIfPlaying);
   }
 
+  public fightTarget: BaseUnit;
   public isFighting: boolean;
   public startFight(target: BaseUnit) {
+    
     let direction = this.perimeter.findPerimeterPos(target.x, target.y);
     this.isFighting = true;
+    this.fightTarget = target;
     this.flipX = direction.j == 0;
     this.mover.pauseUpdates(true);
     this.playUnitAnim('fight', true);
@@ -90,7 +93,9 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
   }
 
   public stopFight() {
+    this.fightTarget.perimeter.unclaimSpot(this.x, this.y);
     this.isFighting = false;
+    this.fightTarget = null;
     this.mover.pauseUpdates(false);
     this.originX = 0.5;
     this.originY = 0.5;

@@ -26,7 +26,7 @@ import { ISelectable } from "../actors/ISelectable";
 import { GameobjectClicksModule } from "../modules/scene/GameobjectClicksModule";
 import { TargetListPanel } from "../windows/TargetsListPanel";
 import { BaseUnit } from "../actors/BaseUnit";
-import { Hero } from "../Hero";
+import { Hero, UnitData } from "../Hero";
 
 
 export class GameplayRootScene extends Phaser.Scene {
@@ -38,7 +38,7 @@ export class GameplayRootScene extends Phaser.Scene {
   private player: HeroUnit;
   private enemyUnit: SquadUnit;
   private unitsGrp: Phaser.GameObjects.Group;
-  private squads: Array<SquadUnit> = [];
+  private deployedSquads: Array<SquadUnit> = [];
 
   // windows
   private targetListPanel: TargetListPanel;
@@ -113,15 +113,16 @@ export class GameplayRootScene extends Phaser.Scene {
     let units = new UnitsPanel();
     units.populate(hero.data.unitTypes);
     units.show();
-    units.onUnitAttack = (unitId: string) => {
+    units.onUnitAttack = (conf: UnitData) => {
+      let squad = this.findOrDeploySquad(conf);
       let target = this.selectedUnit;
-      let from = this.grid.snapToGrid(this.player.x, this.player.y);
+      // let from = this.grid.snapToGrid(squad.x, squad.y);
       let to = this.grid.snapToGrid(target.x, target.y);
-      let squad = new SquadUnit(this, from.x + 16, from.y + 16, this.grid, 1);
-      squad.id = unitId;
+      
+      squad.id = conf.id;
       this.add.existing(squad);
       this.unitsGrp.add(squad);
-      this.squads.push(squad);
+      this.deployedSquads.push(squad);
 
       let onStepComplete = (stepsToGo: number, nextDest: {x: number, y: number}) => {
         if (stepsToGo == 1) {
@@ -148,9 +149,9 @@ export class GameplayRootScene extends Phaser.Scene {
       squad.mover.onStepComplete = onStepComplete;
       squad.mover.onPathComplete = onPathComplete;
     }
-    units.onUnitReturn = (unitId: string) => {
-      for (let squad of this.squads) {
-        if (squad.id == unitId) {
+    units.onUnitReturn = (conf: UnitData) => {
+      for (let squad of this.deployedSquads) {
+        if (squad.id == conf.id) {
           if (squad.isFighting) {
             squad.stopFight()
           }
@@ -158,7 +159,7 @@ export class GameplayRootScene extends Phaser.Scene {
           squad.mover.onPathComplete = () => {
             console.log('returned');
             this.unitsGrp.remove(squad, true);
-            this.squads = this.squads.filter((o, i, arr) => { return o != squad });
+            this.deployedSquads = this.deployedSquads.filter((o, i, arr) => { return o != squad });
           };
         }
       }
@@ -220,6 +221,23 @@ export class GameplayRootScene extends Phaser.Scene {
       this.add.existing(scout);
       this.unitsGrp.add(scout);
     };
+  }
+
+
+  private findOrDeploySquad(conf: UnitData) {
+    let squad: SquadUnit = null;
+    for (let s of this.deployedSquads) {
+      if (s.id == conf.id) {
+        // found deployed squad
+        squad = s;
+        break;
+      }
+    }
+    if (!squad) {
+      let from = this.grid.snapToGrid(this.player.x, this.player.y);
+      squad = new SquadUnit(this, from.x + 16, from.y + 16, this.grid, 1);
+    }
+    return squad;
   }
 
   update(): void {
