@@ -6,22 +6,11 @@
 */
 
 import { BaseWindow } from "./BaseWindow";
+import { UnitTypeData, UnitData } from "../Hero";
+import { UnitItem } from "./elements/UnitItem";
 
-declare type UnitConfig = {
-  id: string;
-  icon: string;
-  health: number;
-  energy: number;
-  quantity: number;
-}
-
-declare type UnitTypeConfig = {
-  icon: string;
-  name: string;
-  units: Array<UnitConfig>;
-}
   
-  export class UnitsPanel extends BaseWindow {
+export class UnitsPanel extends BaseWindow {
   // static
   static innerHtml: string;
 
@@ -32,7 +21,7 @@ declare type UnitTypeConfig = {
 
   // private
   private allUnitTypes: Array<HTMLElement> = [];
-  private allActionLists: Array<HTMLElement> = [];
+  private allUnitItems: Array<UnitItem> = [];
 
   // template elements
   private unitTypesList: HTMLElement;
@@ -47,69 +36,54 @@ declare type UnitTypeConfig = {
     this.refUnitItem = this.element.querySelector(".unit_item");
     this.unitTypesList.innerHTML = "";
 
-    this.populateTestConfig();
+    this.startDataSyncLoop();
   }
 
-  private populateTestConfig() {
-    // test data
-    let typeItem = this.makeUnitTypeItem({
-      icon: "infantry_1_icon",
-      name: "Infantry",
-      units: [
-        {
-          id: "type_1_unit_1",
-          icon: "infantry_1_icon",
-          health: 1,
-          energy: 1,
-          quantity: 99
-        },
-        {
-          id: "type_1_unit_2",
-          icon: "infantry_1_icon",
-          health: 0.5,
-          energy: 0.9,
-          quantity: 20
-        }
-      ]
-    });
+  private dataSyncIntervalHandler: any;
+  private startDataSyncLoop() {
+    this.dataSyncIntervalHandler = setInterval(() => {
+      this.dataSync()
+    }, 500);
+  }
+  private stopDataSyncLoop() {
+    clearInterval(this.dataSyncIntervalHandler);
+  }
 
-    this.unitTypesList.appendChild(typeItem);
-    this.allUnitTypes.push(typeItem);
-
-    for (let i in [0, 1, 2, 3, 4]) {
-      let item = this.makeUnitTypeItem({
-        icon: "infantry_2_icon",
-        name: "Archers",
-        units: [
-          {
-            id: 'type_' + (i + 2) +'_unit_1',
-            icon: "infantry_1_icon",
-            health: Math.random(),
-            energy: Math.random(),
-            quantity: Math.floor(Math.random()*10)*10 
-          },
-          {
-            id: 'type_' + (i + 2) +'_unit_2',
-            icon: "infantry_1_icon",
-            health: Math.random(),
-            energy: Math.random(),
-            quantity: Math.floor(Math.random()*10)*10
-          }
-        ]
-      });
-      this.unitTypesList.appendChild(this.makeHorizontalSpacingDiv(5));
-      this.unitTypesList.appendChild(item);
-      this.allUnitTypes.push(item);
+  private dataSync() {
+    for (let unitItem of this.allUnitItems) {
+      unitItem.populate(unitItem.conf);
     }
   }
 
-  private makeUnitTypeItem(conf: UnitTypeConfig): HTMLElement {
+  private clear() {
+    this.unitTypesList.innerHTML = "";
+    this.allUnitTypes = [];
+    this.allUnitItems = [];
+  }
+
+  public populate(unitTypes: Array<UnitTypeData>) {
+    this.clear();
+    let first = true;
+
+    for (let unitType of unitTypes) {
+      let typeItem = this.makeUnitTypeItem(unitType);
+      // spacing
+      if (first) first = false;
+      else this.unitTypesList.appendChild(this.makeHorizontalSpacingDiv(5));
+      
+      this.unitTypesList.appendChild(typeItem);
+      this.allUnitTypes.push(typeItem);
+    }
+    this.hideAllActionLists();
+  }
+
+  private makeUnitTypeItem(conf: UnitTypeData): HTMLElement {
     let typeItem = this.refUnitTypeItem.cloneNode(true) as HTMLElement;
     this.configureUnitType(typeItem, conf);
     return typeItem;
   }
 
-  private configureUnitType(item: HTMLElement, conf: UnitTypeConfig) {
+  private configureUnitType(item: HTMLElement, conf: UnitTypeData) {
     let unitTypeItemIcon: HTMLElement = item.querySelector(".unit_type_item_icon");
     let unitTypeItemName: HTMLElement = item.querySelector(".unit_type_item_name");
     let unitTypeItemFold: HTMLElement = item.querySelector(".unit_type_item_fold");
@@ -138,44 +112,32 @@ declare type UnitTypeConfig = {
     }
   }
 
-  private makeUnitItem(conf: UnitConfig): HTMLElement {
+  private makeUnitItem(conf: UnitData): HTMLElement {
     let typeItem = this.refUnitItem.cloneNode(true) as HTMLElement;
     this.configureUnit(typeItem, conf);
     return typeItem;
   }
 
-  private configureUnit(unit: HTMLElement, conf: UnitConfig) {
-    let unitIcon: HTMLElement = unit.querySelector(".unit_item_icon");
-    let unitQuantity: HTMLElement = unit.querySelector(".unit_item_quantity");
-    let unitHealth: HTMLElement = unit.querySelector(".unit_item_health");
-    let unitEnergy: HTMLElement = unit.querySelector(".unit_item_energy");
-    let unitActionsList: HTMLElement = unit.querySelector(".unit_item_actions_list");
-    let unitAction1: HTMLElement = unit.querySelector(".unit_item_action_1");
-    let unitAction2: HTMLElement = unit.querySelector(".unit_item_action_2");
+  private configureUnit(unit: HTMLElement, conf: UnitData) {
+    let item = new UnitItem(unit);
 
-    let backgroundStyle = 'url(\'/assets/' + conf.icon + '.png\') center center no-repeat rgb(184, 176, 33)';
-    unitIcon.style.background = backgroundStyle;
-    unitQuantity.innerHTML = conf.quantity.toString();
-    unitActionsList.style.display = 'none' // 'flex'
+    this.allUnitItems.push(item);
 
-    this.allActionLists.push(unitActionsList);
-    this.configureProgress(unitHealth, conf.health);
-    this.configureProgress(unitEnergy, conf.energy);
-
-    unitIcon.addEventListener('click', () => {
-      let hidden = unitActionsList.style.display == 'none';
+    item.populate(conf);
+    item.icon.addEventListener('click', () => {
+      let hidden = item.isActionListHidden;
       // hide currently visible action list if clicked on any of them
       this.hideAllActionLists();
-      this.setActionListHidden(unitActionsList, !hidden);
+      item.setActionListHidden(!hidden);
     });
 
-    unitAction1.addEventListener('click', () => {
+    item.action1.addEventListener('click', () => {
       this.hideAllActionLists();
       if (this.onUnitAttack) {
         this.onUnitAttack(conf.id);
       }
     })
-    unitAction2.addEventListener('click', () => {
+    item.action2.addEventListener('click', () => {
       this.hideAllActionLists();
       if (this.onUnitReturn) {
         this.onUnitReturn(conf.id);
@@ -205,19 +167,9 @@ declare type UnitTypeConfig = {
   }
 
   private hideAllActionLists() {
-    for (let actionList of this.allActionLists) {
-      this.setActionListHidden(actionList, true);
+    for (let unitItem of this.allUnitItems) {
+      unitItem.setActionListHidden(true);
     }
-  }
-
-  private setActionListHidden(element: HTMLElement, hidden: boolean) {
-    element.style.display = hidden ? 'none' : 'flex';
-  }
-
-  private configureProgress(element: HTMLElement, progress: number) {
-    let maxW = parseInt(element.style.width);
-    let inner = element.children[0] as HTMLElement;
-    inner.style.width = (maxW * progress) + 'px';
   }
 
 

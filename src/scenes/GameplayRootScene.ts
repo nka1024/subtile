@@ -26,6 +26,7 @@ import { ISelectable } from "../actors/ISelectable";
 import { GameobjectClicksModule } from "../modules/scene/GameobjectClicksModule";
 import { TargetListPanel } from "../windows/TargetsListPanel";
 import { BaseUnit } from "../actors/BaseUnit";
+import { Hero } from "../Hero";
 
 
 export class GameplayRootScene extends Phaser.Scene {
@@ -98,9 +99,9 @@ export class GameplayRootScene extends Phaser.Scene {
     this.unitsGrp.runChildUpdate = true;
     this.clicksTracker.addObjectsGroup(this.unitsGrp);
 
-
     let player = new HeroUnit(this, 400, 280, this.grid);
     player.depth = player.y + 16;
+    let hero = new Hero();
 
     this.add.existing(player);
     this.player = player;
@@ -110,6 +111,7 @@ export class GameplayRootScene extends Phaser.Scene {
     this.cameras.main.centerOn(444, 280);
     this.unitsGrp.add(this.player);
     let units = new UnitsPanel();
+    units.populate(hero.data.unitTypes);
     units.show();
     units.onUnitAttack = (unitId: string) => {
       let target = this.selectedUnit;
@@ -229,6 +231,7 @@ export class GameplayRootScene extends Phaser.Scene {
     }
 
     if (this.grid) this.grid.update();
+
   }
 
 }
