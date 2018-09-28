@@ -5,11 +5,10 @@
 * @license      Apache 2.0
 */
 
-import { IUnit } from "../actors/IUnit";
 import { IScoutable } from "../actors/IScouteable";
 
 import { WindowManager } from "../windows/WindowManager";
-import { ASSETS, AssetsLoader } from "../AssetsLoader";
+import { AssetsLoader } from "../AssetsLoader";
 import { TileGrid } from "../TileGrid";
 import { UnitsPanel } from "../windows/UnitsPanel";
 
@@ -28,7 +27,6 @@ import { TargetListPanel } from "../windows/TargetsListPanel";
 import { BaseUnit } from "../actors/BaseUnit";
 import { Hero, UnitData } from "../Hero";
 import { OkPopup } from "../windows/OkPopup";
-import { FloatingText } from "../FloatingText";
 
 
 export class GameplayRootScene extends Phaser.Scene {
@@ -160,12 +158,7 @@ export class GameplayRootScene extends Phaser.Scene {
           if (squad.isFighting) {
             squad.stopFight()
           }
-          squad.mover.onPathComplete = () => {
-            console.log('returned');
-            this.unitsGrp.remove(squad, true);
-            this.deployedSquads = this.deployedSquads.filter((o, i, arr) => { return o != squad });
-          };
-          squad.mover.moveTo(this.player, true);
+          this.returnSquad(squad);
         }
       }
     }
@@ -201,8 +194,11 @@ export class GameplayRootScene extends Phaser.Scene {
     this.createEnemy(15, 10);
     this.createEnemy(14, 15);
     this.createEnemy(6, 13);
-    // Show context menu on object click
-    this.contextMenuModule.onReconClicked = (object: Phaser.GameObjects.Sprite) => {
+
+    this.contextMenuModule.onReturnClicked = (object: BaseUnit) => {
+      this.returnSquad(object as SquadUnit);
+    };
+    this.contextMenuModule.onReconClicked = (object: BaseUnit) => {
       // Send scouts to that object
       let from = this.grid.snapToGrid(player.x, player.y);
       let to = this.grid.snapToGrid(object.x, object.y);
@@ -233,6 +229,15 @@ export class GameplayRootScene extends Phaser.Scene {
       this.add.existing(scout);
       this.unitsGrp.add(scout);
     };
+  }
+
+  private returnSquad(squad: SquadUnit) {
+    squad.mover.onPathComplete = () => {
+      console.log('returned');
+      this.unitsGrp.remove(squad, true);
+      this.deployedSquads = this.deployedSquads.filter((o, i, arr) => { return o != squad });
+    };
+    squad.mover.moveTo(this.player, true);
   }
 
   private createEnemy(i: number, j: number) {

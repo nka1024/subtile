@@ -15,7 +15,7 @@ export class ContextMenuWindow extends BaseWindow {
     public static defaultWidth:number = 100;
 
     // public
-    public reconButton: HTMLInputElement;
+    public button: HTMLInputElement;
 
     constructor(x:number, y:number, width:number = ContextMenuWindow.defaultWidth) {
         super();
@@ -25,9 +25,9 @@ export class ContextMenuWindow extends BaseWindow {
         this.element.style.left = x + "px";
         this.element.style.top = y + "px";
         this.element.style.width = width + "px";
-        this.reconButton = this.element.querySelector(".recon_button");
+        this.button = this.element.querySelector(".recon_button");
 
-        this.reconButton.addEventListener('click', () => {
+        this.button.addEventListener('click', () => {
             this.destroy();
         });
     }

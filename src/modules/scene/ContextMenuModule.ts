@@ -13,7 +13,8 @@ import { BaseUnit } from "../../actors/BaseUnit";
 export class ContextMenuModule {
 
   // Public
-  public onReconClicked: (object: Phaser.GameObjects.Sprite) => void;
+  public onReconClicked: (object: BaseUnit) => void;
+  public onReturnClicked: (object: BaseUnit) => void;
   
   // Private
   private contextWindow: ContextMenuWindow;
@@ -25,6 +26,7 @@ export class ContextMenuModule {
 
   // flag used to destroy current context window when clicked outside of it
   private objectClickedInThisFrame: Boolean;
+  
 
   constructor(scene: Phaser.Scene, clicksTracker: GameobjectClicksModule) {
     this.scene = scene;
@@ -79,10 +81,17 @@ export class ContextMenuModule {
 
     let p = this.worldToScreen({x: object.x, y: object.y});
 
+    let isDeployedSquad = object.conf.id.indexOf('type') != -1;
     this.contextWindow = new ContextMenuWindow(p.x - ContextMenuWindow.defaultWidth / 2, p.y + 16);
-    this.contextWindow.reconButton.addEventListener('click', () => {
+    this.contextWindow.button.value = isDeployedSquad ? "Return" : "Scout";
+    this.contextWindow.button.addEventListener('click', () => {
       if (this.onReconClicked) {
-        this.onReconClicked(object);
+        if (isDeployedSquad) {
+          this.onReturnClicked(object);
+        }
+        else {
+          this.onReconClicked(object);
+        }
       }
     });
     this.contextWindow.onDestroy = (w) => {
