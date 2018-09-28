@@ -149,6 +149,9 @@ export class GameplayRootScene extends Phaser.Scene {
     units.onUnitReturn = (unitId: string) => {
       for (let squad of this.squads) {
         if (squad.id == unitId) {
+          if (squad.isFighting) {
+            squad.stopFight()
+          }
           squad.mover.moveTo(this.player, true);
           squad.mover.onPathComplete = () => {
             console.log('returned');
