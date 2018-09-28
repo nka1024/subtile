@@ -6,6 +6,7 @@
 */
 
 import { BaseWindow } from "./BaseWindow";
+import { BaseUnit } from "../actors/BaseUnit";
 
 declare type TargetItem = {
   element: HTMLElement;
@@ -19,7 +20,7 @@ export class TargetListPanel extends BaseWindow {
   static innerHtml: string;
 
   // public
-  public onObjectSelectionChange: (object: any, selected:boolean) => void;
+  public onObjectSelectionChange: (object: BaseUnit, selected:boolean) => void;
 
   // private 
 
@@ -34,7 +35,7 @@ export class TargetListPanel extends BaseWindow {
     this.objContainer.innerHTML = "";
   }
 
-  public addTarget(object: any, texture: string) {
+  public addTarget(object: BaseUnit, texture: string) {
     let margin = this.addMarginElement();
     let element = this.addTargetElementHTML({ selected: false, texture: texture });
     
@@ -45,7 +46,7 @@ export class TargetListPanel extends BaseWindow {
     });
   }
 
-  public isTargeted(target: any):boolean {
+  public isTargeted(target: BaseUnit):boolean {
     for (let item of this.items) {
       if (item.target == target)
         return true;
@@ -53,7 +54,7 @@ export class TargetListPanel extends BaseWindow {
     return false;
   }
 
-  public selectTarget(target: object) {
+  public selectTarget(target: BaseUnit) {
     // skip if item is already selected
     if (this.selectedItem && this.selectedItem.target == target) {
       return;
@@ -62,7 +63,7 @@ export class TargetListPanel extends BaseWindow {
     this.selectedItem = this.itemByTarget(target);
   }
 
-  public deselectTarget(target: object) {
+  public deselectTarget(target: BaseUnit) {
     // skip if item not selected
     if (!this.selectedItem || this.selectedItem.target != target) {
       return;
@@ -95,14 +96,14 @@ export class TargetListPanel extends BaseWindow {
     this.selectTarget(this.itemByElement(element).target)
   }
 
-  private notifyTargetSelectionChange(target:any, selected: boolean) {
+  private notifyTargetSelectionChange(target: BaseUnit, selected: boolean) {
     if (!this.onObjectSelectionChange) {
       return
     }
     this.onObjectSelectionChange(target, selected);
   }
 
-  private setTargetSelected(target: any, selected: boolean) {
+  private setTargetSelected(target: BaseUnit, selected: boolean) {
     let item = this.itemByTarget(target)
     if (item) {
         this.setElementBorderHTML(item.element, selected);
@@ -110,7 +111,7 @@ export class TargetListPanel extends BaseWindow {
     }
   }
 
-  private itemByTarget(target: any):TargetItem {
+  private itemByTarget(target: BaseUnit):TargetItem {
     for (let item of this.items) {
       if (item.target == target) {
         return item;

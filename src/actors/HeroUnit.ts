@@ -15,10 +15,10 @@ import { ProgressModule } from "../modules/unit/ProgressModule";
 import { ScouteeModule } from "../modules/unit/ScouteeModule";
 import { UnitModuleCore } from "../modules/UnitModuleCore";
 import { BaseUnit } from "./BaseUnit";
+import { UnitData } from "../Hero";
 
 export class HeroUnit extends BaseUnit implements IUnit, IScoutable {
 
-  public id: string;
   // gameobject can only be destroyed at the end of update()
   public toDestroy: boolean;
 
@@ -27,8 +27,8 @@ export class HeroUnit extends BaseUnit implements IUnit, IScoutable {
   public scoutee: ScouteeModule;
   public core: UnitModuleCore;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid) {
-    super(scene, x, y, grid, "player_idle_32x32");
+  constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid, conf: UnitData) {
+    super(scene, x, y, grid, conf, "player_idle_32x32");
 
     this.scoutee = new ScouteeModule(this.progress);
     this.core.addModule(this.scoutee)

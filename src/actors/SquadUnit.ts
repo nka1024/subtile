@@ -12,6 +12,7 @@ import { ScouteeModule } from "../modules/unit/ScouteeModule";
 import { UnitSelectionModule } from "../modules/unit/UnitSelectionModule";
 import { ISelectable } from "./ISelectable";
 import { BaseUnit } from "./BaseUnit";
+import { UnitData } from "../Hero";
 
 export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
 
@@ -22,8 +23,8 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
 
   private static initialized: boolean = false;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid, squadType: number) {
-    super(scene, x, y, grid, 'infantry_' + squadType + '_idle_48x48');
+  constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid, conf: UnitData, squadType: number) {
+    super(scene, x, y, grid, conf, 'infantry_' + squadType + '_idle_48x48');
 
     this.squadType = squadType;
     this.selection = new UnitSelectionModule(this, scene);
@@ -72,10 +73,27 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     this.anims.play(anim, ignoreIfPlaying);
   }
 
+  update() {
+    this.depth = this.y - 4;
+
+    super.update();
+    this.fightUpdate();
+  }
+
+  destroy() {
+    this.scoutee = null;
+    this.progress = null;
+    this.selection = null;
+    super.destroy()
+  }
+
+
+  // Fighting
+
   public fightTarget: BaseUnit;
   public isFighting: boolean;
+  private attackTimer: any;
   public startFight(target: BaseUnit) {
-    
     let direction = this.perimeter.findPerimeterPos(target.x, target.y);
     this.isFighting = true;
     this.fightTarget = target;
@@ -90,6 +108,8 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     if (direction.i == 1) this.originY = 0.5;
     else if (direction.i == 0) this.originY = 0.75;
     else if (direction.i == 2) this.originY = 0.25;
+
+    this.attackTimer = setInterval(() => { this.performAttack() }, 1000);
   }
 
   public stopFight() {
@@ -101,17 +121,13 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     this.originY = 0.5;
   }
 
-  update() {
-    this.depth = this.y - 4;
-
-    super.update();
+  private performAttack() {
+    this.fightTarget.sufferAttack({ damage: 0.1 });
+    console.log('performing attack');
   }
 
-  destroy() {
-    this.scoutee = null;
-    this.progress = null;
-    this.selection = null;
-    super.destroy()
+  private fightUpdate() {
   }
 
+  
 }

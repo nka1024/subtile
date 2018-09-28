@@ -29,6 +29,36 @@ export class Hero {
     this.createTestData();
   }
 
+  public static makeHeroConf(): UnitData {
+    return {
+      id: "hero_squad",
+      icon: "infantry_1_icon",
+      health: 1,
+      energy: 1,
+      quantity: 1
+    };
+  }
+
+  public static makeReconSquadConf(): UnitData {
+    return {
+      id: "recon_squad",
+      icon: "infantry_1_icon",
+      health: 1,
+      energy: 1,
+      quantity: 1
+    };
+  }
+
+  public static makeRogueSquadConf(): UnitData {
+    return {
+      id: "enemy_squad",
+      icon: "infantry_2_icon",
+      health: 1,
+      energy: 1,
+      quantity: 99
+    };
+  }
+
   private createTestData() {
     this.data = { unitTypes: [] };
     this.data.unitTypes.push({

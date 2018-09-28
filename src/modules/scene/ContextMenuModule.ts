@@ -8,6 +8,7 @@
 import { ContextObjectPopup } from "../../windows/ContextObjectWindow";
 import { GameobjectClicksModule } from "./GameobjectClicksModule";
 import { TargetListPanel } from "../../windows/TargetsListPanel";
+import { BaseUnit } from "../../actors/BaseUnit";
 
 export class ContextMenuModule {
 
@@ -28,7 +29,7 @@ export class ContextMenuModule {
   constructor(scene: Phaser.Scene, clicksTracker: GameobjectClicksModule) {
     this.scene = scene;
     this.clicksTracker = clicksTracker;
-    this.clicksTracker.on('click', (object: Phaser.GameObjects.GameObject) => {
+    this.clicksTracker.on('click', (object: BaseUnit) => {
       this.handleClick(object);
     });
     this.scene.events.on('postupdate', (time, delta) => {
@@ -56,9 +57,9 @@ export class ContextMenuModule {
 
   // Private
 
-  private handleClick(object: Phaser.GameObjects.GameObject) {
+  private handleClick(object: BaseUnit) {
     if (!this.targetList.isTargeted(object)) {
-      this.showContextWindowForObject(object as Phaser.GameObjects.Sprite);
+      this.showContextWindowForObject(object);
     }
     this.objectClickedInThisFrame = true;
   }
@@ -73,7 +74,7 @@ export class ContextMenuModule {
     return {x: halfW + x, y: halfH + y};
   }
 
-  private showContextWindowForObject(object: Phaser.GameObjects.Sprite) {
+  private showContextWindowForObject(object: BaseUnit) {
     this.destroyContextWindow();
 
     let p = this.worldToScreen({x: object.x, y: object.y});

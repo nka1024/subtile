@@ -35,7 +35,6 @@ export class UnitItem {
     let backgroundStyle = 'url(\'/assets/' + conf.icon + '.png\') center center no-repeat rgb(184, 176, 33)';
     this.icon.style.background = backgroundStyle;
     this.quantity.innerHTML = conf.quantity.toString();
-    // this.actionsList.style.display = 'none' // 'flex'
 
     this.configureProgress(this.health, conf.health);
     this.configureProgress(this.energy, conf.energy);

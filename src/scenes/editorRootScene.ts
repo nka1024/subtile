@@ -15,6 +15,7 @@ import { ToolsPanel } from "../windows/ToolsPanel";
 import { TileGrid } from "../TileGrid";
 import { HeroUnit } from "../actors/HeroUnit";
 import { UI_DEPTH } from "../const/const";
+import { Hero } from "../Hero";
 
 
 export class EditorRootScene extends Phaser.Scene {
@@ -61,7 +62,7 @@ export class EditorRootScene extends Phaser.Scene {
         this.player = null;
         this.toolsPanel.playButton.value = "PLAY";
       } else {
-        let player = new HeroUnit(this, 444, 280, this.grid);
+        let player = new HeroUnit(this, 444, 280, this.grid, Hero.makeHeroConf());
         player.depth = player.y+16;
         this.add.existing(player);
         this.player = player;

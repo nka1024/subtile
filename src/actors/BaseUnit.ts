@@ -11,10 +11,11 @@ import { ProgressModule } from "../modules/unit/ProgressModule";
 import { UnitModuleCore } from "../modules/UnitModuleCore";
 import { TileGrid } from "../TileGrid";
 import { UnitPerimeterModule } from "../modules/unit/UnitPerimeterModule";
+import { UnitData } from "../Hero";
 
 export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
 
-  public id: string;
+  public conf: UnitData;
   public toDestroy: boolean;
   
   // modules
@@ -24,9 +25,9 @@ export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
 
   protected core: UnitModuleCore;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid, texture: string) {
+  constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid, conf:UnitData, texture: string) {
     super(scene, x, y, texture);
-    
+    this.conf = conf;
     this.perimeter = new UnitPerimeterModule(this, grid);
     this.mover = new UnitMoverModule(this, scene, grid);
     this.progress = new ProgressModule(this, scene);
@@ -51,6 +52,10 @@ export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
     this.core = null;
     this.mover = null;
     this.progress = null;
+  }
+
+  public sufferAttack(attack: {damage: number}) {
+    this.conf.health -= attack.damage;
   }
 
 }

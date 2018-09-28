@@ -8,11 +8,12 @@
 import { IUnit } from "./IUnit";
 import { TileGrid } from "../TileGrid";
 import { BaseUnit } from "./BaseUnit";
+import { UnitData } from "../Hero";
 
 export class ScoutUnit extends BaseUnit implements IUnit {
 
-  constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid) {
-    super(scene, x, y, grid, 'anim_scout_eagle_32x32');
+  constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid, conf:UnitData) {
+    super(scene, x, y, grid, conf, 'anim_scout_eagle_32x32');
 
     var anim = {
       key: 'scout_move',
