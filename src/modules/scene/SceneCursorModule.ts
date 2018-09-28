@@ -34,15 +34,17 @@ export class SceneCursorModule {
 
   private cursorTouchHandler() {
     if (this.scene.input.activePointer.isDown) {
+      if (this.scene.input.activePointer.justDown) {
+        if (this.onClick != null) {
+          this.onClick(this.cursor);
+        }
+      }
       if (this.cursor.alpha != 0.5) {
         this.cursor.alpha = 0.5;
       }
     } else {
       if (this.cursor.alpha != 1) {
         this.cursor.alpha = 1;
-        if (this.onClick != null) {
-          this.onClick(this.cursor);
-        }
       }
     }
   }

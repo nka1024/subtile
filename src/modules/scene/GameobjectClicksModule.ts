@@ -9,14 +9,23 @@ export class GameobjectClicksModule extends Phaser.Events.EventEmitter{
   private scene: Phaser.Scene;
   private groups: Array<Phaser.GameObjects.Group>;
 
+  public get objectClickedInThisFrame():boolean { return this._objectClickedInThisFrame; };
+  private _objectClickedInThisFrame: boolean;
+
+
   constructor(scene: Phaser.Scene) {
     super();
     this.groups = [];
     this.scene = scene;
+
+    this.scene.events.on('postupdate', (time, delta) => {
+      this._objectClickedInThisFrame = false;
+    });
   }
 
   private trackClicks(object: Phaser.GameObjects.GameObject) {
     object.on('pointerdown', () => {
+      this._objectClickedInThisFrame = true      
       this.emit('click', object);
     })
   }

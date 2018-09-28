@@ -91,7 +91,7 @@ export class GameplayRootScene extends Phaser.Scene {
     let hero = new Hero();
 
     this.cursorModule.onClick = (cursor) => {
-      if (!this.cameraDragModule.isDrag) {
+      if (!this.cameraDragModule.isDrag && !this.clicksTracker.objectClickedInThisFrame) {
         player.mover.moveTo(cursor);
       }
     };

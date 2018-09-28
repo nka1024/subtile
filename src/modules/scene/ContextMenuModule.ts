@@ -24,18 +24,11 @@ export class ContextMenuModule {
   private targetList: TargetListPanel;
   private clicksTracker: GameobjectClicksModule;
 
-  // flag used to destroy current context window when clicked outside of it
-  private objectClickedInThisFrame: Boolean;
-  
-
   constructor(scene: Phaser.Scene, clicksTracker: GameobjectClicksModule) {
     this.scene = scene;
     this.clicksTracker = clicksTracker;
     this.clicksTracker.on('click', (object: BaseUnit) => {
       this.handleClick(object);
-    });
-    this.scene.events.on('postupdate', (time, delta) => {
-      this.objectClickedInThisFrame = false;
     });
   }
 
@@ -48,7 +41,7 @@ export class ContextMenuModule {
 
   public update() {
     // close context window if clicked outside of it
-    if (this.scene.input.activePointer.justDown && !this.objectClickedInThisFrame) {
+    if (this.scene.input.activePointer.justDown && !this.clicksTracker.objectClickedInThisFrame) {
       this.destroyContextWindow();
     }
   }
@@ -63,7 +56,6 @@ export class ContextMenuModule {
     if (!this.targetList.isTargeted(object)) {
       this.showContextWindowForObject(object);
     }
-    this.objectClickedInThisFrame = true;
   }
 
   private worldToScreen(p:{x: number, y:number}):{x: number, y: number} {
