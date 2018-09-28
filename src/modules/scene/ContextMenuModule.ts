@@ -5,7 +5,7 @@
 * @license      Apache 2.0
 */
 
-import { ContextObjectPopup } from "../../windows/ContextObjectWindow";
+import { ContextMenuWindow } from "../../windows/ContextMenuWindow";
 import { GameobjectClicksModule } from "./GameobjectClicksModule";
 import { TargetListPanel } from "../../windows/TargetsListPanel";
 import { BaseUnit } from "../../actors/BaseUnit";
@@ -16,7 +16,7 @@ export class ContextMenuModule {
   public onReconClicked: (object: Phaser.GameObjects.Sprite) => void;
   
   // Private
-  private contextWindow: ContextObjectPopup;
+  private contextWindow: ContextMenuWindow;
   
   // Dependencies 
   private scene: Phaser.Scene;
@@ -79,7 +79,7 @@ export class ContextMenuModule {
 
     let p = this.worldToScreen({x: object.x, y: object.y});
 
-    this.contextWindow = new ContextObjectPopup(p.x - ContextObjectPopup.defaultWidth / 2, p.y + 16);
+    this.contextWindow = new ContextMenuWindow(p.x - ContextMenuWindow.defaultWidth / 2, p.y + 16);
     this.contextWindow.reconButton.addEventListener('click', () => {
       if (this.onReconClicked) {
         this.onReconClicked(object);

@@ -11,7 +11,7 @@ import { ObjectsListPanel } from "./ObjectsListPanel";
 import { ExportWindow } from "../windows/ExportWindow";
 import { ToolsPanel } from "./ToolsPanel";
 import { UnitsPanel } from "./UnitsPanel";
-import { ContextObjectPopup } from "./ContextObjectWindow";
+import { ContextMenuWindow } from "./ContextMenuWindow";
 import { ZoomPanel } from "./ZoomPanel";
 import { TargetListPanel } from "./TargetsListPanel";
 
@@ -25,7 +25,7 @@ export class WindowManager {
     ToolsPanel.initialize();
     try {
       UnitsPanel.initialize();
-      ContextObjectPopup.initialize();
+      ContextMenuWindow.initialize();
       ZoomPanel.initialize();
       TargetListPanel.initialize();
     } catch (e) {

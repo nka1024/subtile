@@ -7,7 +7,7 @@
 
 import { BaseWindow } from "./BaseWindow";
 
-export class ContextObjectPopup extends BaseWindow {
+export class ContextMenuWindow extends BaseWindow {
     public width: number = 100;
     
     // static
@@ -17,7 +17,7 @@ export class ContextObjectPopup extends BaseWindow {
     // public
     public reconButton: HTMLInputElement;
 
-    constructor(x:number, y:number, width:number = ContextObjectPopup.defaultWidth) {
+    constructor(x:number, y:number, width:number = ContextMenuWindow.defaultWidth) {
         super();
         this.width = width;
 
@@ -34,9 +34,9 @@ export class ContextObjectPopup extends BaseWindow {
 
     // Window HTML properties
     protected getWindowName(): string { return "context_object_popup" }
-    protected getInnerHTML(): string  { return ContextObjectPopup.innerHtml }
+    protected getInnerHTML(): string  { return ContextMenuWindow.innerHtml }
     static initialize() {
-        ContextObjectPopup.innerHtml = BaseWindow.getPrefab(".context_object_popup_prefab").innerHTML;
+        ContextMenuWindow.innerHtml = BaseWindow.getPrefab(".context_object_popup_prefab").innerHTML;
     }
 
 }
