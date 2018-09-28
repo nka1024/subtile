@@ -39,6 +39,9 @@ export class UnitsPanel extends BaseWindow {
     this.startDataSyncLoop();
   }
 
+
+  // Data sync
+
   private dataSyncIntervalHandler: any;
   private startDataSyncLoop() {
     this.dataSyncIntervalHandler = setInterval(() => {
@@ -55,11 +58,8 @@ export class UnitsPanel extends BaseWindow {
     }
   }
 
-  private clear() {
-    this.unitTypesList.innerHTML = "";
-    this.allUnitTypes = [];
-    this.allUnitItems = [];
-  }
+  
+  // Data population
 
   public populate(unitTypes: Array<UnitTypeData>) {
     this.clear();
@@ -76,6 +76,15 @@ export class UnitsPanel extends BaseWindow {
     }
     this.hideAllActionLists();
   }
+
+  private clear() {
+    this.unitTypesList.innerHTML = "";
+    this.allUnitTypes = [];
+    this.allUnitItems = [];
+  }
+
+
+  // Element creation & configuration
 
   private makeUnitTypeItem(conf: UnitTypeData): HTMLElement {
     let typeItem = this.refUnitTypeItem.cloneNode(true) as HTMLElement;
@@ -107,18 +116,18 @@ export class UnitsPanel extends BaseWindow {
 
     // add unit item
     for (let unitConf of conf.units) {
-      let unit = this.makeUnitItem(unitConf);
-      unitsList.appendChild(unit);
+      let unitItem = this.makeUnitItem(unitConf);
+      unitsList.appendChild(unitItem.element);
     }
   }
 
-  private makeUnitItem(conf: UnitData): HTMLElement {
-    let typeItem = this.refUnitItem.cloneNode(true) as HTMLElement;
-    this.configureUnit(typeItem, conf);
-    return typeItem;
+  private makeUnitItem(conf: UnitData): UnitItem {
+    let unit = this.refUnitItem.cloneNode(true) as HTMLElement;
+    let item = this.configureUnit(unit, conf);
+    return item;
   }
 
-  private configureUnit(unit: HTMLElement, conf: UnitData) {
+  private configureUnit(unit: HTMLElement, conf: UnitData): UnitItem {
     let item = new UnitItem(unit);
 
     this.allUnitItems.push(item);
@@ -136,13 +145,15 @@ export class UnitsPanel extends BaseWindow {
       if (this.onUnitAttack) {
         this.onUnitAttack(conf);
       }
-    })
+    });
     item.action2.addEventListener('click', () => {
       this.hideAllActionLists();
       if (this.onUnitReturn) {
         this.onUnitReturn(conf);
       }
-    })
+    });
+
+    return item;
   }
 
   private makeHorizontalSpacingDiv(width: number): HTMLElement {

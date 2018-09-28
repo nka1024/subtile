@@ -7,15 +7,12 @@
 
 import { UnitData } from "../../Hero";
 
-export class UnitItem {
+export class UnitTargetItem {
   public element: HTMLElement;
   public icon: HTMLElement;
   public quantity: HTMLElement;
   public health: HTMLElement;
-  public energy: HTMLElement;
   public actionsList: HTMLElement
-  public action1: HTMLInputElement;
-  public action2: HTMLInputElement;
   
   public conf: UnitData;
 
@@ -24,10 +21,6 @@ export class UnitItem {
     this.icon = unit.querySelector(".unit_item_icon");
     this.quantity = unit.querySelector(".unit_item_quantity");
     this.health = unit.querySelector(".unit_item_health");
-    this.energy = unit.querySelector(".unit_item_energy");
-    this.actionsList = unit.querySelector(".unit_item_actions_list");
-    this.action1 = unit.querySelector(".unit_item_action_1");
-    this.action2 = unit.querySelector(".unit_item_action_2");
   }
 
   public populate(conf: UnitData) {
@@ -37,16 +30,21 @@ export class UnitItem {
     this.quantity.innerHTML = conf.quantity.toString();
 
     this.configureProgress(this.health, conf.health);
-    this.configureProgress(this.energy, conf.energy);
   }
 
-  public setActionListHidden(hidden: boolean) {
-    this.actionsList.style.display = hidden ? 'none' : 'flex';
-  }
+public setSelected(selected: boolean) {
+    this.element.style.borderRadius = selected ? '0px' : '3px';
 
-  public get isActionListHidden():boolean {
-    return this.actionsList.style.display == 'none';
-  }
+    this.element.style.borderRadius = selected ? '0px' : '3px';
+    this.element.style.border = selected ? "white" : "";
+    this.element.style.borderColor = selected ? "white" : "";
+    this.element.style.borderStyle = selected ? "solid" : "none";
+    this.element.style.borderWidth = selected ? "2px" : "0px";
+    this.element.style.marginTop = selected ? "0px" : "1px";
+
+    this.icon.style.borderRadius = selected ? '0px' : '3px';;
+    this.icon.style.marginTop = selected ? "1px" : "2px";
+}
 
   private configureProgress(element: HTMLElement, progress: number) {
     let maxW = parseInt(element.style.width);

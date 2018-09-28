@@ -36,7 +36,6 @@ export class GameplayRootScene extends Phaser.Scene {
 
   // objects
   private player: HeroUnit;
-  private enemyUnit: SquadUnit;
   private unitsGrp: Phaser.GameObjects.Group;
   private deployedSquads: Array<SquadUnit> = [];
 
@@ -188,9 +187,12 @@ export class GameplayRootScene extends Phaser.Scene {
     });
 
     let worldPos = this.grid.gridToWorld(10, 14);
-    this.enemyUnit = new SquadUnit(this, worldPos.x + 16, worldPos.y + 16, this.grid, Hero.makeRogueSquadConf(), 2);
-    this.add.existing(this.enemyUnit);
-    this.unitsGrp.add(this.enemyUnit);
+    let enemyUnit = new SquadUnit(this, worldPos.x + 16, worldPos.y + 16, this.grid, Hero.makeRogueSquadConf(), 2);
+    this.add.existing(enemyUnit);
+    this.unitsGrp.add(enemyUnit);
+    enemyUnit.events.addListener('death', () => {
+      this.unitsGrp.remove(enemyUnit, true);
+    });
 
 
     // Show context menu on object click
@@ -206,7 +208,7 @@ export class GameplayRootScene extends Phaser.Scene {
         if ('scoutee' in object) {
           (object as IScoutable).scoutee.beginScout(0.01, () => {
             // Add object to target list 
-            this.targetListPanel.addTarget(object, 'infantry_1_icon');
+            this.targetListPanel.addTarget(object);
             // Show selection frame aroud object
             if ("selection" in object) {
               (object as ISelectable).selection.showSoft();

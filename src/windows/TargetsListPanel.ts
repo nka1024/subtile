@@ -7,9 +7,11 @@
 
 import { BaseWindow } from "./BaseWindow";
 import { BaseUnit } from "../actors/BaseUnit";
+import { UnitData } from "../Hero";
+import { UnitTargetItem } from "./elements/UnitTargetItem";
 
 declare type TargetItem = {
-  element: HTMLElement;
+  unitItem: UnitTargetItem;
   margin: HTMLElement;
   target: any
 }
@@ -20,33 +22,65 @@ export class TargetListPanel extends BaseWindow {
   static innerHtml: string;
 
   // public
-  public onObjectSelectionChange: (object: BaseUnit, selected:boolean) => void;
+  public onObjectSelectionChange: (object: BaseUnit, selected: boolean) => void;
 
   // private 
 
-  private objContainer: HTMLElement;
   private selectedItem: TargetItem;
   private items: Array<TargetItem> = [];
+
+  private unitsList: HTMLElement;
+  private refUnitItem: HTMLElement;
+
+  private allUnitItems: Array<UnitTargetItem> = [];
 
   constructor() {
     super();
 
-    this.objContainer = this.element.querySelector(".obj_list");
-    this.objContainer.innerHTML = "";
+    this.unitsList = this.element.querySelector(".units_list");
+    this.refUnitItem = this.element.querySelector(".unit_item");
+    this.unitsList.innerHTML = "";
+
+    this.startDataSyncLoop();
   }
 
-  public addTarget(object: BaseUnit, texture: string) {
-    let margin = this.addMarginElement();
-    let element = this.addTargetElementHTML({ selected: false, texture: texture });
-    
+
+  // Data sync
+
+  private dataSyncIntervalHandler: any;
+  private startDataSyncLoop() {
+    this.dataSyncIntervalHandler = setInterval(() => {
+      this.dataSync()
+    }, 500);
+  }
+  private stopDataSyncLoop() {
+    clearInterval(this.dataSyncIntervalHandler);
+  }
+
+  private dataSync() {
+    for (let unitItem of this.allUnitItems) {
+      unitItem.populate(unitItem.conf);
+    }
+  }
+
+
+  // Public
+
+  public addTarget(object: BaseUnit) {
+    let margin = this.makeVerticalSpacingDiv(5);
+    let unitItem = this.makeUnitItem(object.conf);
     this.items.push({
-      element: element,
+      unitItem: unitItem,
       margin: margin,
       target: object
     });
+    
+    this.allUnitItems.push(unitItem);
+    this.unitsList.appendChild(unitItem.element);
+    this.unitsList.appendChild(margin);
   }
 
-  public isTargeted(target: BaseUnit):boolean {
+  public isTargeted(target: BaseUnit): boolean {
     for (let item of this.items) {
       if (item.target == target)
         return true;
@@ -73,20 +107,37 @@ export class TargetListPanel extends BaseWindow {
   }
 
 
+  // Element creationg & configuration
+
+  private makeUnitItem(conf: UnitData): UnitTargetItem {
+    let unit = this.refUnitItem.cloneNode(true) as HTMLElement;
+    let item = this.configureUnit(unit, conf);
+    return item;
+  }
+
+  private configureUnit(element: HTMLElement, conf: UnitData): UnitTargetItem {
+    let item = new UnitTargetItem(element);
+
+    item.populate(conf);
+    item.setSelected(false);
+    item.icon.addEventListener('click', () => {
+      this.onElementClick(element);
+    });
+    return item;
+  }
+
 
   // Private 
 
   private removeAll() {
-    let children = Array.from(this.objContainer.children);
-    for (let object of children) {
-      this.objContainer.removeChild(object);
-    }
+    this.unitsList.innerHTML = null;
     this.items = [];
+    this.allUnitItems = [];
   }
 
   private onElementClick(element: HTMLElement) {
     // skip if already selected
-    if (this.selectedItem && this.selectedItem.element == element) {
+    if (this.selectedItem && this.selectedItem.unitItem.element == element) {
       return;
     }
 
@@ -106,12 +157,12 @@ export class TargetListPanel extends BaseWindow {
   private setTargetSelected(target: BaseUnit, selected: boolean) {
     let item = this.itemByTarget(target)
     if (item) {
-        this.setElementBorderHTML(item.element, selected);
-        this.notifyTargetSelectionChange(target, selected);
+      item.unitItem.setSelected(selected);
+      this.notifyTargetSelectionChange(target, selected);
     }
   }
 
-  private itemByTarget(target: BaseUnit):TargetItem {
+  private itemByTarget(target: BaseUnit): TargetItem {
     for (let item of this.items) {
       if (item.target == target) {
         return item;
@@ -120,67 +171,23 @@ export class TargetListPanel extends BaseWindow {
     return null;
   }
 
-  private itemByElement(element: HTMLElement):TargetItem {
+  private itemByElement(element: HTMLElement): TargetItem {
     for (let item of this.items) {
-      if (item.element == element) {
+      if (item.unitItem.element == element) {
         return item;
       }
     }
     return null;
   }
 
-  
+
   // HTML routines
 
-  private addMarginElement(): HTMLElement {
+  private makeVerticalSpacingDiv(height: number): HTMLElement {
     let element = document.createElement('div');
-    element.style.height = "5px";
-    element.style.margin = "0 auto";
-    this.objContainer.appendChild(element);
+    element.style.height = height + 'px';
+    element.style.margin = '0 auto';
     return element;
-  }
-
-  private addTargetElementHTML(conf: { selected: boolean, texture: string }): HTMLElement {
-    let innerHtml =
-      "<input class=\"target_list_item_input\" style=\"border-radius: $_BORDER_RADIUS_$; " +
-      "image-rendering: pixelated; " +
-      "width: 48px; height: 48px; background: url('$_FILENAME_$') " +
-      "center center no-repeat rgb(184, 176, 33);  outline: none;\" type=\"button\" />" +
-      "<div style=\"position: relative\">" +
-      "<h2 class=\"unit_item_quantity\" style=\"font-size: 10px; background-color: rgba(0,0,0,0.5); padding-left: 5px; position: absolute; right: 3px; top: -48px\">60</h2></div>" +
-      "<div style=\"height: 1px; margin: 0 auto;\"></div>" +
-      "<div style=\"background-color: #a6e13f; border-radius: 1px; height: 4px; width: 48px; margin: 0 auto;\"></div>" +
-      "<h2 style=\"font-size: 10px\">Scouts</h2>";
-
-    let filename = '/assets/' + conf.texture + '.png';
-    let element = document.createElement('div');
-    this.element.style.outline = 'none';
-    this.element.style.fontSize = '0px';
-
-    let borderRadius = conf.selected ? '0px' : '3px'
-    innerHtml = innerHtml.replace('$_FILENAME_$', filename);
-    innerHtml = innerHtml.replace('$_BORDER_RADIUS_$', borderRadius);
-    element.innerHTML = innerHtml;
-    this.setElementBorderHTML(element, conf.selected);
-    element.addEventListener('click', () => {
-      this.onElementClick(element);
-    });
-
-    this.objContainer.appendChild(element);
-    return element;
-  }
-
-  private setElementBorderHTML(element: HTMLElement, visible: boolean) {
-    element.style.borderRadius = visible ? '0px' : '3px';
-    element.style.border = visible ? "white" : "";
-    element.style.borderColor = visible ? "white" : "";
-    element.style.borderStyle = visible ? "solid" : "none";
-    element.style.borderWidth = visible ? "2px" : "0px";
-    element.style.marginTop = visible ? "0px" : "1px";
-
-    let input: HTMLInputElement = element.querySelector(".target_list_item_input");
-    input.style.borderRadius = visible ? '0px' : '3px';;
-    input.style.marginTop = visible ? "1px" : "2px";
   }
 
 

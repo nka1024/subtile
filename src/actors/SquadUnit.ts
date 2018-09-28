@@ -116,18 +116,31 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     this.fightTarget.perimeter.unclaimSpot(this.x, this.y);
     this.isFighting = false;
     this.fightTarget = null;
+    clearInterval(this.attackTimer);
     this.mover.pauseUpdates(false);
     this.originX = 0.5;
     this.originY = 0.5;
   }
 
   private performAttack() {
-    this.fightTarget.sufferAttack({ damage: 0.1 });
-    console.log('performing attack');
+    if (this.fightTarget.conf.health <= 0) {
+      this.stopFight()
+      console.log('stopping attack: target is dead');
+    } else {
+      this.fightTarget.sufferAttack({ attacker: this, damage: 0.1 });
+      console.log('performing attack');
+    }
   }
 
   private fightUpdate() {
   }
 
+  public sufferAttack(attack: {attacker: BaseUnit, damage: number}) {
+    super.sufferAttack(attack);
+
+    if (!this.isFighting) {
+      this.startFight(attack.attacker);
+    }
+  }
   
 }
