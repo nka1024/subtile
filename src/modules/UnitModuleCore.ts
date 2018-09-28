@@ -30,6 +30,8 @@ export class UnitModuleCore {
 
   public update() {
     for (let m of this.modules) {
+      // if the object was destroyed by callback in one of the modules
+      if (!this.modules) return;
       m.update();
     }
   }

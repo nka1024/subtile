@@ -82,7 +82,7 @@ export class Hero {
       ]
     });
 
-    for (let i in [0, 1, 2, 3, 4]) {
+    for (let i in [0, 1]) {
       this.data.unitTypes.push({
         icon: "infantry_2_icon",
         name: "Archers",

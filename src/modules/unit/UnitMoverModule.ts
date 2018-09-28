@@ -11,7 +11,7 @@ import { IUnitModule } from "../interface/IUnitModule";
 
 export class UnitMoverModule implements IUnitModule {
 
-  private moveSpeed:number = 0.5;
+  private moveSpeed:number = 1.5;
 
   // public
   public onStepComplete: (stepsToGo: number, nextStep: {x: number, y: number}) => void;

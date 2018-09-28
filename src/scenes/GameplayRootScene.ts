@@ -93,7 +93,6 @@ export class GameplayRootScene extends Phaser.Scene {
     this.cursorModule.onClick = (cursor) => {
       if (!this.cameraDragModule.isDrag) {
         player.mover.moveTo(cursor);
-        // let floaty = new FloatingText(this, cursor.x, cursor.y, '10');
       }
     };
 
@@ -116,7 +115,7 @@ export class GameplayRootScene extends Phaser.Scene {
     units.onUnitAttack = (conf: UnitData) => {
       let target = this.targetListPanel.selectedTarget;
       if (!target) {
-        let popup = new OkPopup("No targets scouted", "You need to recon an enemy squad first");
+        let popup = new OkPopup("No targets scouted", "You need to scout and target an enemy squad first");
         popup.show();
         return;
       }
@@ -236,6 +235,7 @@ export class GameplayRootScene extends Phaser.Scene {
       console.log('returned');
       this.unitsGrp.remove(squad, true);
       this.deployedSquads = this.deployedSquads.filter((o, i, arr) => { return o != squad });
+      squad.destroy();
     };
     squad.mover.moveTo(this.player, true);
   }

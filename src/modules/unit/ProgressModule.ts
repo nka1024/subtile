@@ -14,7 +14,7 @@ export class ProgressModule implements IUnitModule {
 
   // Public
   public progress: number = 0;
-  public width: number = 50;
+  
   public text: string;
 
   // Private 
@@ -27,9 +27,39 @@ export class ProgressModule implements IUnitModule {
   private lineFg: Phaser.GameObjects.Image;
   private lineBg: Phaser.GameObjects.Image;
 
-  constructor(unit: IUnit, scene: Scene) {
+  // settings
+  private fgW: number;
+  private fgH: number;
+  private bgW: number;
+  private bgH: number;
+  private lineFgTexture: string;
+  private lineBgTexture: string;
+  private lineFgOffset: {x: number, y: number};
+  private lineBgOffset: {x: number, y: number};
+
+  constructor(unit: IUnit, scene: Scene, type: string) {
     this.unit = unit;
     this.scene = scene;
+
+    if (type == 'hp') {
+      this.bgW = 34;
+      this.fgW = 32;
+      this.bgH = 4;
+      this.bgH = 2;
+      this.lineFgTexture = 'progress_green_32x2';
+      this.lineBgTexture = 'progress_black_34x4';
+      this.lineBgOffset = {x: -17, y: -17};
+      this.lineFgOffset = {x: -16, y: -16};
+    } else {
+      this.bgW = 50;
+      this.fgW = 50;
+      this.bgH = 2;
+      this.fgH = 2;
+      this.lineFgTexture = 'progress_yellow_50x2';
+      this.lineBgTexture = 'progress_black_52x4';
+      this.lineBgOffset = {x: -26, y: -17};
+      this.lineFgOffset = {x: -25, y: -16};
+    }
   }
 
 
@@ -48,7 +78,9 @@ export class ProgressModule implements IUnitModule {
   }
 
   public show() {
-    this.createText();
+    if (this.text && this.text.length > 0) {
+      this.createText();
+    }
     this.createLine();
   }
 
@@ -81,13 +113,17 @@ export class ProgressModule implements IUnitModule {
 
   private createLine() {
     if (!this.lineFg) {
-      this.lineFg = this.scene.add.image(0, 0, 'progress_yellow_50x2');
+      this.lineFg = this.scene.add.image(0, 0, this.lineFgTexture);
       this.lineFg.depth = UI_DEPTH.PROGRESS + 1;
+      this.lineFg.originX = 1;
+      this.lineFg.originY = 1;
     }
 
     if (!this.lineBg) {
-      this.lineBg = this.scene.add.image(0, 0, 'progress_black_50x2');
+      this.lineBg = this.scene.add.image(0, 0, this.lineBgTexture);
       this.lineBg.depth = UI_DEPTH.PROGRESS;
+      this.lineBg.originX = 1;
+      this.lineBg.originY = 1;
     }
   }
 
@@ -111,10 +147,12 @@ export class ProgressModule implements IUnitModule {
 
   private updateLine(progress: number) {
     if (this.lineBg && this.lineFg) {
-      for (let line of [this.lineFg, this.lineBg]) {
-        line.x = this.unit.x;
-        line.y = this.unit.y - 15;
-      }
+      this.lineBg.x = this.unit.x + this.lineBgOffset.x;
+      this.lineBg.y = this.unit.y + this.lineBgOffset.y;
+      this.lineFg.x = this.unit.x + this.lineFgOffset.x;
+      this.lineFg.y = this.unit.y + this.lineFgOffset.y;
+      this.lineFg.setDisplayOrigin(0, 0);
+      this.lineBg.setDisplayOrigin(0, 0);
 
       this.lineFg.scaleX = progress;
     }

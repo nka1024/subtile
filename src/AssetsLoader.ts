@@ -32,7 +32,10 @@ export class AssetsLoader {
     scene.load.image("target_select_40x40", "./assets/target_select_40x40.png");
 
     scene.load.image("progress_yellow_50x2", "./assets/progress_yellow_50x2.png");
-    scene.load.image("progress_black_50x2", "./assets/progress_black_50x2.png");
+    scene.load.image("progress_black_52x4", "./assets/progress_black_52x4.png");
+
+    scene.load.image("progress_green_32x2", "./assets/progress_green_32x2.png");
+    scene.load.image("progress_black_34x4", "./assets/progress_black_34x4.png");
 
     scene.load.bitmapFont('hello-world-16-white',
       './assets/fonts/hello-world/hello-world-16-white.png',
