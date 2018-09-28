@@ -90,6 +90,14 @@ export class UnitMoverModule implements IUnitModule {
 
   public destroy() {
     this.destroyAllDots();
+    this.onStepComplete = null;
+    this.onPathComplete = null;
+    this.grid = null;
+    this.scene = null;
+    this.unit = null;
+    this.pathBySteps = null;
+    this.path = null;
+    this.pathDots = null;
   }
 
 
@@ -198,7 +206,7 @@ export class UnitMoverModule implements IUnitModule {
   private destroyAllDots() {
     if (this.pathDots) {
       for (let dot of this.pathDots) {
-        dot.destroy()
+        dot.destroy();
       }
       this.pathDots = null;
     }

@@ -11,7 +11,6 @@ import { UnitData } from "../Hero";
 
 export interface IUnit extends Phaser.GameObjects.Sprite {
     conf: UnitData;
-    toDestroy: boolean;
     mover: UnitMoverModule;
     progress: ProgressModule
 

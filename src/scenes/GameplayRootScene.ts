@@ -186,15 +186,8 @@ export class GameplayRootScene extends Phaser.Scene {
       }
     });
 
-    let worldPos = this.grid.gridToWorld(10, 14);
-    let enemyUnit = new SquadUnit(this, worldPos.x + 16, worldPos.y + 16, this.grid, Hero.makeRogueSquadConf(), 2);
-    this.add.existing(enemyUnit);
-    this.unitsGrp.add(enemyUnit);
-    enemyUnit.events.addListener('death', () => {
-      this.unitsGrp.remove(enemyUnit, true);
-    });
-
-
+    this.createEnemy(10, 14);
+    this.createEnemy(10, 16);
     // Show context menu on object click
     this.contextMenuModule.onReconClicked = (object: Phaser.GameObjects.Sprite) => {
       // Send scouts to that object
@@ -223,6 +216,13 @@ export class GameplayRootScene extends Phaser.Scene {
     };
   }
 
+  private createEnemy(i: number, j: number) {
+    let worldPos = this.grid.gridToWorld(i, j);
+    let enemyUnit = new SquadUnit(this, worldPos.x + 16, worldPos.y + 16, this.grid, Hero.makeRogueSquadConf(), 2);
+    this.add.existing(enemyUnit);
+    this.unitsGrp.add(enemyUnit);
+    enemyUnit.events.addListener('death', () => { this.handleUnitDeath(enemyUnit); });
+  }
 
   private findOrDeploySquad(conf: UnitData) {
     let squad: SquadUnit = null;
@@ -236,8 +236,15 @@ export class GameplayRootScene extends Phaser.Scene {
     if (!squad) {
       let from = this.grid.snapToGrid(this.player.x, this.player.y);
       squad = new SquadUnit(this, from.x + 16, from.y + 16, this.grid, conf, 1);
+      squad.events.addListener('death', () => { this.handleUnitDeath(squad); });
     }
     return squad;
+  }
+
+  private handleUnitDeath(unit: BaseUnit) {
+    this.unitsGrp.remove(unit, true);
+    this.targetListPanel.removeTarget(unit);
+    unit.destroy();
   }
 
   update(): void {
@@ -248,7 +255,9 @@ export class GameplayRootScene extends Phaser.Scene {
       this.cameraDragModule.update();
     }
 
-    if (this.grid) this.grid.update();
+    if (this.grid) {
+      this.grid.update();
+    }
 
   }
 

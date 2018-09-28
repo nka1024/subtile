@@ -94,6 +94,7 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
   public isFighting: boolean;
   private attackTimer: any;
   public startFight(target: BaseUnit) {
+    console.log('start fight: ' + this.conf.id);
     let direction = this.perimeter.findPerimeterPos(target.x, target.y);
     this.isFighting = true;
     this.fightTarget = target;
@@ -113,19 +114,24 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
   }
 
   public stopFight() {
-    this.fightTarget.perimeter.unclaimSpot(this.x, this.y);
+    console.log('stop fight: ' + this.conf.id);
+    if (this.fightTarget && !this.fightTarget.destroyed) {
+      this.fightTarget.perimeter.unclaimSpot(this.x, this.y);
+    }
+    if (this.mover) {
+      this.mover.pauseUpdates(false);
+    }
     this.isFighting = false;
     this.fightTarget = null;
     clearInterval(this.attackTimer);
-    this.mover.pauseUpdates(false);
     this.originX = 0.5;
     this.originY = 0.5;
   }
 
   private performAttack() {
     if (this.fightTarget.conf.health <= 0) {
-      this.stopFight()
       console.log('stopping attack: target is dead');
+      this.stopFight()
     } else {
       this.fightTarget.sufferAttack({ attacker: this, damage: 0.1 });
       console.log('performing attack');
@@ -136,11 +142,15 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
   }
 
   public sufferAttack(attack: {attacker: BaseUnit, damage: number}) {
-    super.sufferAttack(attack);
-
     if (!this.isFighting) {
       this.startFight(attack.attacker);
+    } else {
+      if (this.conf.health - attack.damage <= 0) {
+        this.stopFight();
+      }
     }
+
+    super.sufferAttack(attack);
   }
   
 }

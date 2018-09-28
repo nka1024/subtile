@@ -16,7 +16,7 @@ import { UnitData } from "../Hero";
 export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
 
   public conf: UnitData;
-  public toDestroy: boolean;
+  public destroyed: boolean;
   
   // modules
   public mover: UnitMoverModule;
@@ -46,9 +46,6 @@ export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
 
   public update() {
     this.core.update();
-    if (this.toDestroy) {
-      this.destroy();
-    }
   }
 
   public destroy() {
@@ -56,6 +53,7 @@ export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
     this.core = null;
     this.mover = null;
     this.progress = null;
+    this.destroyed = true;
   }
 
   public sufferAttack(attack: {attacker: BaseUnit, damage: number}) {

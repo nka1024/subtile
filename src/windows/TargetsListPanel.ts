@@ -74,10 +74,22 @@ export class TargetListPanel extends BaseWindow {
       margin: margin,
       target: object
     });
-    
+
     this.allUnitItems.push(unitItem);
     this.unitsList.appendChild(unitItem.element);
     this.unitsList.appendChild(margin);
+  }
+
+  public removeTarget(object: BaseUnit) {
+    let item = this.itemByTarget(object);
+    if (item) {
+      this.deselectTarget(object);
+      item.margin.parentNode.removeChild(item.margin);
+      item.unitItem.element.parentNode.removeChild(item.unitItem.element);
+      this.allUnitItems = this.allUnitItems.filter((o, idx, arr) => {
+        return o == item.unitItem; 
+      });
+    }
   }
 
   public isTargeted(target: BaseUnit): boolean {
