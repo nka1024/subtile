@@ -89,6 +89,9 @@ export class TargetListPanel extends BaseWindow {
       this.allUnitItems = this.allUnitItems.filter((o, idx, arr) => {
         return o == item.unitItem; 
       });
+      this.items = this.items.filter((o, idx, arr) => {
+        return o.target != object;
+      });
     }
   }
 
@@ -116,6 +119,17 @@ export class TargetListPanel extends BaseWindow {
     }
     this.setTargetSelected(target, false);
     this.selectedItem = null;
+  }
+
+  public deselectAll() {
+    for (let targetItem of this.items) {
+      this.setTargetSelected(targetItem.target, false);
+    }
+    this.selectedItem = null;
+  }
+
+  public get selectedTarget():BaseUnit {
+    return this.selectedItem ? this.selectedItem.target : null;
   }
 
 

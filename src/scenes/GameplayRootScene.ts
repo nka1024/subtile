@@ -27,12 +27,12 @@ import { GameobjectClicksModule } from "../modules/scene/GameobjectClicksModule"
 import { TargetListPanel } from "../windows/TargetsListPanel";
 import { BaseUnit } from "../actors/BaseUnit";
 import { Hero, UnitData } from "../Hero";
+import { OkPopup } from "../windows/OkPopup";
 
 
 export class GameplayRootScene extends Phaser.Scene {
 
   private grid: TileGrid;
-  private selectedUnit: BaseUnit;
 
   // objects
   private player: HeroUnit;
@@ -86,9 +86,14 @@ export class GameplayRootScene extends Phaser.Scene {
     });
     zoomPanel.show();
 
+
+    let player = new HeroUnit(this, 400, 280, this.grid, Hero.makeHeroConf());
+    player.depth = player.y + 16;
+    let hero = new Hero();
+
     this.cursorModule.onClick = (cursor) => {
       if (!this.cameraDragModule.isDrag) {
-        this.selectedUnit.mover.moveTo(cursor);
+        player.mover.moveTo(cursor);
       }
     };
 
@@ -98,13 +103,9 @@ export class GameplayRootScene extends Phaser.Scene {
     this.unitsGrp.runChildUpdate = true;
     this.clicksTracker.addObjectsGroup(this.unitsGrp);
 
-    let player = new HeroUnit(this, 400, 280, this.grid, Hero.makeHeroConf());
-    player.depth = player.y + 16;
-    let hero = new Hero();
 
     this.add.existing(player);
     this.player = player;
-    this.selectedUnit = player;
 
     player.mover.moveTo({ x: 444, y: 280 }, true);
     this.cameras.main.centerOn(444, 280);
@@ -113,8 +114,13 @@ export class GameplayRootScene extends Phaser.Scene {
     units.populate(hero.data.unitTypes);
     units.show();
     units.onUnitAttack = (conf: UnitData) => {
+      let target = this.targetListPanel.selectedTarget;
+      if (!target) {
+        let popup = new OkPopup("No targets scouted", "You need to recon an enemy squad first");
+        popup.show();
+        return;
+      }
       let squad = this.findOrDeploySquad(conf);
-      let target = this.selectedUnit;
       let to = this.grid.snapToGrid(target.x, target.y);
       
       this.add.existing(squad);
@@ -175,12 +181,13 @@ export class GameplayRootScene extends Phaser.Scene {
 
     this.clicksTracker.on('click', (object: BaseUnit) => {
       // deselect old
-      if (this.targetListPanel.isTargeted(this.selectedUnit)) {
-        this.targetListPanel.deselectTarget(this.selectedUnit);
+      this.targetListPanel.deselectAll()
+
+      if (object.conf.id.indexOf('enemy') == -1) {
+        return;
       }
 
       // select new
-      this.selectedUnit = object;
       if (this.targetListPanel.isTargeted(object)) {
         this.targetListPanel.selectTarget(object);
       }
@@ -197,11 +204,17 @@ export class GameplayRootScene extends Phaser.Scene {
 
       // Start scouting when scouts arrive to object
       scout.mover.onPathComplete = () => {
+        
         this.unitsGrp.remove(scout, true);
+        scout.destroy();
         if ('scoutee' in object) {
           (object as IScoutable).scoutee.beginScout(0.01, () => {
             // Add object to target list 
             this.targetListPanel.addTarget(object);
+
+            if (!this.targetListPanel.selectedTarget) {
+              this.targetListPanel.selectTarget(object);
+            }
             // Show selection frame aroud object
             if ("selection" in object) {
               (object as ISelectable).selection.showSoft();
