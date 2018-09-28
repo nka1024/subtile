@@ -132,9 +132,9 @@ export class GameplayRootScene extends Phaser.Scene {
       let onStepComplete = (stepsToGo: number, nextDest: {x: number, y: number}) => {
         if (stepsToGo == 1) {
           if (!target.perimeter.isSpotFree(nextDest.x, nextDest.y)){
-            squad.mover.moveTo(target.perimeter.findEmptySpot(), true);
             squad.mover.onStepComplete = onStepComplete;
             squad.mover.onPathComplete = onPathComplete;
+            squad.mover.moveTo(target.perimeter.findEmptySpot(), true);
           }
         }
       }
@@ -145,14 +145,14 @@ export class GameplayRootScene extends Phaser.Scene {
           squad.mover.onPathComplete = null;
           squad.startFight(target);
         } else {
-          squad.mover.moveTo(target.perimeter.findEmptySpot(), true);
           squad.mover.onStepComplete = onStepComplete;
           squad.mover.onPathComplete = onPathComplete;
+          squad.mover.moveTo(target.perimeter.findEmptySpot(), true);
         }
       };
-      squad.mover.moveTo(to, true);
       squad.mover.onStepComplete = onStepComplete;
       squad.mover.onPathComplete = onPathComplete;
+      squad.mover.moveTo(to, true);
     }
     units.onUnitReturn = (conf: UnitData) => {
       for (let squad of this.deployedSquads) {
@@ -160,12 +160,12 @@ export class GameplayRootScene extends Phaser.Scene {
           if (squad.isFighting) {
             squad.stopFight()
           }
-          squad.mover.moveTo(this.player, true);
           squad.mover.onPathComplete = () => {
             console.log('returned');
             this.unitsGrp.remove(squad, true);
             this.deployedSquads = this.deployedSquads.filter((o, i, arr) => { return o != squad });
           };
+          squad.mover.moveTo(this.player, true);
         }
       }
     }
@@ -196,7 +196,11 @@ export class GameplayRootScene extends Phaser.Scene {
     });
 
     this.createEnemy(10, 14);
-    this.createEnemy(10, 16);
+    this.createEnemy(11, 16);
+    this.createEnemy(8, 19);
+    this.createEnemy(15, 10);
+    this.createEnemy(14, 15);
+    this.createEnemy(6, 13);
     // Show context menu on object click
     this.contextMenuModule.onReconClicked = (object: Phaser.GameObjects.Sprite) => {
       // Send scouts to that object

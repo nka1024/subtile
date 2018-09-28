@@ -139,9 +139,9 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
 
       // floaty text
       let damage = Math.floor((Math.random() * 100)) + Math.floor((Math.random() * 10));
-      let floatyX = this.x + Math.random()*10 - 5;
-      let floatyY = this.y - Math.random()*10 - 10;
-      let white = this.conf.id.indexOf('enemy') == -1;
+      let floatyX = this.fightTarget.x + Math.random()*10 - 5;
+      let floatyY = this.fightTarget.y - Math.random()*10 - 10;
+      let white = this.conf.id.indexOf('enemy') != -1;
       new FloatingText(this.scene, floatyX, floatyY, damage.toString(), white);
     }
   }

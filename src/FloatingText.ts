@@ -53,8 +53,9 @@ export class FloatingText {
     let spacing = -1;
 
     if (!this.textShadow1 && !this.textShadow2) {
-      this.textShadow2 = this.scene.add.bitmapText(this.x, this.y, 'pokemon-8-shadow', txt);
-      this.textShadow1 = this.scene.add.bitmapText(this.x, this.y, 'pokemon-8-shadow', txt);
+      let offset = white ? 0 : 1
+      this.textShadow2 = this.scene.add.bitmapText(this.x + offset, this.y, 'pokemon-8-shadow', txt);
+      this.textShadow1 = this.scene.add.bitmapText(this.x, this.y + offset, 'pokemon-8-shadow', txt);
       this.textShadow2.letterSpacing = spacing;
       this.textShadow1.letterSpacing = spacing;
       this.textShadow1.depth = UI_DEPTH.FLOATING_TEXT;
@@ -62,12 +63,11 @@ export class FloatingText {
     }
 
     if (!this.textMain) {
-      let font = white ? 'pokemon-8-white' : 'pokemon-8-red';
+      let font = white ? 'pokemon-8-red' : 'pokemon-8-white';
       this.textMain = this.scene.add.bitmapText(this.x, this.y, font, txt);
       this.textMain.letterSpacing = spacing;
       this.textMain.depth = UI_DEPTH.FLOATING_TEXT;
     }
   }
 
-  public update
 }
