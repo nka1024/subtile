@@ -22,6 +22,8 @@ export class UnitChaseModule implements IUnitModule {
 
   private lastDest: { i: number, j: number };
 
+  private claimedSpot: { x: number, y: number };
+
   constructor(owner: BaseUnit, mover: UnitMoverModule, grid) {
     this.owner = owner;
     this.mover = mover;
@@ -32,16 +34,44 @@ export class UnitChaseModule implements IUnitModule {
     this.target = target;
     this.onChaseComplete = onComplete;
 
-    this.mover.onPathComplete = () => {
+    let onStepComplete = (stepsToGo: number, nextDest: { x: number, y: number }) => {
+      if (stepsToGo == 1) {
+        if (!target.perimeter.isSpotFree(nextDest.x, nextDest.y)) {
+          this.mover.onStepComplete = onStepComplete;
+          this.mover.onPathComplete = onPathComplete;
+          this.claimedSpot = target.perimeter.findEmptySpot(this.owner);
+          target.perimeter.claimSpot(this.claimedSpot.x, this.claimedSpot.y);
+          this.mover.moveTo(this.claimedSpot, true);
+        }
+      }
+    }
+
+    let onPathComplete = () => {
       let gp = this.grid.worldToGrid(target.x, target.y);
       if (this.lastDest.i != gp.i || this.lastDest.j != gp.j) {
         this.start(target, onComplete);
       } else {
-        if (this.onChaseComplete) {
-          this.onChaseComplete();
+
+        let distance = this.gridDistanceToTarget();
+        if (distance.i == 0 && distance.j == 0) {
+          console.log('wrong!');
+
+          this.mover.onStepComplete = onStepComplete;
+          this.mover.onPathComplete = onPathComplete;
+          this.claimedSpot = target.perimeter.findEmptySpot(this.owner);
+          target.perimeter.claimSpot(this.claimedSpot.x, this.claimedSpot.y);
+          this.mover.moveTo(this.claimedSpot, true);
+
+        } else {
+          if (this.onChaseComplete) {
+            this.onChaseComplete();
+          }
         }
       }
     };
+
+    this.mover.onStepComplete = onStepComplete;
+    this.mover.onPathComplete = onPathComplete;
     this.mover.moveTo(target, true);
 
     this.lastDest = this.grid.worldToGrid(target.x, target.y);
@@ -56,15 +86,28 @@ export class UnitChaseModule implements IUnitModule {
 
   update() {
     if (this.target) {
-      let gp = this.grid.worldToGrid(this.target.x, this.target.y);
-      if (this.lastDest.i != gp.i || this.lastDest.j != gp.j) {
-        console.log('object changed position, restarting chase');
-        this.start(this.target, this.onChaseComplete);
+      let tp = this.grid.worldToGrid(this.target.x, this.target.y);
+      if (this.lastDest.i != tp.i || this.lastDest.j != tp.j) {
+        if (!this.atMeleeToTarget()) {
+          this.target.perimeter.unclaimSpot(this.owner.x, this.owner.y);
+          this.start(this.target, this.onChaseComplete);
+        }
       }
     }
   }
 
-    destroy() {
-
-    }
+  private atMeleeToTarget(): boolean {
+    let distance = this.gridDistanceToTarget();
+    return Math.abs(distance.i) <= 1 && Math.abs(distance.j) <= 1;
   }
+
+  private gridDistanceToTarget(): { i: number, j: number } {
+    let tp = this.grid.worldToGrid(this.target.x, this.target.y);
+    let op = this.grid.worldToGrid(this.owner.x, this.owner.y);
+    return { i: op.i - tp.i, j: op.j - tp.j };
+  }
+
+  destroy() {
+
+  }
+}
