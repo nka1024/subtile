@@ -3,7 +3,7 @@
 * @copyright    nka1024
 * @description  subtile
 * @license      Apache 2.0
-*/ 
+*/
 
 import { IUnitModule } from "../interface/IUnitModule";
 import { BaseUnit } from "../../actors/BaseUnit";
@@ -17,12 +17,12 @@ export class UnitChaseModule implements IUnitModule {
   private grid: TileGrid;
 
   private target: BaseUnit;
-  
+
   private onChaseComplete: () => void;
-  
-  private lastDest: {i: number, j: number};
-  
-  constructor (owner: BaseUnit, mover: UnitMoverModule, grid) {
+
+  private lastDest: { i: number, j: number };
+
+  constructor(owner: BaseUnit, mover: UnitMoverModule, grid) {
     this.owner = owner;
     this.mover = mover;
     this.grid = grid;
@@ -32,31 +32,15 @@ export class UnitChaseModule implements IUnitModule {
     this.target = target;
     this.onChaseComplete = onComplete;
 
-    this.mover.onStepComplete = (stepsToGo: number, nextStep: {x: number, y: number}) => {
-      console.log('onStepComplete')
-      let gp = this.grid.worldToGrid(target.x, target.y);
-      if (this.lastDest.i != gp.i || this.lastDest.j != gp.j) {
-        // console.log(this.lastDest.i + ' : ' + this.lastDest.j + ' != ' + gp.i + ' : ' + gp.j);
-        console.log('object changed position, restarting chase');
-        // find new path
-        // this.mover.moveTo(target, true);    
-        // this.lastDest = gp;
-        this.start(target, onComplete);
-      }
-    };
     this.mover.onPathComplete = () => {
-      console.log('onPathComplete')
       let gp = this.grid.worldToGrid(target.x, target.y);
       if (this.lastDest.i != gp.i || this.lastDest.j != gp.j) {
-        console.log('object changed position, restarting chase');
         this.start(target, onComplete);
       } else {
-        console.log('chase is compelte')
         if (this.onChaseComplete) {
           this.onChaseComplete();
         }
       }
-      this.stop();
     };
     this.mover.moveTo(target, true);
 
@@ -70,10 +54,17 @@ export class UnitChaseModule implements IUnitModule {
     this.onChaseComplete = null;
   }
 
-  update () {
+  update() {
+    if (this.target) {
+      let gp = this.grid.worldToGrid(this.target.x, this.target.y);
+      if (this.lastDest.i != gp.i || this.lastDest.j != gp.j) {
+        console.log('object changed position, restarting chase');
+        this.start(this.target, this.onChaseComplete);
+      }
+    }
   }
 
-  destroy() {
+    destroy() {
 
+    }
   }
-}
