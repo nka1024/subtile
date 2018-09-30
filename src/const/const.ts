@@ -10,7 +10,11 @@ export let CONST = {
   DEV: false,
 
   FIELD_W: 300,
-  FIELD_H: 150
+  FIELD_H: 150,
+  SCOUT_RATE: 0.01,
+  HERO_SPEED: 1,
+  SCOUT_SPEED: 2,
+  SQUAD_SPEED: 0.3
 };
 
 export let UI_DEPTH = {

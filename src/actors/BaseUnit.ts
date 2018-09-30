@@ -27,19 +27,18 @@ export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
 
   protected core: UnitModuleCore;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid, conf:UnitData, texture: string) {
+  constructor(scene: Phaser.Scene, x: number, y: number, speed: number, grid: TileGrid, conf:UnitData, texture: string) {
     super(scene, x, y, texture);
     this.conf = conf;
 
     this.events = new Phaser.Events.EventEmitter();
 
     this.perimeter = new UnitPerimeterModule(this, grid);
-    this.mover = new UnitMoverModule(this, scene, grid);
+    this.mover = new UnitMoverModule(this, scene, grid, speed);
     this.progress = new ProgressModule(this, scene, 'progress');
     this.hp = new ProgressModule(this, scene, 'hp');
     this.core = new UnitModuleCore([this.mover, this.progress, this.perimeter, this.hp]);
 
-    
     this.setInteractive();
   }
 
@@ -72,4 +71,8 @@ export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
     }
   }
 
+
+  public aggressedBy(who: BaseUnit) {
+    
+  }
 }

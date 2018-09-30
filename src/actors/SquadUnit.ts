@@ -14,23 +14,27 @@ import { ISelectable } from "./ISelectable";
 import { BaseUnit } from "./BaseUnit";
 import { UnitData } from "../Hero";
 import { FloatingText } from "../FloatingText";
+import { CONST } from "../const/const";
+import { UnitChaseModule } from "../modules/unit/UnitChaseModule";
 
 export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
 
   public selection: UnitSelectionModule;
   public scoutee: ScouteeModule;
+  public chase: UnitChaseModule;
 
   private squadType: number = 1;
 
   private static initialized: boolean = false;
 
   constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid, conf: UnitData, squadType: number) {
-    super(scene, x, y, grid, conf, 'infantry_' + squadType + '_idle_48x48');
+    super(scene, x, y, CONST.SQUAD_SPEED, grid, conf, 'infantry_' + squadType + '_idle_48x48');
 
     this.squadType = squadType;
     this.selection = new UnitSelectionModule(this, scene);
     this.scoutee = new ScouteeModule(this.progress);
-    this.core.addModules([this.scoutee, this.selection])
+    this.chase = new UnitChaseModule(this, this.mover, grid);
+    this.core.addModules([this.scoutee, this.selection, this.chase])
 
     this.initializeOnce();
 
@@ -134,7 +138,7 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
       console.log('stopping attack: target is dead');
       this.stopFight()
     } else {
-      let damage = Math.random()/100 + Math.random()/50;
+      let damage = 0.3;//Math.random()/100 + Math.random()/50;
       this.fightTarget.sufferAttack({ attacker: this, damage: damage });
       console.log('performing attack');
 
@@ -160,6 +164,11 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     }
 
     super.sufferAttack(attack);
+  }
+
+
+  public aggressedBy(who: BaseUnit) {
+   this.chase.start(who, () => {}); 
   }
   
 }

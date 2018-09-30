@@ -16,6 +16,7 @@ import { ScouteeModule } from "../modules/unit/ScouteeModule";
 import { UnitModuleCore } from "../modules/UnitModuleCore";
 import { BaseUnit } from "./BaseUnit";
 import { UnitData } from "../Hero";
+import { CONST } from "../const/const";
 
 export class HeroUnit extends BaseUnit implements IUnit, IScoutable {
 
@@ -28,7 +29,7 @@ export class HeroUnit extends BaseUnit implements IUnit, IScoutable {
   public core: UnitModuleCore;
 
   constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid, conf: UnitData) {
-    super(scene, x, y, grid, conf, "player_idle_32x32");
+    super(scene, x, y, CONST.HERO_SPEED, grid, conf, "player_idle_32x32");
 
     this.scoutee = new ScouteeModule(this.progress);
     this.core.addModule(this.scoutee)

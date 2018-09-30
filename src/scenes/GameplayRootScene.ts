@@ -27,6 +27,7 @@ import { TargetListPanel } from "../windows/TargetsListPanel";
 import { BaseUnit } from "../actors/BaseUnit";
 import { Hero, UnitData } from "../Hero";
 import { OkPopup } from "../windows/OkPopup";
+import { CONST } from "../const/const";
 
 
 export class GameplayRootScene extends Phaser.Scene {
@@ -126,30 +127,47 @@ export class GameplayRootScene extends Phaser.Scene {
       this.unitsGrp.add(squad);
       this.deployedSquads.push(squad);
 
-      let onStepComplete = (stepsToGo: number, nextDest: {x: number, y: number}) => {
-        if (stepsToGo == 1) {
-          if (!target.perimeter.isSpotFree(nextDest.x, nextDest.y)){
-            squad.mover.onStepComplete = onStepComplete;
-            squad.mover.onPathComplete = onPathComplete;
-            squad.mover.moveTo(target.perimeter.findEmptySpot(squad), true);
-          }
-        }
-      }
-      let onPathComplete = () => {
-        if (target.perimeter.isSpotFree(squad.x, squad.y)) {
-          target.perimeter.claimSpot(squad.x, squad.y);
-          squad.mover.onStepComplete = null;
-          squad.mover.onPathComplete = null;
+
+      let onChaseComplete = () => {
+        console.log('chase complete');
+        // if squad is next to target
+        let a = this.grid.worldToGrid(squad.x, squad.y);
+        let b = this.grid.worldToGrid(target.x, target.y);
+        let reached = Math.abs(a.j - b.j) <= 1 && Math.abs(a.i - b.i) <= 1;
+
+        if (reached) {
           squad.startFight(target);
-        } else {
-          squad.mover.onStepComplete = onStepComplete;
-          squad.mover.onPathComplete = onPathComplete;
-          squad.mover.moveTo(target.perimeter.findEmptySpot(squad), true);
+        } 
+        else {
+          squad.chase.start(target, onChaseComplete);
         }
       };
-      squad.mover.onStepComplete = onStepComplete;
-      squad.mover.onPathComplete = onPathComplete;
-      squad.mover.moveTo(to, true);
+      squad.chase.start(target, onChaseComplete);
+
+      // let onStepComplete = (stepsToGo: number, nextDest: {x: number, y: number}) => {
+      //   if (stepsToGo == 1) {
+      //     if (!target.perimeter.isSpotFree(nextDest.x, nextDest.y)){
+      //       squad.mover.onStepComplete = onStepComplete;
+      //       squad.mover.onPathComplete = onPathComplete;
+      //       squad.mover.moveTo(target.perimeter.findEmptySpot(squad), true);
+      //     }
+      //   }
+      // }
+      // let onPathComplete = () => {
+      //   if (target.perimeter.isSpotFree(squad.x, squad.y)) {
+      //     target.perimeter.claimSpot(squad.x, squad.y);
+      //     squad.mover.onStepComplete = null;
+      //     squad.mover.onPathComplete = null;
+      //     squad.startFight(target);
+      //   } else {
+      //     squad.mover.onStepComplete = onStepComplete;
+      //     squad.mover.onPathComplete = onPathComplete;
+      //     squad.mover.moveTo(target.perimeter.findEmptySpot(squad), true);
+      //   }
+      // };
+      // squad.mover.onStepComplete = onStepComplete;
+      // squad.mover.onPathComplete = onPathComplete;
+      // squad.mover.moveTo(to, true);
     }
     units.onUnitReturn = (conf: UnitData) => {
       for (let squad of this.deployedSquads) {
@@ -203,13 +221,14 @@ export class GameplayRootScene extends Phaser.Scene {
       let to = this.grid.snapToGrid(object.x, object.y);
       let scout = new ScoutUnit(this, from.x + 16, from.y + 16, this.grid, Hero.makeReconSquadConf());
 
+      object.aggressedBy(player);
       // Start scouting when scouts arrive to object
       scout.mover.onPathComplete = () => {
         
         this.unitsGrp.remove(scout, true);
         scout.destroy();
         if ('scoutee' in object) {
-          (object as IScoutable).scoutee.beginScout(0.1, () => {
+          (object as IScoutable).scoutee.beginScout(CONST.SCOUT_RATE, () => {
             // Add object to target list 
             this.targetListPanel.addTarget(object);
 
@@ -231,13 +250,12 @@ export class GameplayRootScene extends Phaser.Scene {
   }
 
   private returnSquad(squad: SquadUnit) {
-    squad.mover.onPathComplete = () => {
+    squad.chase.start(this.player, () => {
       console.log('returned');
       this.unitsGrp.remove(squad, true);
       this.deployedSquads = this.deployedSquads.filter((o, i, arr) => { return o != squad });
       squad.destroy();
-    };
-    squad.mover.moveTo(this.player, true);
+    });
   }
 
   private createEnemy(i: number, j: number) {

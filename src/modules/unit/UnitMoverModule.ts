@@ -11,7 +11,7 @@ import { IUnitModule } from "../interface/IUnitModule";
 
 export class UnitMoverModule implements IUnitModule {
 
-  private moveSpeed:number = 0.65;
+  private moveSpeed:number;
 
   // public
   public onStepComplete: (stepsToGo: number, nextStep: {x: number, y: number}) => void;
@@ -31,7 +31,8 @@ export class UnitMoverModule implements IUnitModule {
   private speed: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
   private updatesPaused: boolean;
 
-  constructor(unit: IUnit, scene: Phaser.Scene, grid: TileGrid) {
+  constructor(unit: IUnit, scene: Phaser.Scene, grid: TileGrid, speed: number) {
+    this.moveSpeed = speed;
     this.unit = unit;
     this.scene = scene;
     this.grid = grid;
