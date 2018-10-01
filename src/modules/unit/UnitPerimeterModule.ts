@@ -19,6 +19,8 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
   private grid: TileGrid;
   private owner: BaseUnit;
 
+  private lastIJ: { i: number, j: number };
+
   private perimeter: Array<Array<UnitPerimeterSpot>> = [
     [ {i: 0, j: 0, claimed: false}, 
       {i: 0, j: 1, claimed: false}, 
@@ -60,8 +62,13 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
   }
 
 
+  public perimeterSpotToXY(spot:UnitPerimeterSpot): {x: number, y:number} {
+    let p = this.grid.worldToGrid(this.owner.x, this.owner.y);
+    return this.grid.gridToWorld(p.i + spot.i - 1, p.j + spot.j - 1)
+  }
+
+
   // Overrides
-  private lastIJ: { i: number, j: number };
   public update() {
     let currentIJ = this.grid.worldToGrid(this.owner.x, this.owner.y);
 
@@ -104,21 +111,30 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
     this.emit('revoke_all_claims');
   }
 
-  // Shit
+  
 
-  public perimeterSpotToXY(spot:UnitPerimeterSpot): {x: number, y:number} {
+  // Core logic
+
+  public findEmptyPerimeterSpot(sourceXY: { x: number, y: number }): UnitPerimeterSpot {
     let p = this.grid.worldToGrid(this.owner.x, this.owner.y);
-    return this.grid.gridToWorld(p.i + spot.i - 1, p.j + spot.j - 1)
+    let checkOrder = this.spotCheckOrder(this.grid.worldToGrid(sourceXY.x, sourceXY.y));
+
+    // check if nearby spot is free on map and not occupied by another attacking unit
+    for (let c of checkOrder) {
+      if (this.grid.isFree(p.i + c.i, p.j + c.j) && !this.perimeter[1 + c.i][1 + c.j].claimed) {
+        return this.perimeter[c.i + 1][c.j + 1];
+      }
+    }
+
+    return null;
   }
 
-  public findEmptyPerimeterSpot(startPos: { x: number, y: number }): UnitPerimeterSpot {
+  private spotCheckOrder(s:{i: number, j: number}): Array<{i: number, j: number}>{
     let p = this.grid.worldToGrid(this.owner.x, this.owner.y);
-    let s = this.grid.worldToGrid(startPos.x, startPos.y);
-
-    let checkOrder = [];
+    let result = null;
 
     if (s.i == p.i && s.j == p.j) {
-      checkOrder = [
+      result = [
         { i: 0, j: 1 },
         { i: 0, j: -1 },
         { i: - 1, j: 0 },
@@ -131,7 +147,7 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
     }
 
     if (s.i < p.i && s.j < p.j) {
-      checkOrder = [
+      result = [
         // x 0 0
         // 0   0
         // 0 0 0
@@ -175,7 +191,7 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
     }
 
     if (s.i < p.i && s.j == p.j) {
-      checkOrder = [
+      result = [
         // 0 x 0
         // 0   0
         // 0 0 0
@@ -219,7 +235,7 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
     }
 
     if (s.i < p.i && s.j > p.j) {
-      checkOrder = [
+      result = [
         // 0 0 x
         // 0   0
         // 0 0 0
@@ -263,7 +279,7 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
     }
 
     if (s.i == p.i && s.j < p.j) {
-      checkOrder = [
+      result = [
         // 0 0 0
         // x   0
         // 0 0 0
@@ -307,7 +323,7 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
     }
 
     if (s.i == p.i && s.j > p.j) {
-      checkOrder = [
+      result = [
         // 0 0 0
         // 0   x
         // 0 0 0
@@ -351,7 +367,7 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
     }
 
     if (s.i > p.i && s.j < p.j) {
-      checkOrder = [
+      result = [
         // 0 0 0
         // 0   0
         // x 0 0
@@ -395,7 +411,7 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
     }
 
     if (s.i > p.i && s.j == p.j) {
-      checkOrder = [
+      result = [
         // 0 0 0
         // 0   0
         // 0 x 0
@@ -439,7 +455,7 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
     }
 
     if (s.i > p.i && s.j > p.j) {
-      checkOrder = [
+      result = [
         // 0 0 0
         // 0   0
         // 0 0 x
@@ -482,14 +498,6 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
       ];
     }
 
-    // check if nearby spot is free on map and not occupied by another attacking unit
-    for (let c of checkOrder) {
-      if (this.grid.isFree(p.i + c.i, p.j + c.j) && !this.perimeter[1 + c.i][1 + c.j].claimed) {
-        // return this.grid.gridToWorld(p.i + c.i, p.j + c.j);
-        return this.perimeter[c.i + 1][c.j + 1];
-      }
-    }
-
-    return null;
+    return result;
   }
 }

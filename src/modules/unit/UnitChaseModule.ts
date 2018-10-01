@@ -21,43 +21,13 @@ export class UnitChaseModule implements IUnitModule {
   private tp: UnitPerimeterModule;
 
   private onChaseComplete: () => void;
-
   private lastDest: { i: number, j: number };
-
   private claimedSpot: UnitPerimeterSpot;
 
   constructor(owner: BaseUnit, mover: UnitMoverModule, grid) {
     this.owner = owner;
     this.mover = mover;
     this.grid = grid;
-  }
-
-  private onTargetClaimRevoked = () => {
-    let distance = this.gridDistanceToTarget();
-    
-    // if distance is still claimable
-    if (Math.abs(distance.i) <= 1 && Math.abs(distance.j) <= 1) {
-      // try to claim same spot
-
-      let spot = this.tp.findRelativePerimeterSpot(this.owner.x, this.owner.y);
-      if (!spot.claimed) {
-        this.claim(spot);
-        return;
-      } 
-    }
-
-    // find new spot and claim it
-    this.start(this.target, this.onChaseComplete);
-  }
-
-  private trackTargetRevokes() {
-    this.tp.on('revoke_all_claims', this.onTargetClaimRevoked);
-  }
-  private untrackTargetRevokes() {
-    if (this.target) {
-      this.tp.off('revoke_all_claims', this.onTargetClaimRevoked, null, false);
-      this.claimedSpot = null;
-    }
   }
 
   public start(target: BaseUnit, onComplete: () => void) {
@@ -77,7 +47,6 @@ export class UnitChaseModule implements IUnitModule {
           
           if (!spot) {
             console.log('empty spots not found')
-            target.perimeter.print();
           }
 
           this.claim(spot);
@@ -102,7 +71,6 @@ export class UnitChaseModule implements IUnitModule {
           let spot = target.perimeter.findEmptyPerimeterSpot(this.owner);
           if (!spot) {
             console.log('empty spots not found')
-            target.perimeter.print();
           }
           this.claim(spot);
           let spotXY = this.tp.perimeterSpotToXY(spot);
@@ -120,6 +88,37 @@ export class UnitChaseModule implements IUnitModule {
     this.lastDest = this.grid.worldToGrid(target.x, target.y);
     this.mover.moveTo(target, true);
   }
+
+
+  private onTargetClaimRevoked = () => {
+    let distance = this.gridDistanceToTarget();
+    
+    // if distance is still claimable
+    if (Math.abs(distance.i) <= 1 && Math.abs(distance.j) <= 1) {
+      // try to claim same spot
+
+      let spot = this.tp.findRelativePerimeterSpot(this.owner.x, this.owner.y);
+      if (!spot.claimed) {
+        this.claim(spot);
+        return;
+      } 
+    }
+
+    // find new spot and claim it
+    this.start(this.target, this.onChaseComplete);
+  }
+
+  private trackTargetRevokes() {
+    this.tp.on('revoke_all_claims', this.onTargetClaimRevoked);
+  }
+
+  private untrackTargetRevokes() {
+    if (this.target) {
+      this.tp.off('revoke_all_claims', this.onTargetClaimRevoked, null, false);
+      this.claimedSpot = null;
+    }
+  }
+
 
   private unclaim() {
     if (this.claimedSpot) {
@@ -141,6 +140,20 @@ export class UnitChaseModule implements IUnitModule {
     this.onChaseComplete = null;
   }
 
+  private atMeleeToTarget(): boolean {
+    let distance = this.gridDistanceToTarget();
+    return Math.abs(distance.i) <= 1 && Math.abs(distance.j) <= 1;
+  }
+
+  private gridDistanceToTarget(): { i: number, j: number } {
+    let tp = this.grid.worldToGrid(this.target.x, this.target.y);
+    let op = this.grid.worldToGrid(this.owner.x, this.owner.y);
+    return { i: op.i - tp.i, j: op.j - tp.j };
+  }
+
+
+  // Overrides
+
   update() {
     if (this.target) {
       let tp = this.grid.worldToGrid(this.target.x, this.target.y);
@@ -151,17 +164,6 @@ export class UnitChaseModule implements IUnitModule {
         }
       }
     }
-  }
-
-  private atMeleeToTarget(): boolean {
-    let distance = this.gridDistanceToTarget();
-    return Math.abs(distance.i) <= 1 && Math.abs(distance.j) <= 1;
-  }
-
-  private gridDistanceToTarget(): { i: number, j: number } {
-    let tp = this.grid.worldToGrid(this.target.x, this.target.y);
-    let op = this.grid.worldToGrid(this.owner.x, this.owner.y);
-    return { i: op.i - tp.i, j: op.j - tp.j };
   }
 
   destroy() {
