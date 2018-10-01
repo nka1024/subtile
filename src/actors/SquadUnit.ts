@@ -100,7 +100,7 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
   private attackTimer: any;
   public startFight(target: BaseUnit) {
     console.log('start fight: ' + this.conf.id);
-    let direction = this.perimeter.findPerimeterPos(target.x, target.y);
+    let direction = this.perimeter.findRelativePerimeterSpot(target.x, target.y);
     this.isFighting = true;
     this.fightTarget = target;
     this.flipX = direction.j == 0;
@@ -121,7 +121,7 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
   public stopFight() {
     console.log('stop fight: ' + this.conf.id);
     if (this.fightTarget && !this.fightTarget.destroyed) {
-      this.fightTarget.perimeter.unclaimSpot(this.x, this.y);
+      // this.fightTarget.perimeter.unclaimSpot(this.x, this.y);
     }
     if (this.mover) {
       this.mover.pauseUpdates(false);

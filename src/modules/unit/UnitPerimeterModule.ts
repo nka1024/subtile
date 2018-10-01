@@ -9,16 +9,31 @@ import { IUnitModule } from "../interface/IUnitModule";
 import { TileGrid } from "../../TileGrid";
 import { BaseUnit } from "../../actors/BaseUnit";
 
-export class UnitPerimeterModule implements IUnitModule {
+export type UnitPerimeterSpot = {
+  i: number;
+  j: number;
+  claimed: boolean;
+}
+
+export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements IUnitModule {
   private grid: TileGrid;
   private owner: BaseUnit;
 
-  private perimeter: Array<Array<number>> = [
-    [0, 0, 0],
-    [0, 1, 0],
-    [0, 0, 0]];
+  private perimeter: Array<Array<UnitPerimeterSpot>> = [
+    [ {i: 0, j: 0, claimed: false}, 
+      {i: 0, j: 1, claimed: false}, 
+      {i: 0, j: 2, claimed: false}],
+    [ {i: 1, j: 0, claimed: false}, 
+      {i: 1, j: 1, claimed: true},  // this is owner
+      {i: 1, j: 2, claimed: false}],
+    [ {i: 2, j: 0, claimed: false}, 
+      {i: 2, j: 1, claimed: false}, 
+      {i: 2, j: 2, claimed: false}]
+    ];
 
   constructor(unit: BaseUnit, grid: TileGrid) {
+    super();
+
     this.grid = grid;
     this.owner = unit;
   }
@@ -26,22 +41,8 @@ export class UnitPerimeterModule implements IUnitModule {
 
   // Public
 
-  public isSpotFree(x: number, y: number): boolean {
-    let p = this.findPerimeterPos(x, y);
-    return this.perimeter[p.i][p.j] == 0;
-  }
 
-  public claimSpot(x: number, y: number) {
-    let p = this.findPerimeterPos(x, y);
-    this.perimeter[p.i][p.j] = 1;
-  }
-
-  public unclaimSpot(x: number, y: number) {
-    let p = this.findPerimeterPos(x, y);
-    this.perimeter[p.i][p.j] = 0;
-  }
-
-  public findPerimeterPos(x: number, y: number): { i: number, j: number } {
+  public findRelativePerimeterSpot(x: number, y: number): UnitPerimeterSpot {
     let a = this.grid.worldToGrid(x, y);
     let b = this.grid.worldToGrid(this.owner.x, this.owner.y);
     let i = 0;
@@ -55,9 +56,8 @@ export class UnitPerimeterModule implements IUnitModule {
     else if (a.j < b.j) j = 0;
     else if (a.j > b.j) j = 2;
 
-    return { i: i, j: j };
+    return this.perimeter[i][j];
   }
-
 
 
   // Overrides
@@ -87,25 +87,31 @@ export class UnitPerimeterModule implements IUnitModule {
 
   // private 
   private revokePerimeterClaims() {
-    this.perimeter[0][0] = 0;
-    this.perimeter[0][1] = 0;
-    this.perimeter[0][2] = 0;
+    this.perimeter[0][0].claimed = false;
+    this.perimeter[0][1].claimed = false;
+    this.perimeter[0][2].claimed = false;
 
-    this.perimeter[1][0] = 0;
-    this.perimeter[1][1] = 1; // this my position
-    this.perimeter[1][2] = 0;
+    this.perimeter[1][0].claimed = false;
+    this.perimeter[1][1].claimed = true; // this is owner
+    this.perimeter[1][2].claimed = false;
 
-    this.perimeter[2][0] = 0;
-    this.perimeter[2][1] = 0;
-    this.perimeter[2][2] = 0;
+    this.perimeter[2][0].claimed = false;
+    this.perimeter[2][1].claimed = false;
+    this.perimeter[2][2].claimed = false;
   }
 
   private notifyClaimsRevoked() {
+    this.emit('revoke_all_claims');
   }
 
   // Shit
 
-  public findEmptySpot(startPos: { x: number, y: number }): { x: number, y: number } {
+  public perimeterSpotToXY(spot:UnitPerimeterSpot): {x: number, y:number} {
+    let p = this.grid.worldToGrid(this.owner.x, this.owner.y);
+    return this.grid.gridToWorld(p.i + spot.i - 1, p.j + spot.j - 1)
+  }
+
+  public findEmptyPerimeterSpot(startPos: { x: number, y: number }): UnitPerimeterSpot {
     let p = this.grid.worldToGrid(this.owner.x, this.owner.y);
     let s = this.grid.worldToGrid(startPos.x, startPos.y);
 
@@ -478,8 +484,9 @@ export class UnitPerimeterModule implements IUnitModule {
 
     // check if nearby spot is free on map and not occupied by another attacking unit
     for (let c of checkOrder) {
-      if (this.grid.isFree(p.i + c.i, p.j + c.j) && this.perimeter[1 + c.i][1 + c.j] == 0) {
-        return this.grid.gridToWorld(p.i + c.i, p.j + c.j);
+      if (this.grid.isFree(p.i + c.i, p.j + c.j) && !this.perimeter[1 + c.i][1 + c.j].claimed) {
+        // return this.grid.gridToWorld(p.i + c.i, p.j + c.j);
+        return this.perimeter[c.i + 1][c.j + 1];
       }
     }
 
