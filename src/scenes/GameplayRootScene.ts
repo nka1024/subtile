@@ -111,7 +111,7 @@ export class GameplayRootScene extends Phaser.Scene {
     this.cameras.main.centerOn(444, 280);
     this.unitsGrp.add(this.player);
     let units = new UnitsPanel();
-    units.populate(hero.data.unitTypes);
+    units.populate(hero.data.units);
     units.show();
     units.onUnitAttack = (conf: UnitData) => {
       let target = this.targetListPanel.selectedTarget;

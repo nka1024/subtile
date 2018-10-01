@@ -6,9 +6,8 @@
 */
 
 import { BaseWindow } from "./BaseWindow";
-import { UnitTypeData, UnitData } from "../Hero";
+import { UnitData } from "../Hero";
 import { UnitItem } from "./elements/UnitItem";
-import { UnitTypeItem } from "./elements/UnitTypeItem";
 
   
 export class UnitsPanel extends BaseWindow {
@@ -16,23 +15,23 @@ export class UnitsPanel extends BaseWindow {
   static innerHtml: string;
 
   // public
-  public onUnitAttack: (conf: UnitTypeData) => void;
-  public onUnitReturn: (conf: UnitTypeData) => void;
+  public onUnitAttack: (conf: UnitData) => void;
+  public onUnitReturn: (conf: UnitData) => void;
   public filenamePrefix: string;
 
   // private
-  private allUnitTypes: Array<UnitTypeItem> = [];
+  private allUnitItems: Array<UnitItem> = [];
 
   // template elements
-  private unitTypesList: HTMLElement;
+  private unitsList: HTMLElement;
   private refUnitTypeItem: HTMLElement;
 
   constructor() {
     super();
 
-    this.unitTypesList = this.element.querySelector(".unit_types_list");
+    this.unitsList = this.element.querySelector(".unit_types_list");
     this.refUnitTypeItem = this.element.querySelector(".unit_type_item");
-    this.unitTypesList.innerHTML = "";
+    this.unitsList.innerHTML = "";
 
     this.startDataSyncLoop();
   }
@@ -52,7 +51,7 @@ export class UnitsPanel extends BaseWindow {
   }
 
   private dataSync() {
-    for (let unitTypeItem of this.allUnitTypes) {
+    for (let unitTypeItem of this.allUnitItems) {
       unitTypeItem.populate(unitTypeItem.conf);
     }
   }
@@ -60,39 +59,39 @@ export class UnitsPanel extends BaseWindow {
   
   // Data population
 
-  public populate(unitTypes: Array<UnitTypeData>) {
+  public populate(units: Array<UnitData>) {
     this.clear();
     let first = true;
 
-    for (let unitType of unitTypes) {
-      let typeItem = this.makeUnitTypeItem(unitType);
+    for (let unit of units) {
+      let unitItem = this.makeUnitItem(unit);
       // spacing
       if (first) first = false;
-      else this.unitTypesList.appendChild(this.makeHorizontalSpacingDiv(5));
+      else this.unitsList.appendChild(this.makeHorizontalSpacingDiv(5));
       
-      this.unitTypesList.appendChild(typeItem.element);
-      this.allUnitTypes.push(typeItem);
+      this.unitsList.appendChild(unitItem.element);
+      this.allUnitItems.push(unitItem);
     }
   }
 
   private clear() {
-    this.unitTypesList.innerHTML = "";
-    this.allUnitTypes = [];
+    this.unitsList.innerHTML = "";
+    this.allUnitItems = [];
   }
 
 
   // Element creation & configuration
 
-  private makeUnitTypeItem(conf: UnitTypeData): UnitTypeItem {
+  private makeUnitItem(conf: UnitData): UnitItem {
     let element = this.refUnitTypeItem.cloneNode(true) as HTMLElement;
-    let typeItem = this.configureUnitType(element, conf);
+    let typeItem = this.configureUnit(element, conf);
     return typeItem;
   }
 
-  private configureUnitType(element: HTMLElement, conf: UnitTypeData): UnitTypeItem {
-    let item = new UnitTypeItem(element);
+  private configureUnit(element: HTMLElement, conf: UnitData): UnitItem {
+    let item = new UnitItem(element);
 
-    this.allUnitTypes.push(item);
+    this.allUnitItems.push(item);
     item.populate(conf);
     item.onSelectionChange = (selected: boolean) => {
         if (selected && this.onUnitAttack) {
@@ -101,11 +100,11 @@ export class UnitsPanel extends BaseWindow {
           this.onUnitAttack(conf);
         }
     };
-    let foldingCallback = () => {
+    let onIconClick = () => {
         // hide currently unfolded unit list if clicked on any of them
         item.setSelected(!item.isSelected)
     }
-    item.icon.addEventListener('click', foldingCallback);
+    item.icon.addEventListener('click', onIconClick);
 
     return item;
   }

@@ -10,24 +10,21 @@ import { UnitData } from "../../Hero";
 export class UnitItem {
   public element: HTMLElement;
   public icon: HTMLElement;
+  public name: HTMLElement;
   public quantity: HTMLElement;
   public health: HTMLElement;
   public energy: HTMLElement;
-  public actionsList: HTMLElement
-  public action1: HTMLInputElement;
-  public action2: HTMLInputElement;
   
+  public onSelectionChange: (selected: boolean) => void;
   public conf: UnitData;
 
   constructor(unit: HTMLElement) {
     this.element = unit;
-    this.icon = unit.querySelector(".unit_item_icon");
-    this.quantity = unit.querySelector(".unit_item_quantity");
-    this.health = unit.querySelector(".unit_item_health");
-    this.energy = unit.querySelector(".unit_item_energy");
-    this.actionsList = unit.querySelector(".unit_item_actions_list");
-    this.action1 = unit.querySelector(".unit_item_action_1");
-    this.action2 = unit.querySelector(".unit_item_action_2");
+    this.icon = unit.querySelector(".unit_type_item_icon");
+    this.name = unit.querySelector(".unit_type_item_name");
+    this.quantity = unit.querySelector(".unit_type_item_quantity");
+    this.health = unit.querySelector(".unit_type_item_health");
+    this.energy = unit.querySelector(".unit_type_item_energy");
   }
 
   public populate(conf: UnitData) {
@@ -35,17 +32,27 @@ export class UnitItem {
     let backgroundStyle = 'url(\'/assets/' + conf.icon + '.png\') center center no-repeat rgb(184, 176, 33)';
     this.icon.style.background = backgroundStyle;
     this.quantity.innerHTML = (Math.floor(conf.quantity*conf.health)).toString();
+    this.icon.style.borderColor = 'white';
+    this.name.innerHTML = conf.name;
 
+    this.setSelected(false);
+    
     this.configureProgress(this.health, conf.health);
     this.configureProgress(this.energy, conf.energy);
   }
+  
+  public setSelected(selected: boolean) {
+    let was = this.isSelected;
+    this.icon.style.borderWidth = selected ? '3px' : '0px';
+    this.icon.style.borderStyle = selected ? 'solid' : 'none';
 
-  public setActionListHidden(hidden: boolean) {
-    this.actionsList.style.display = hidden ? 'none' : 'flex';
+    if (this.onSelectionChange && was != selected) {
+      this.onSelectionChange(selected);
+    }
   }
 
-  public get isActionListHidden():boolean {
-    return this.actionsList.style.display == 'none';
+  public get isSelected():boolean {
+    return this.icon.style.borderStyle != 'none';
   }
 
   private configureProgress(element: HTMLElement, progress: number) {

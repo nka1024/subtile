@@ -5,15 +5,8 @@
 * @license      Apache 2.0
 */
 
-export type UnitData = {
-  id: string;
-  icon: string;
-  health: number;
-  energy: number;
-  quantity: number;
-}
 
-export type UnitTypeData = {
+export type UnitData = {
   id: string;
   icon: string;
   name: string;
@@ -23,7 +16,7 @@ export type UnitTypeData = {
 }
 
 export type HeroData = {
-  unitTypes: Array<UnitTypeData>;
+  units: Array<UnitData>;
 }
 
 export class Hero {
@@ -35,6 +28,7 @@ export class Hero {
   public static makeHeroConf(): UnitData {
     return {
       id: "hero_squad",
+      name: "Hiro",
       icon: "infantry_1_icon",
       health: 1,
       energy: 1,
@@ -45,6 +39,7 @@ export class Hero {
   public static makeReconSquadConf(): UnitData {
     return {
       id: "recon_squad",
+      name: "Scouts",
       icon: "infantry_1_icon",
       health: 1,
       energy: 1,
@@ -56,6 +51,7 @@ export class Hero {
     return {
       id: "enemy_squad",
       icon: "infantry_2_icon",
+      name: "Rogues",
       health: 1,
       energy: 1,
       quantity: 99
@@ -63,8 +59,8 @@ export class Hero {
   }
 
   private createTestData() {
-    this.data = { unitTypes: [] };
-    this.data.unitTypes.push({
+    this.data = { units: [] };
+    this.data.units.push({
       id: "type_1_unit_1",
       icon: "infantry_1_icon",
       name: "Infantry",
@@ -74,7 +70,7 @@ export class Hero {
     });
 
     for (let i in [0, 1]) {
-      this.data.unitTypes.push({
+      this.data.units.push({
         id: 'type_' + (i + 2) + '_unit_1',
         icon: "infantry_2_icon",
         name: "Archers",
