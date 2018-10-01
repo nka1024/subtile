@@ -97,7 +97,7 @@ export class UnitsPanel extends BaseWindow {
         if (selected && this.onUnitAttack) {
           this.onUnitAttack(conf);
         } else if (!selected && this.onUnitReturn) {
-          this.onUnitAttack(conf);
+          this.onUnitReturn(conf);
         }
     };
     let onIconClick = () => {

@@ -25,6 +25,7 @@ export class UnitItem {
     this.quantity = unit.querySelector(".unit_type_item_quantity");
     this.health = unit.querySelector(".unit_type_item_health");
     this.energy = unit.querySelector(".unit_type_item_energy");
+    this.setSelected(false);
   }
 
   public populate(conf: UnitData) {
@@ -34,8 +35,6 @@ export class UnitItem {
     this.quantity.innerHTML = (Math.floor(conf.quantity*conf.health)).toString();
     this.icon.style.borderColor = 'white';
     this.name.innerHTML = conf.name;
-
-    this.setSelected(false);
     
     this.configureProgress(this.health, conf.health);
     this.configureProgress(this.energy, conf.energy);
