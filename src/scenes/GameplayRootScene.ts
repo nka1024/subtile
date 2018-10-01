@@ -143,31 +143,6 @@ export class GameplayRootScene extends Phaser.Scene {
         }
       };
       squad.chase.start(target, onChaseComplete);
-
-      // let onStepComplete = (stepsToGo: number, nextDest: {x: number, y: number}) => {
-      //   if (stepsToGo == 1) {
-      //     if (!target.perimeter.isSpotFree(nextDest.x, nextDest.y)){
-      //       squad.mover.onStepComplete = onStepComplete;
-      //       squad.mover.onPathComplete = onPathComplete;
-      //       squad.mover.moveTo(target.perimeter.findEmptySpot(squad), true);
-      //     }
-      //   }
-      // }
-      // let onPathComplete = () => {
-      //   if (target.perimeter.isSpotFree(squad.x, squad.y)) {
-      //     target.perimeter.claimSpot(squad.x, squad.y);
-      //     squad.mover.onStepComplete = null;
-      //     squad.mover.onPathComplete = null;
-      //     squad.startFight(target);
-      //   } else {
-      //     squad.mover.onStepComplete = onStepComplete;
-      //     squad.mover.onPathComplete = onPathComplete;
-      //     squad.mover.moveTo(target.perimeter.findEmptySpot(squad), true);
-      //   }
-      // };
-      // squad.mover.onStepComplete = onStepComplete;
-      // squad.mover.onPathComplete = onPathComplete;
-      // squad.mover.moveTo(to, true);
     }
     units.onUnitReturn = (conf: UnitData) => {
       for (let squad of this.deployedSquads) {

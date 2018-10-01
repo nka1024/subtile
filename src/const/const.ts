@@ -12,9 +12,9 @@ export let CONST = {
   FIELD_W: 300,
   FIELD_H: 150,
   SCOUT_RATE: 0.01,
-  HERO_SPEED: 0.3,
-  SCOUT_SPEED: 2,
-  SQUAD_SPEED: 0.3
+  HERO_SPEED: 3,
+  SCOUT_SPEED: 3,
+  SQUAD_SPEED: 3
 };
 
 export let UI_DEPTH = {

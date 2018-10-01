@@ -11,7 +11,7 @@ import { BaseUnit } from "../../actors/BaseUnit";
 
 export class UnitPerimeterModule implements IUnitModule {
   private grid: TileGrid;
-  private unit: BaseUnit;
+  private owner: BaseUnit;
 
   private perimeter: Array<Array<number>> = [
     [0, 0, 0],
@@ -20,7 +20,7 @@ export class UnitPerimeterModule implements IUnitModule {
 
   constructor(unit: BaseUnit, grid: TileGrid) {
     this.grid = grid;
-    this.unit = unit;
+    this.owner = unit;
   }
 
 
@@ -41,14 +41,9 @@ export class UnitPerimeterModule implements IUnitModule {
     this.perimeter[p.i][p.j] = 0;
   }
 
-
-
-
-  // Private
-
   public findPerimeterPos(x: number, y: number): { i: number, j: number } {
     let a = this.grid.worldToGrid(x, y);
-    let b = this.grid.worldToGrid(this.unit.x, this.unit.y);
+    let b = this.grid.worldToGrid(this.owner.x, this.owner.y);
     let i = 0;
     let j = 0;
 
@@ -63,18 +58,55 @@ export class UnitPerimeterModule implements IUnitModule {
     return { i: i, j: j };
   }
 
-  update() {
+
+
+  // Overrides
+  private lastIJ: { i: number, j: number };
+  public update() {
+    let currentIJ = this.grid.worldToGrid(this.owner.x, this.owner.y);
+
+    // reset perimeter claims if unit position was changed
+    if (this.lastIJ) {
+      let positionChanged = this.lastIJ.i != currentIJ.i || this.lastIJ.j != currentIJ.j;
+      if (positionChanged) {
+        this.revokePerimeterClaims();
+        this.notifyClaimsRevoked();
+      }
+    }
+
+    this.lastIJ = currentIJ;
   }
 
   destroy() {
+    this.owner = null;
     this.grid = null;
+    this.perimeter = null;
   }
 
 
 
+  // private 
+  private revokePerimeterClaims() {
+    this.perimeter[0][0] = 0;
+    this.perimeter[0][1] = 0;
+    this.perimeter[0][2] = 0;
+
+    this.perimeter[1][0] = 0;
+    this.perimeter[1][1] = 1; // this my position
+    this.perimeter[1][2] = 0;
+
+    this.perimeter[2][0] = 0;
+    this.perimeter[2][1] = 0;
+    this.perimeter[2][2] = 0;
+  }
+
+  private notifyClaimsRevoked() {
+  }
+
+  // Shit
 
   public findEmptySpot(startPos: { x: number, y: number }): { x: number, y: number } {
-    let p = this.grid.worldToGrid(this.unit.x, this.unit.y);
+    let p = this.grid.worldToGrid(this.owner.x, this.owner.y);
     let s = this.grid.worldToGrid(startPos.x, startPos.y);
 
     let checkOrder = [];
@@ -274,7 +306,7 @@ export class UnitPerimeterModule implements IUnitModule {
         // 0   x
         // 0 0 0
         { i: 0, j: 1 },
-        
+
         // 0 0 0
         // 0   0
         // 0 0 x
@@ -333,7 +365,7 @@ export class UnitPerimeterModule implements IUnitModule {
         // 0   0
         // 0 0 0
         { i: -1, j: -1 },
-        
+
         // 0 0 0
         // 0   0
         // 0 0 x
@@ -421,12 +453,12 @@ export class UnitPerimeterModule implements IUnitModule {
         // 0   0
         // x 0 0
         { i: 1, j: -1 },
-        
+
         // 0 0 x
         // 0   0
         // 0 0 0
         { i: -1, j: 1 },
-        
+
         // 0 0 0
         // x   0
         // 0 0 0
@@ -443,7 +475,7 @@ export class UnitPerimeterModule implements IUnitModule {
         { i: -1, j: -1 },
       ];
     }
-    
+
     // check if nearby spot is free on map and not occupied by another attacking unit
     for (let c of checkOrder) {
       if (this.grid.isFree(p.i + c.i, p.j + c.j) && this.perimeter[1 + c.i][1 + c.j] == 0) {
