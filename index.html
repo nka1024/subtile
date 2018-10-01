@@ -20,7 +20,7 @@
 
   <!-- UNITS FORM -->
   <div class="units_panel_prefab" hidden="true">
-    <div id="container" class="menu_container" hidden=false style="display: block; position: absolute;  bottom: 0;width: 100%; height: 68px; text-align: center">
+    <div id="container" class="menu_container" hidden=false style="display: block; position: absolute;  bottom: 0;width: 100%; height: 83px; text-align: center">
       <div style="height: 100%; display: inline-block">
         <section id="main" style="padding: 5px; border-radius: 3px">
           <form action="./" method="post">
@@ -32,47 +32,29 @@
                   <!-- Squad icon -->
                   <input class="unit_type_item_icon" style="border-radius: 3px; image-rendering: pixelated; width: 48px; height: 48px; background: url('/assets/infantry_1_icon.png') center center no-repeat rgb(184, 176, 33);  outline: none;"
                     type="button" />
+
+                  <!-- Name -->
                   <h2 class="unit_type_item_name" style="font-size: 10px">Infantry</h2>
 
-                  <!-- Folding arrow -->
-                  <div class="unit_type_item_fold" style="background-color: rgba(0,0,0,0.5); border-radius: 3px; position: absolute; top: 0px; left: 0px; width: 48px; height: 48px;">
-                    <input type="button" class="btn" value="lol" style="image-rendering: pixelated; width: 48px; height: 32px; outline: none; background: url('/assets/button_down_arrow_48_32.png') center center no-repeat">
+                  
+
+                  <!-- Quantity -->
+                  <div style="position: relative">
+                    <h2 class="unit_type_item_quantity" style="font-size: 10px; background-color: rgba(0,0,0,0.5); padding-left: 5px; position: absolute; right: 0px; top: -63px">99</h2>
                   </div>
 
-                  <!-- Extended vertical div -->
-                  <div class="units_list" style="background-color: rgba(0, 0, 0, 0.75); border-radius: 3px; position: absolute; left: -5px; bottom: 70px; width: 58px; padding-bottom: 5px">
-                    <!-- First unit squad -->
-                    <div class="unit_item">
-                      <!-- Icon -->
-                      <input class="unit_item_icon" style="border-radius: 3px;  image-rendering: pixelated; width: 48px; height: 48px; background: url('/assets/infantry_1_icon.png') center center no-repeat rgb(184, 176, 33);  outline: none; margin-top: 5px"
-                        type="button" />
-                      <!-- Quantity -->
-                      <div style="position: relative">
-                        <h2 class="unit_item_quantity" style="font-size: 10px; background-color: rgba(0,0,0,0.5); padding-left: 5px; position: absolute; right: 5px; top: -48px">120</h2>
-                      </div>
-                      <!-- Action buttons -->
-                      <div class="unit_item_actions_list" style="position: relative; text-align: center; display: flex">
-                        <div style="position: absolute; display: flex; height: 48px; background-color: rgba(0,0,0,0.7); left: -24px; top: -48px; border-radius: 2px;">
-                          <!-- Attack -->
-                          <input class="unit_item_action_1" type="button" style=" font-size:12px; border-radius: 1px; outline: none; margin: 0 auto; padding: 5px; margin: 5px; background: #63858e; color: #fff; width: 44px"
-                            value="Attack" />
-                          <!-- Return -->
-                          <input class="unit_item_action_2" type="button" style=" font-size:12px; border-radius: 1px; outline: none; margin: 0 auto; padding: 5px; margin: 5px; background: #63858e; color: #fff; width: 44px"
-                            value="Return" />
-                        </div>
-                      </div>
-                      <!-- Health -->
-                      <div style="height: 1px; margin: 0 auto;"></div>
-                      <div class="unit_item_health" style=" height: 4px; width: 48px; margin: 0 auto;">
-                        <div style="background-color: #a6e13f; height: 4px; width: 30px; left: 0px; border-radius: 1px"></div>
-                      </div>
-                      <!-- Stamina -->
-                      <div style="height: 1px; margin: 0 auto;"></div>
-                      <div class="unit_item_energy" style=" height: 4px; width: 48px; margin: 0 auto;">
-                        <div style="background-color: #ffbb02; height: 4px; width: 20px; left: 0px; border-radius: 1px"></div>
-                      </div>
-                    </div>
+                  <!-- Health -->
+                  <div style="height: 1px; margin: 0 auto;"></div>
+                  <div class="unit_type_item_health" style=" height: 4px; width: 48px; margin: 0 auto;">
+                    <div style="background-color: #a6e13f; height: 4px; width: 30px; left: 0px; border-radius: 1px"></div>
                   </div>
+                  <!-- Stamina -->
+                  <div style="height: 1px; margin: 0 auto;"></div>
+                  <div class="unit_type_item_energy" style=" height: 4px; width: 48px; margin: 0 auto;">
+                    <div style="background-color: #ffbb02; height: 4px; width: 20px; left: 0px; border-radius: 1px"></div>
+                  </div>
+
+
                 </div>
               </div>
             </div>

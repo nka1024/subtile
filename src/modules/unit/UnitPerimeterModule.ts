@@ -41,8 +41,8 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
   }
 
 
+  
   // Public
-
 
   public findRelativePerimeterSpot(x: number, y: number): UnitPerimeterSpot {
     let a = this.grid.worldToGrid(x, y);
