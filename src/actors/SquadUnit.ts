@@ -83,6 +83,24 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
 
     super.update();
     this.fightUpdate();
+
+    if (this.chase.target && !this.isFighting) {
+      let spot = this.chase.target.perimeter.spotOfUnit(this);
+      if (spot) {
+        if (this.side == 'attack') {
+          if (spot.defender) {
+            console.log('startFight with defender' + spot.defender.conf.id);
+            this.startFight(spot.defender);
+          }
+        }
+        else if (this.side == 'defend') {
+          if (spot.attacker) {
+            console.log('startFight with attacker ' + spot.defender.conf.id);
+            this.startFight(spot.attacker);
+          }
+        }
+      }
+    }
   }
 
   destroy() {
@@ -99,7 +117,7 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
   public isFighting: boolean;
   private attackTimer: any;
   public startFight(target: BaseUnit) {
-    console.log('start fight: ' + this.conf.id);
+    console.log('start fight against: ' + target.conf.id);
     let direction = this.perimeter.findRelativePerimeterSpot(target.x, target.y);
     this.isFighting = true;
     this.fightTarget = target;
@@ -107,15 +125,31 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     this.mover.pauseUpdates(true);
     this.playUnitAnim('fight', true);
 
-    if (direction.j == 1) this.originX = 0.5
-    else if (direction.j == 0) this.originX = this.flipX ? 0.25 : 0.75 ;
-    else if (direction.j == 2) this.originX = this.flipX ? 0.75 : 0.25 ;
-    
-    if (direction.i == 1) this.originY = 0.5;
-    else if (direction.i == 0) this.originY = 0.75;
-    else if (direction.i == 2) this.originY = 0.25;
+    this.flipOriginByDirection(direction, false);
+    // same tile
+    if (direction.i == 1 && direction.j == 1) {
+      let heroDirection = this.chase.target.perimeter.findRelativePerimeterSpot(target.x, target.y);
 
+      if (this.side == 'defend') {
+        this.flipOriginByDirection(heroDirection, true);
+      }
+      else if (this.side == 'attack') {
+
+        this.flipOriginByDirection(heroDirection, false);
+      }
+    }
     this.attackTimer = setInterval(() => { this.performAttack() }, 1000);
+  }
+
+  private flipOriginByDirection(direction: {i: number, j: number}, flip: boolean) {
+    if (direction.j == 1) this.originX = 0.5
+    else if (direction.j == 0) this.originX = flip ? 0.25 : 0.75;
+    else if (direction.j == 2) this.originX = flip ? 0.75 : 0.25;
+
+    if (direction.i == 1) this.originY = 0.5;
+    else if (direction.i == 0) this.originY = flip ? 0.25 : 0.75;
+    else if (direction.i == 2) this.originY = flip ? 0.75 : 0.25;
+
   }
 
   public stopFight() {
@@ -134,6 +168,11 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
   }
 
   private performAttack() {
+    if (!this.fightTarget || !this.fightTarget.active) {
+      this.stopFight();
+      return;
+    }
+
     if (this.fightTarget.conf.health <= 0) {
       console.log('stopping attack: target is dead');
       this.stopFight()
@@ -143,18 +182,18 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
       console.log('performing attack');
 
       // floaty text
-      
+
       let floatyX = this.fightTarget.x + Math.random() * 10 - 5;
       let floatyY = this.fightTarget.y - Math.random() * 10 - 10;
       let white = this.conf.id.indexOf('enemy') != -1;
-      new FloatingText(this.scene, floatyX, floatyY, Math.floor(damage*1000).toString(), white);
+      new FloatingText(this.scene, floatyX, floatyY, Math.floor(damage * 1000).toString(), white);
     }
   }
 
   private fightUpdate() {
   }
 
-  public sufferAttack(attack: {attacker: BaseUnit, damage: number}) {
+  public sufferAttack(attack: { attacker: BaseUnit, damage: number }) {
     if (!this.isFighting) {
       this.startFight(attack.attacker);
     } else {
@@ -168,7 +207,7 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
 
 
   public aggressedBy(who: BaseUnit) {
-   this.chase.start(who, () => {}); 
+    this.chase.start(who, () => { });
   }
-  
+
 }

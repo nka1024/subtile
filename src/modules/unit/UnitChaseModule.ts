@@ -17,7 +17,7 @@ export class UnitChaseModule implements IUnitModule {
   private mover: UnitMoverModule;
   private grid: TileGrid;
 
-  private target: BaseUnit;
+  public target: BaseUnit;
   private tp: UnitPerimeterModule;
 
   private onChaseComplete: () => void;
@@ -133,7 +133,6 @@ export class UnitChaseModule implements IUnitModule {
 
   private unclaim() {
     if (this.claimedSpot) {
-      // this.claimedSpot.claimed = false;
       if (this.owner.side == "attack") {
         this.claimedSpot.attacker = null;
       }
@@ -147,8 +146,6 @@ export class UnitChaseModule implements IUnitModule {
   private claim(spot:UnitPerimeterSpot) {
     this.unclaim();
     this.claimedSpot = spot;
-    // this.claimedSpot.claimed = true;
-
     if (this.owner.side == "attack") {
       spot.attacker = this.owner;
     }

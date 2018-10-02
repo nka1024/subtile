@@ -77,12 +77,22 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
     return this.perimeter[i][j];
   }
 
-
   public perimeterSpotToXY(spot: UnitPerimeterSpot): { x: number, y: number } {
     let p = this.grid.worldToGrid(this.owner.x, this.owner.y);
     return this.grid.gridToWorld(p.i + spot.i - 1, p.j + spot.j - 1)
   }
 
+  /// returns a spot that is attacked or defended by unit
+  public spotOfUnit(unit: BaseUnit): UnitPerimeterSpot {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        let spot = this.perimeter[i][j];
+        if (spot.attacker == unit || spot.defender == unit)
+          return spot
+      }
+    }
+    return null;
+  }
 
   // Overrides
   public update() {
