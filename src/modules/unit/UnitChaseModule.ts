@@ -36,7 +36,7 @@ export class UnitChaseModule implements IUnitModule {
     this.tp = target.perimeter;
     this.trackTargetRevokes();
     this.lastDest = this.grid.worldToGrid(target.x, target.y);
-    let spot = this.tp.findEmptyPerimeterSpot(target);
+    let spot = this.tp.findEmptyPerimeterSpot(target, this.owner.side);
     this.claim(spot);
     let spotXY = this.tp.perimeterSpotToXY(spot);
     this.mover.placeToXY(spotXY);
@@ -52,10 +52,10 @@ export class UnitChaseModule implements IUnitModule {
     let onStepComplete = (stepsToGo: number, nextDest: { x: number, y: number }) => {
       if (stepsToGo == 1) {
         let spot = this.tp.findRelativePerimeterSpot(nextDest.x, nextDest.y);
-        if (spot.claimed) {
+        if (this.isClaimed(spot)) {
           this.mover.onStepComplete = onStepComplete;
           this.mover.onPathComplete = onPathComplete;
-          spot = this.tp.findEmptyPerimeterSpot(this.owner);
+          spot = this.tp.findEmptyPerimeterSpot(this.owner, this.owner.side);
           
           if (!spot) {
             console.log('empty spots not found')
@@ -80,7 +80,7 @@ export class UnitChaseModule implements IUnitModule {
           this.mover.onStepComplete = onStepComplete;
           this.mover.onPathComplete = onPathComplete;
 
-          let spot = target.perimeter.findEmptyPerimeterSpot(this.owner);
+          let spot = this.tp.findEmptyPerimeterSpot(this.owner,this.owner.side);
           if (!spot) {
             console.log('empty spots not found')
           }
@@ -110,7 +110,7 @@ export class UnitChaseModule implements IUnitModule {
       // try to claim same spot
 
       let spot = this.tp.findRelativePerimeterSpot(this.owner.x, this.owner.y);
-      if (!spot.claimed) {
+      if (!this.isClaimed(spot)) {
         this.claim(spot);
         return;
       } 
@@ -131,10 +131,15 @@ export class UnitChaseModule implements IUnitModule {
     }
   }
 
-
   private unclaim() {
     if (this.claimedSpot) {
-      this.claimedSpot.claimed = false;
+      // this.claimedSpot.claimed = false;
+      if (this.owner.side == "attack") {
+        this.claimedSpot.attacker = null;
+      }
+      if (this.owner.side == "defend") {
+        this.claimedSpot.defender = null;
+      }
     }
     this.claimedSpot = null;
   }
@@ -142,7 +147,24 @@ export class UnitChaseModule implements IUnitModule {
   private claim(spot:UnitPerimeterSpot) {
     this.unclaim();
     this.claimedSpot = spot;
-    this.claimedSpot.claimed = true;
+    // this.claimedSpot.claimed = true;
+
+    if (this.owner.side == "attack") {
+      spot.attacker = this.owner;
+    }
+    if (this.owner.side == "defend") {
+      spot.defender = this.owner;
+    }
+
+  }
+
+  private isClaimed(spot:UnitPerimeterSpot) {
+    if (this.owner.side == "attack") {
+      return spot.attacker != null;
+    }
+    if (this.owner.side == "defend") {
+      return spot.defender != null;
+    }
   }
 
   public stop() {

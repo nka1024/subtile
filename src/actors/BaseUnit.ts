@@ -75,4 +75,9 @@ export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
   public aggressedBy(who: BaseUnit) {
     
   }
+
+  
+  public get side():string {
+    return this.conf.id.includes("type_1") ? "defend" : "attack";
+  }
 }
