@@ -114,35 +114,19 @@ export class GameplayRootScene extends Phaser.Scene {
     units.populate(hero.data.units);
     units.show();
     units.onUnitAttack = (conf: UnitData) => {
-      let target = this.targetListPanel.selectedTarget;
-      if (!target) {
-        let popup = new OkPopup("No targets scouted", "You need to scout and target an enemy squad first");
-        popup.show();
-        return;
-      }
+      // let target = this.targetListPanel.selectedTarget;
+      // if (!target) {
+      //   let popup = new OkPopup("No targets scouted", "You need to scout and target an enemy squad first");
+      //   popup.show();
+      //   return;
+      // }
       let squad = this.findOrDeploySquad(conf);
-      let to = this.grid.snapToGrid(target.x, target.y);
+      squad.chase.deploy(player);
+      // let to = this.grid.snapToGrid(target.x, target.y);
       
       this.add.existing(squad);
       this.unitsGrp.add(squad);
       this.deployedSquads.push(squad);
-
-
-      let onChaseComplete = () => {
-        console.log('chase complete');
-        // if squad is next to target
-        let a = this.grid.worldToGrid(squad.x, squad.y);
-        let b = this.grid.worldToGrid(target.x, target.y);
-        let reached = Math.abs(a.j - b.j) <= 1 && Math.abs(a.i - b.i) <= 1;
-
-        if (reached) {
-          squad.startFight(target);
-        } 
-        else {
-          squad.chase.start(target, onChaseComplete);
-        }
-      };
-      squad.chase.start(target, onChaseComplete);
     }
     units.onUnitReturn = (conf: UnitData) => {
       for (let squad of this.deployedSquads) {
@@ -225,12 +209,12 @@ export class GameplayRootScene extends Phaser.Scene {
   }
 
   private returnSquad(squad: SquadUnit) {
-    squad.chase.start(this.player, () => {
+    // squad.chase.start(this.player, () => {
       console.log('returned');
       this.unitsGrp.remove(squad, true);
       this.deployedSquads = this.deployedSquads.filter((o, i, arr) => { return o != squad });
       squad.destroy();
-    });
+    // });
   }
 
   private createEnemy(i: number, j: number) {

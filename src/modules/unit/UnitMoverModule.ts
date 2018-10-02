@@ -41,6 +41,18 @@ export class UnitMoverModule implements IUnitModule {
 
   // Public
 
+  /// moves unit instantly
+  public placeToIJ(destIJ: { i: number, j: number }) {
+    let destXY = this.grid.gridToWorld(destIJ.i, destIJ.j);
+    this.placeToXY(destXY);
+  }
+  /// moves unit instantly
+  public placeToXY(dest: { x: number, y: number }) {
+    this.unit.x = dest.x + 16;
+    this.unit.y = dest.y + 16;
+  }
+
+  /// moves unit overtime
   public moveTo(dest: { x: number, y: number }, immediateStart: boolean = false) {
     let grid = this.grid;
     let gridDest = grid.worldToGrid(dest.x, dest.y);

@@ -30,6 +30,18 @@ export class UnitChaseModule implements IUnitModule {
     this.grid = grid;
   }
 
+  public deploy(target: BaseUnit) {
+    this.untrackTargetRevokes();
+    this.target = target;
+    this.tp = target.perimeter;
+    this.trackTargetRevokes();
+    this.lastDest = this.grid.worldToGrid(target.x, target.y);
+    let spot = this.tp.findEmptyPerimeterSpot(target);
+    this.claim(spot);
+    let spotXY = this.tp.perimeterSpotToXY(spot);
+    this.mover.placeToXY(spotXY);
+  }
+
   public start(target: BaseUnit, onComplete: () => void) {
     this.untrackTargetRevokes();
     this.target = target;
@@ -167,6 +179,15 @@ export class UnitChaseModule implements IUnitModule {
   }
 
   destroy() {
-
+    this.unclaim();
+    this.untrackTargetRevokes();
+    this.tp = null;
+    this.owner = null;
+    this.mover = null;
+    this.grid = null;
+    this.onChaseComplete = null;
+    this.lastDest = null;
+    this.target = null;
   }
+
 }
