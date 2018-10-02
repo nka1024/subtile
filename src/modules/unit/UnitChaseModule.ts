@@ -196,6 +196,10 @@ export class UnitChaseModule implements IUnitModule {
           this.unclaim();
           this.start(this.target, this.onChaseComplete);
         }
+        else {
+          this.lastDest.i = tp.i;
+          this.lastDest.j = tp.j;
+        }
       }
     }
   }

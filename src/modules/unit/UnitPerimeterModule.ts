@@ -111,10 +111,13 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
   private revokePerimeterClaims() {
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
-        if (i != 1 && j != 1)
-          // this.perimeter[i][j].claimed = false;
-        this.perimeter[i][j].attacker = null;
+        if (i == 1 && j == 1) {
+        this.perimeter[i][j].attacker = this.owner;
+        this.perimeter[i][j].defender = this.owner;
+        } else {
+          this.perimeter[i][j].attacker = null;
         this.perimeter[i][j].defender = null;
+        }
       }
     }
   }
