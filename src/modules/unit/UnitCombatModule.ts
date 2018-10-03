@@ -142,7 +142,7 @@ export class UnitCombatModule implements IUnitModule {
   }
 
   private findTargets() {
-    let spot = this.target.perimeter.spotOfUnit(this.owner);
+    let spot = this.state.chaseTarget.perimeter.spotOfUnit(this.owner);
     if (spot) {
       if (this.owner.side == 'attack') {
         if (spot.defender) {
