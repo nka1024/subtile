@@ -36,7 +36,23 @@ export class UnitChaseModule implements IUnitModule {
     this.tp = target.perimeter;
     this.trackTargetRevokes();
     this.lastDest = this.grid.worldToGrid(target.x, target.y);
-    let spot = this.tp.findEmptyPerimeterSpot(target, this.owner.side);
+
+    // find first attacked spot with no defenders
+    let spots = this.tp.attackedSpots;
+    let spot = null;
+    if (spots.length > 0) {
+      for (let attackedSpot of spots) {
+        if (attackedSpot.defender == null)
+          spot = attackedSpot;
+      }
+    } 
+
+    // if nothing, find first empty spot
+    if (!spot) {
+      spot = this.tp.findEmptyPerimeterSpot(target, this.owner.side);
+    }
+
+    // claim and deploy to spot
     this.claim(spot);
     let spotXY = this.tp.perimeterSpotToXY(spot);
     this.mover.placeToXY(spotXY);

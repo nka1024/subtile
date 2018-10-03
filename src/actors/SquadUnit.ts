@@ -84,6 +84,7 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     super.update();
     this.fightUpdate();
 
+    // start fight if attacker and defender are in the same tile
     if (this.chase.target && !this.isFighting) {
       let spot = this.chase.target.perimeter.spotOfUnit(this);
       if (spot) {
@@ -149,7 +150,6 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     if (direction.i == 1) this.originY = 0.5;
     else if (direction.i == 0) this.originY = flip ? 0.25 : 0.75;
     else if (direction.i == 2) this.originY = flip ? 0.75 : 0.25;
-
   }
 
   public stopFight() {

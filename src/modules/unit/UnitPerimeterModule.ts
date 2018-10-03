@@ -13,7 +13,9 @@ export type UnitPerimeterSpot = {
   i: number;
   j: number;
   attacker: BaseUnit;
-  defender: BaseUnit
+  defender: BaseUnit;
+  next: UnitPerimeterSpot;
+  prev: UnitPerimeterSpot;
 }
 
 export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements IUnitModule {
@@ -31,31 +33,35 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
     this.owner = unit;
 
     this.perimeter = [
-      [{ i: 0, j: 0, attacker: null, defender: null },
-      { i: 0, j: 1,  attacker: null, defender: null },
-      { i: 0, j: 2,  attacker: null, defender: null }],
-      [{ i: 1, j: 0, attacker: null, defender: null },
-      { i: 1, j: 1,  attacker: unit, defender: unit },  // this is owner
-      { i: 1, j: 2,  attacker: null, defender: null }],
-      [{ i: 2, j: 0, attacker: null, defender: null },
-      { i: 2, j: 1,  attacker: null, defender: null },
-      { i: 2, j: 2,  attacker: null, defender: null }]
+      [{ i: 0, j: 0, attacker: null, defender: null, next: null, prev: null },
+      { i: 0, j: 1, attacker: null, defender: null, next: null, prev: null },
+      { i: 0, j: 2, attacker: null, defender: null, next: null, prev: null }],
+      [{ i: 1, j: 0, attacker: null, defender: null, next: null, prev: null },
+      { i: 1, j: 1, attacker: unit, defender: unit, next: null, prev: null },  // this is owner
+      { i: 1, j: 2, attacker: null, defender: null, next: null, prev: null }],
+      [{ i: 2, j: 0, attacker: null, defender: null, next: null, prev: null },
+      { i: 2, j: 1, attacker: null, defender: null, next: null, prev: null },
+      { i: 2, j: 2, attacker: null, defender: null, next: null, prev: null }]
     ];
 
-    // this.perimeter = [
-    //   [{ i: 0, j: 0, claimed: false, attacker: null, defender: null },
-    //   { i: 0, j: 1,  claimed: false, attacker: null, defender: null },
-    //   { i: 0, j: 2,  claimed: false, attacker: null, defender: null }],
-    //   [{ i: 1, j: 0, claimed: false, attacker: null, defender: null },
-    //   { i: 1, j: 1,  claimed: true,  attacker: unit, defender: unit },  // this is owner
-    //   { i: 1, j: 2,  claimed: false, attacker: null, defender: null }],
-    //   [{ i: 2, j: 0, claimed: false, attacker: null, defender: null },
-    //   { i: 2, j: 1,  claimed: false, attacker: null, defender: null },
-    //   { i: 2, j: 2,  claimed: false, attacker: null, defender: null }]
-    // ];
+    this.perimeter[0][0].next = this.perimeter[0][1].next;
+    this.perimeter[0][1].next = this.perimeter[0][2].next;
+    this.perimeter[0][2].next = this.perimeter[1][2].next;
+    this.perimeter[1][2].next = this.perimeter[2][2].next;
+    this.perimeter[2][2].next = this.perimeter[2][1].next;
+    this.perimeter[2][1].next = this.perimeter[2][0].next;
+    this.perimeter[2][0].next = this.perimeter[1][0].next;
+    this.perimeter[1][0].next = this.perimeter[0][0].next;
 
+    this.perimeter[0][0].prev = this.perimeter[1][0].prev;
+    this.perimeter[1][0].prev = this.perimeter[2][0].prev;
+    this.perimeter[2][0].prev = this.perimeter[2][1].prev;
+    this.perimeter[2][1].prev = this.perimeter[2][2].prev;
+    this.perimeter[2][2].prev = this.perimeter[1][2].prev;
+    this.perimeter[1][2].prev = this.perimeter[0][2].prev;
+    this.perimeter[0][2].prev = this.perimeter[0][1].prev;
+    this.perimeter[0][1].prev = this.perimeter[0][0].prev;
   }
-
 
 
   // Public
@@ -82,19 +88,36 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
     return this.grid.gridToWorld(p.i + spot.i - 1, p.j + spot.j - 1)
   }
 
-  /// returns a spot that is attacked or defended by unit
-  public spotOfUnit(unit: BaseUnit): UnitPerimeterSpot {
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        let spot = this.perimeter[i][j];
-        if (spot.attacker == unit || spot.defender == unit)
-          return spot
+  // return all spots where attacker != null
+  public get attackedSpots(): Array<UnitPerimeterSpot> {
+    let result = [];
+
+    this.forEachSpot((spot: UnitPerimeterSpot) => {
+      if (spot.attacker != null) {
+        result.push(spot);
       }
-    }
-    return null;
+      return true;
+    });
+    return result;
   }
 
+  /// returns a spot that is attacked or defended by unit
+  public spotOfUnit(unit: BaseUnit): UnitPerimeterSpot {
+    let result = null;
+    this.forEachSpot((spot: UnitPerimeterSpot) => {
+      if (spot.attacker == unit || spot.defender == unit) {
+        result = spot;
+        return false;
+      }
+      return true;
+    });
+    return result;
+  }
+
+
+
   // Overrides
+
   public update() {
     let currentIJ = this.grid.worldToGrid(this.owner.x, this.owner.y);
 
@@ -118,24 +141,36 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
 
 
   // private 
+
   private revokePerimeterClaims() {
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        if (i == 1 && j == 1) {
-        this.perimeter[i][j].attacker = this.owner;
-        this.perimeter[i][j].defender = this.owner;
-        } else {
-          this.perimeter[i][j].attacker = null;
-        this.perimeter[i][j].defender = null;
-        }
+    this.forEachSpot((spot: UnitPerimeterSpot) => {
+      if (spot.i == 1 && spot.j == 1) {
+        spot.attacker = this.owner;
+        spot.defender = this.owner;
+      } else {
+        spot.attacker = null;
+        spot.defender = null;
       }
-    }
+      return true;
+    }, true)
   }
 
   private notifyClaimsRevoked() {
     this.emit('revoke_all_claims');
   }
 
+  // iterate all spots except middle
+  private forEachSpot(callback: (spot: UnitPerimeterSpot) => boolean, includeMiddlee: boolean = false) {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (!(i == 1 && j == 1) || includeMiddlee) {
+          if (!callback(this.perimeter[i][j])) {
+            return;
+          };
+        }
+      }
+    }
+  }
 
   // Core logic
 

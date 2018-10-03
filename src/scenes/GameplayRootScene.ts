@@ -114,15 +114,8 @@ export class GameplayRootScene extends Phaser.Scene {
     units.populate(hero.data.units);
     units.show();
     units.onUnitAttack = (conf: UnitData) => {
-      // let target = this.targetListPanel.selectedTarget;
-      // if (!target) {
-      //   let popup = new OkPopup("No targets scouted", "You need to scout and target an enemy squad first");
-      //   popup.show();
-      //   return;
-      // }
       let squad = this.findOrDeploySquad(conf);
       squad.chase.deploy(player);
-      // let to = this.grid.snapToGrid(target.x, target.y);
       
       this.add.existing(squad);
       this.unitsGrp.add(squad);
