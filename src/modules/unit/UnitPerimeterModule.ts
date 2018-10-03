@@ -115,6 +115,19 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
     return result;
   }
 
+  public pushBackDistance(spot:UnitPerimeterSpot): Tile {
+    if (spot.i == 0 && spot.j == 0) return { i: -1, j: -1 };
+    if (spot.i == 0 && spot.j == 1) return { i: -1, j: 0 };
+    if (spot.i == 0 && spot.j == 2) return { i: -1, j: 1 };
+    
+    if (spot.i == 1 && spot.j == 0) return { i: 0, j: -1 };
+    if (spot.i == 1 && spot.j == 1) return { i: 0, j: 2 };
+    if (spot.i == 1 && spot.j == 2) return { i: 0, j: 1 };
+
+    if (spot.i == 2 && spot.j == 0) return { i: 1, j: -1 };
+    if (spot.i == 2 && spot.j == 1) return { i: 1, j: 0 };
+    if (spot.i == 2 && spot.j == 2) return { i: 1, j: 1 };
+  }
 
 
   // Overrides

@@ -40,7 +40,7 @@ export class UnitChaseModule implements IUnitModule {
     this.state.isChasing = target != null;
   }
 
-  public deploy(target: BaseUnit) {
+  public deployDefender(target: BaseUnit) {
     this.untrackTargetRevokes();
     this.setTarget(target);
 
@@ -55,8 +55,10 @@ export class UnitChaseModule implements IUnitModule {
       for (let attackedSpot of spots) {
         if (attackedSpot.defender == null) {
           spot = attackedSpot;
-          let tile = spot.attacker.tile();
-          spot.attacker.mover.placeToTile({ i: tile.i, j: tile.j + 1 })
+          let tile = spot.attacker.tile;
+          let push = this.owner.perimeter.pushBackDistance(spot);
+
+          spot.attacker.mover.placeToTile({ i: tile.i + push.i, j: tile.j + push.j })
         }
       }
     }

@@ -77,7 +77,7 @@ export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
     super.destroy()
   }
 
-  public tile(): Tile {
+  public get tile(): Tile {
     return this.grid.worldToGrid(this);
   }
 
