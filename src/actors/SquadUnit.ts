@@ -26,6 +26,8 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
   private static initialized: boolean = false;
   private banner: Phaser.GameObjects.Image;
 
+  private onFightEnd:() => void;
+
   constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid, conf: UnitData, squadType: number) {
     super(scene, x, y, CONST.SQUAD_SPEED, grid, conf, 'infantry_' + squadType + '_idle_48x48');
 
@@ -36,6 +38,10 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     this.scoutee = new ScouteeModule(this.progress);
     this.core.addModules([this.scoutee, this.selection])
 
+    this.onFightEnd = () => {
+      this.chase.restartIfHasTarget();
+    };
+    this.combat.events.on('fight_end', this.onFightEnd);
     this.initializeOnce();
 
     this.playUnitAnim('idle', true);
@@ -91,7 +97,9 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
   }
 
   destroy() {
+    this.combat.events.removeListener('fight_end', this.onFightEnd);
     this.banner.destroy();
+    this.combat = null;
     this.scoutee = null;
     this.progress = null;
     this.selection = null;
@@ -100,7 +108,7 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
 
 
   private targetScanUpdate() {
-    if (!this.chase.target) {
+    if (!this.state.hasChaseTarget) {
       let player = (this.scene as GameplayRootScene).player;
       let distToPlayer = this.grid.distanceXY(player, this, true);
       if (distToPlayer.i <= 4 && distToPlayer.j <= 4) {

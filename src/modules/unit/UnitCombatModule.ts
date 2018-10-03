@@ -11,56 +11,58 @@ import { UnitMoverModule } from "./UnitMoverModule";
 import { TileGrid } from "../../TileGrid";
 import { Scene } from "phaser";
 import { FloatingText } from "../../FloatingText";
+import { EventEmitter } from "events";
+import { UnitStateModule } from "./UnitStateModule";
 
 export class UnitCombatModule implements IUnitModule {
   private owner: BaseUnit;
   private scene: Scene;
   private grid: TileGrid;
 
+  private state: UnitStateModule;
   private mover: UnitMoverModule;
 
-  public fightTarget: BaseUnit;
-  public isFighting: boolean;
   private attackTimer: any;
+  private target: BaseUnit;
 
-  constructor(owner: BaseUnit, scene: Scene, mover: UnitMoverModule, grid: TileGrid) {
+  public events: EventEmitter;
+
+  constructor(owner: BaseUnit, scene: Scene, mover: UnitMoverModule, state: UnitStateModule, grid: TileGrid) {
     this.owner = owner;
     this.mover = mover;
+    this.state = state;
     this.grid = grid;
     this.scene = scene;
+
+    this.events = new EventEmitter();
   }
+
+  private setTarget(target: BaseUnit) {
+    this.target = target;
+    this.state.fightTarget = target;
+    this.state.isFighting = target != null;
+  }
+
 
 
   // Overrides
 
   update() {
     // start fight if attacker and defender are in the same tile
-    if (this.owner.chase.target && !this.isFighting) {
-      let spot = this.owner.chase.target.perimeter.spotOfUnit(this.owner);
-      if (spot) {
-        if (this.owner.side == 'attack') {
-          if (spot.defender) {
-            console.log('startFight with defender' + spot.defender.conf.id);
-            this.startFight(spot.defender);
-          }
-        }
-        else if (this.owner.side == 'defend') {
-          if (spot.attacker) {
-            console.log('startFight with attacker ' + spot.defender.conf.id);
-            this.startFight(spot.attacker);
-          }
-        }
-      }
+    if (this.state.hasChaseTarget && !this.state.isFighting) {
+      this.findTargets();
     }
   }
 
   destroy() {
+    this.state.fightTarget = null;
+    this.state.isFighting = false;
     this.owner = null;
     this.scene = null;
     this.grid = null;
     this.mover = null;
+    this.state = null;
 
-    this.fightTarget = null;
     clearInterval(this.attackTimer);
   }
 
@@ -68,7 +70,7 @@ export class UnitCombatModule implements IUnitModule {
   // public
 
   public sufferAttack(attack: { attacker: BaseUnit, damage: number }) {
-    if (!this.isFighting) {
+    if (!this.state.isFighting) {
       this.startFight(attack.attacker);
     } else {
       if (this.owner.conf.health - attack.damage <= 0) {
@@ -84,12 +86,10 @@ export class UnitCombatModule implements IUnitModule {
     }
   }
 
-
   public startFight(target: BaseUnit) {
     console.log('start fight against: ' + target.conf.id);
     let direction = this.owner.perimeter.findRelativePerimeterSpot(target);
-    this.isFighting = true;
-    this.fightTarget = target;
+    this.setTarget(target);
     this.owner.flipX = direction.j == 0;
     this.mover.pauseUpdates(true);
     this.owner.playUnitAnim('fight', true);
@@ -105,12 +105,11 @@ export class UnitCombatModule implements IUnitModule {
     if (this.mover) {
       this.mover.pauseUpdates(false);
     }
-    this.isFighting = false;
-    this.fightTarget = null;
+    this.setTarget(null);
     clearInterval(this.attackTimer);
 
     if (reason != 'death' && reason != 'return') {
-      this.owner.chase.restartIfHasTarget();
+      this.events.emit('end_fight');
     }
   }
 
@@ -118,17 +117,17 @@ export class UnitCombatModule implements IUnitModule {
   // Private
 
   private performAttack() {
-    if (!this.fightTarget || !this.fightTarget.active) {
+    if (!this.state.fightTarget || !this.state.fightTarget.active) {
       this.stopFight("no_target");
       return;
     }
 
-    if (this.fightTarget.conf.health <= 0) {
+    if (this.owner.conf.health <= 0) {
       console.log('stopping attack: target is dead');
       this.stopFight("dead_target")
     } else {
-      let damage = Math.random()/100 + Math.random()/50;
-      this.fightTarget.combat.sufferAttack({ attacker: this.owner, damage: damage });
+      let damage = (Math.random() / 100 + Math.random() / 50) * 10;
+      this.target.combat.sufferAttack({ attacker: this.owner, damage: damage });
       console.log('performing attack');
 
       this.showFloatyText(damage);
@@ -136,10 +135,36 @@ export class UnitCombatModule implements IUnitModule {
   }
 
   private showFloatyText(damage: number) {
-    let floatyX = this.fightTarget.x + Math.random() * 10 - 5;
-    let floatyY = this.fightTarget.y - Math.random() * 10 - 10;
+    let floatyX = this.target.x + Math.random() * 10 - 5;
+    let floatyY = this.target.y - Math.random() * 10 - 10;
     let white = this.owner.conf.id.indexOf('enemy') != -1;
     new FloatingText(this.scene, floatyX, floatyY, Math.floor(damage * 1000).toString(), white);
+  }
+
+  private findTargets() {
+    let spot = this.state.targetPerimeter.spotOfUnit(this.owner);
+    if (spot) {
+      if (this.owner.side == 'attack') {
+        if (spot.defender) {
+          console.log('startFight with defender' + spot.defender.conf.id);
+          this.startFight(spot.defender);
+        }
+      }
+      else if (this.owner.side == 'defend') {
+        if (spot.attacker) {
+          console.log('startFight with attacker ' + spot.defender.conf.id);
+          this.startFight(spot.attacker);
+        } else {
+          // defend nearby cells from attackers
+          for (let spot_ of [spot.prev, spot.next, spot.prev.prev, spot.next.next]) {
+            if (spot_.attacker) {
+              this.startFight(spot_.attacker);
+              break;
+            }
+          }
+        }
+      }
+    }
   }
 
 }

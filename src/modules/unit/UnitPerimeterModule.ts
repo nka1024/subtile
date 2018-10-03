@@ -45,23 +45,23 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
       { i: 2, j: 2, attacker: null, defender: null, next: null, prev: null }]
     ];
 
-    this.perimeter[0][0].next = this.perimeter[0][1].next;
-    this.perimeter[0][1].next = this.perimeter[0][2].next;
-    this.perimeter[0][2].next = this.perimeter[1][2].next;
-    this.perimeter[1][2].next = this.perimeter[2][2].next;
-    this.perimeter[2][2].next = this.perimeter[2][1].next;
-    this.perimeter[2][1].next = this.perimeter[2][0].next;
-    this.perimeter[2][0].next = this.perimeter[1][0].next;
-    this.perimeter[1][0].next = this.perimeter[0][0].next;
+    this.perimeter[0][0].next = this.perimeter[0][1];
+    this.perimeter[0][1].next = this.perimeter[0][2];
+    this.perimeter[0][2].next = this.perimeter[1][2];
+    this.perimeter[1][2].next = this.perimeter[2][2];
+    this.perimeter[2][2].next = this.perimeter[2][1];
+    this.perimeter[2][1].next = this.perimeter[2][0];
+    this.perimeter[2][0].next = this.perimeter[1][0];
+    this.perimeter[1][0].next = this.perimeter[0][0];
 
-    this.perimeter[0][0].prev = this.perimeter[1][0].prev;
-    this.perimeter[1][0].prev = this.perimeter[2][0].prev;
-    this.perimeter[2][0].prev = this.perimeter[2][1].prev;
-    this.perimeter[2][1].prev = this.perimeter[2][2].prev;
-    this.perimeter[2][2].prev = this.perimeter[1][2].prev;
-    this.perimeter[1][2].prev = this.perimeter[0][2].prev;
-    this.perimeter[0][2].prev = this.perimeter[0][1].prev;
-    this.perimeter[0][1].prev = this.perimeter[0][0].prev;
+    this.perimeter[0][0].prev = this.perimeter[1][0];
+    this.perimeter[1][0].prev = this.perimeter[2][0];
+    this.perimeter[2][0].prev = this.perimeter[2][1];
+    this.perimeter[2][1].prev = this.perimeter[2][2];
+    this.perimeter[2][2].prev = this.perimeter[1][2];
+    this.perimeter[1][2].prev = this.perimeter[0][2];
+    this.perimeter[0][2].prev = this.perimeter[0][1];
+    this.perimeter[0][1].prev = this.perimeter[0][0];
   }
 
 
