@@ -31,10 +31,9 @@ export class UnitCombatModule implements IUnitModule {
   }
 
 
+  // Overrides
+
   update() {
-    this.fightUpdate();
-
-
     // start fight if attacker and defender are in the same tile
     if (this.owner.chase.target && !this.isFighting) {
       let spot = this.owner.chase.target.perimeter.spotOfUnit(this.owner);
@@ -56,7 +55,35 @@ export class UnitCombatModule implements IUnitModule {
   }
 
   destroy() {
+    this.owner = null;
+    this.scene = null;
+    this.grid = null;
+    this.mover = null;
+
+    this.fightTarget = null;
+    clearInterval(this.attackTimer);
   }
+
+
+  // public
+
+  public sufferAttack(attack: { attacker: BaseUnit, damage: number }) {
+    if (!this.isFighting) {
+      this.startFight(attack.attacker);
+    } else {
+      if (this.owner.conf.health - attack.damage <= 0) {
+        this.stopFight("death");
+      }
+    }
+
+    // only destroy after all logic
+    this.owner.conf.health -= attack.damage;
+
+    if (this.owner.conf.health <= 0) {
+      this.owner.events.emit('death');
+    }
+  }
+
 
   public startFight(target: BaseUnit) {
     console.log('start fight against: ' + target.conf.id);
@@ -75,9 +102,6 @@ export class UnitCombatModule implements IUnitModule {
   // reason: 'death', 'dead_target', 'no_target', 'return'
   public stopFight(reason: string) {
     console.log('stop fight: ' + this.owner.conf.id);
-    if (this.fightTarget && !this.fightTarget.destroyed) {
-      // this.fightTarget.perimeter.unclaimSpot(this.x, this.y);
-    }
     if (this.mover) {
       this.mover.pauseUpdates(false);
     }
@@ -85,11 +109,13 @@ export class UnitCombatModule implements IUnitModule {
     this.fightTarget = null;
     clearInterval(this.attackTimer);
 
-
     if (reason != 'death') {
       this.owner.chase.restartIfHasTarget();
     }
   }
+
+
+  // Private
 
   private performAttack() {
     if (!this.fightTarget || !this.fightTarget.active) {
@@ -101,37 +127,19 @@ export class UnitCombatModule implements IUnitModule {
       console.log('stopping attack: target is dead');
       this.stopFight("dead_target")
     } else {
-      let damage = 0.3;//Math.random()/100 + Math.random()/50;
+      let damage = 0.3; //Math.random()/100 + Math.random()/50;
       this.fightTarget.combat.sufferAttack({ attacker: this.owner, damage: damage });
       console.log('performing attack');
 
-      // floaty text
-
-      let floatyX = this.fightTarget.x + Math.random() * 10 - 5;
-      let floatyY = this.fightTarget.y - Math.random() * 10 - 10;
-      let white = this.owner.conf.id.indexOf('enemy') != -1;
-      new FloatingText(this.scene, floatyX, floatyY, Math.floor(damage * 1000).toString(), white);
+      this.showFloatyText(damage);
     }
   }
 
-
-  private fightUpdate() {
-  }
-
-  public sufferAttack(attack: { attacker: BaseUnit, damage: number }) {
-    if (!this.isFighting) {
-      this.startFight(attack.attacker);
-    } else {
-      if (this.owner.conf.health - attack.damage <= 0) {
-        this.stopFight("death");
-      }
-    }
-
-    this.owner.conf.health -= attack.damage;
-
-    if (this.owner.conf.health <= 0) {
-      this.owner.events.emit('death');
-    }
+  private showFloatyText(damage: number) {
+    let floatyX = this.fightTarget.x + Math.random() * 10 - 5;
+    let floatyY = this.fightTarget.y - Math.random() * 10 - 10;
+    let white = this.owner.conf.id.indexOf('enemy') != -1;
+    new FloatingText(this.scene, floatyX, floatyY, Math.floor(damage * 1000).toString(), white);
   }
 
 }
