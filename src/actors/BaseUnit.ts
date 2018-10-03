@@ -14,6 +14,7 @@ import { UnitPerimeterModule } from "../modules/unit/UnitPerimeterModule";
 import { UnitData } from "../Hero";
 import { UnitCombatModule } from "../modules/unit/UnitCombatModule";
 import { UnitChaseModule } from "../modules/unit/UnitChaseModule";
+import { Tile } from "../types/Position";
 
 export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
 
@@ -73,8 +74,8 @@ export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
     super.destroy()
   }
 
-  public positionIJ(): {i: number, j: number} {
-    return this.grid.worldToGrid(this.x, this.y);
+  public tile(): Tile {
+    return this.grid.worldToGrid(this);
   }
 
   public aggressedBy(who: BaseUnit) {

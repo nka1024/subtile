@@ -7,6 +7,7 @@
 
 import { js as easystar } from "easystarjs";
 import { UI_DEPTH } from "./const/const";
+import { Point, Tile } from "./types/Position";
 
 export class TileGrid {
 
@@ -79,10 +80,10 @@ export class TileGrid {
     }
   }
 
-  public getTileXY(x:number, y:number):any {
+  public getTileXY(p: Point):any {
     try {
-      if (x < 0 || y < 0) throw('cant be negative')
-      let gridPos = this.worldToGrid(x, y);
+      if (p.x < 0 || p.y < 0) throw('cant be negative')
+      let gridPos = this.worldToGrid(p);
       let tile = this.data[gridPos.i][gridPos.j];
       return {
         i: gridPos.i,
@@ -113,7 +114,7 @@ export class TileGrid {
   }
 
   public editTile(cursor: Phaser.GameObjects.Image, color: string) {
-    let gridPos = this.worldToGrid(cursor.x, cursor.y);
+    let gridPos = this.worldToGrid(cursor);
     let currentTile = this.tiles[gridPos.i][gridPos.j];
     if (currentTile != null) {
       currentTile.destroy();
@@ -132,7 +133,7 @@ export class TileGrid {
     let worldPosX = screenPosX + this.scene.cameras.main.scrollX;
     let worldPosY = screenPosY + this.scene.cameras.main.scrollY;
 
-    let snapPos = this.snapToGrid(worldPosX, worldPosY)
+    let snapPos = this.snapToGrid({x: worldPosX, y: worldPosY})
     cursor.x = snapPos.x + 16;
     cursor.y = snapPos.y + 16;
   }
@@ -146,26 +147,39 @@ export class TileGrid {
     this.pathfinder.setGrid(this.data);
   }
 
-  public gridToWorld(i: number, j: number): {x: number,  y: number} {
+  public gridToWorld(i: number, j: number): Point {
     return {
       x: j * 32,
       y: i * 32
     };
   }
-  public worldToGrid(x: number, y: number): {i: number, j: number} {
+  public worldToGrid(p: Point): Tile {
     return {
-      i: Math.floor(y / 32),
-      j: Math.floor(x / 32)
+      i: Math.floor(p.y / 32),
+      j: Math.floor(p.x / 32)
     };
   }
 
-  public snapToGrid(x: number, y: number): {x: number,  y: number} {
-    let gridPos = this.worldToGrid(x, y);
+  public snapToGrid(p: Point): Point {
+    let gridPos = this.worldToGrid(p);
     return this.gridToWorld(gridPos.i, gridPos.j);
   }
 
   get visible() {
     return this.grid != null;
+  }
+
+  public distanceXY(a: Point, b: Point, abs: boolean = false): Tile {
+    let ap = this.worldToGrid(a);
+    let bp = this.worldToGrid(b);
+    return this.distance(ap, bp, abs);
+  }
+
+  public distance(a: Tile, b:Tile, abs: boolean = false): Tile {
+    if (abs) 
+      return { i: Math.abs(a.i - b.i), j: Math.abs(a.j - b.j) };
+    else 
+      return { i: a.i - b.i, j: a.j - b.j };
   }
 
 
@@ -179,10 +193,8 @@ export class TileGrid {
     this.pathfinder.setAcceptableTiles([0]);
   }
 
-  public findPath(startX: number, startY: number, 
-                  endX: number, endY: number, 
-                  callback: (path: { x: number, y: number }[]) => void): number {
-    return this.pathfinder.findPath(startX, startY,endX, endY,callback);
+  public findPath(from: Tile, to: Tile, callback: (path: Point[]) => void): number {
+    return this.pathfinder.findPath(from.j, from.i, to.j, to.i, callback);
   }
 
   public update() {

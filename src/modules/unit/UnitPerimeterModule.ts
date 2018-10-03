@@ -8,6 +8,7 @@
 import { IUnitModule } from "../interface/IUnitModule";
 import { TileGrid } from "../../TileGrid";
 import { BaseUnit } from "../../actors/BaseUnit";
+import { Point, Tile } from "../../types/Position";
 
 export type UnitPerimeterSpot = {
   i: number;
@@ -66,9 +67,9 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
 
   // Public
 
-  public findRelativePerimeterSpot(x: number, y: number): UnitPerimeterSpot {
-    let a = this.grid.worldToGrid(x, y);
-    let b = this.grid.worldToGrid(this.owner.x, this.owner.y);
+  public findRelativePerimeterSpot(p: Point): UnitPerimeterSpot {
+    let a = this.grid.worldToGrid(p);
+    let b = this.grid.worldToGrid(this.owner);
     let i = 0;
     let j = 0;
 
@@ -83,8 +84,8 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
     return this.perimeter[i][j];
   }
 
-  public perimeterSpotToXY(spot: UnitPerimeterSpot): { x: number, y: number } {
-    let p = this.grid.worldToGrid(this.owner.x, this.owner.y);
+  public perimeterSpotToXY(spot: UnitPerimeterSpot): Point {
+    let p = this.grid.worldToGrid(this.owner);
     return this.grid.gridToWorld(p.i + spot.i - 1, p.j + spot.j - 1)
   }
 
@@ -119,7 +120,7 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
   // Overrides
 
   public update() {
-    let currentIJ = this.grid.worldToGrid(this.owner.x, this.owner.y);
+    let currentIJ = this.grid.worldToGrid(this.owner);
 
     // reset perimeter claims if unit position was changed
     if (this.lastIJ) {
@@ -174,9 +175,9 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
 
   // Core logic
 
-  public findEmptyPerimeterSpot(sourceXY: { x: number, y: number }, side: string): UnitPerimeterSpot {
-    let p = this.grid.worldToGrid(this.owner.x, this.owner.y);
-    let checkOrder = this.spotCheckOrder(this.grid.worldToGrid(sourceXY.x, sourceXY.y));
+  public findEmptyPerimeterSpot(from: Point, side: string): UnitPerimeterSpot {
+    let p = this.grid.worldToGrid(this.owner);
+    let checkOrder = this.spotCheckOrder(this.grid.worldToGrid(from));
 
     // check if nearby spot is free on map and not occupied by another attacking unit
     for (let c of checkOrder) {
@@ -194,8 +195,8 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
     return null;
   }
 
-  private spotCheckOrder(s: { i: number, j: number }): Array<{ i: number, j: number }> {
-    let p = this.grid.worldToGrid(this.owner.x, this.owner.y);
+  private spotCheckOrder(s: Tile): Tile[] {
+    let p = this.grid.worldToGrid(this.owner);
     let result = null;
 
     if (s.i == p.i && s.j == p.j) {

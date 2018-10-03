@@ -8,13 +8,14 @@
 import { TileGrid } from "../../TileGrid";
 import { IUnit } from "../../actors/IUnit";
 import { IUnitModule } from "../interface/IUnitModule";
+import { Point, Tile } from "../../types/Position";
 
 export class UnitMoverModule implements IUnitModule {
 
   private moveSpeed:number;
 
   // public
-  public onStepComplete: (stepsToGo: number, nextStep: {x: number, y: number}) => void;
+  public onStepComplete: (stepsToGo: number, nextStep: Point) => void;
   public onPathComplete: () => void;
   
   // private
@@ -22,12 +23,12 @@ export class UnitMoverModule implements IUnitModule {
   private scene: Phaser.Scene;
   private grid: TileGrid;
 
-  private dest: { i: number, j: number };
-  private path: { x: number, y: number }[];
+  private dest: Tile;
+  private path: Point[];
   private pathDots: Phaser.GameObjects.Image[];
 
-  private nextDest: { x: number, y: number };
-  private pathBySteps: { x: number, y: number }[];
+  private nextDest: Point;
+  private pathBySteps: Point[];
   private speed: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
   private updatesPaused: boolean;
 
@@ -42,31 +43,31 @@ export class UnitMoverModule implements IUnitModule {
   // Public
 
   /// moves unit instantly
-  public placeToIJ(destIJ: { i: number, j: number }) {
-    let destXY = this.grid.gridToWorld(destIJ.i, destIJ.j);
-    this.placeToXY(destXY);
+  public placeToTile(tile: Tile) {
+    let destXY = this.grid.gridToWorld(tile.i, tile.j);
+    this.placeToPoint(destXY);
   }
   /// moves unit instantly
-  public placeToXY(dest: { x: number, y: number }) {
+  public placeToPoint(dest: Point) {
     this.unit.x = dest.x + 16;
     this.unit.y = dest.y + 16;
   }
 
   /// moves unit overtime
-  public moveTo(dest: { x: number, y: number }, immediateStart: boolean = false) {
+  public moveTo(dest: Point, immediateStart: boolean = false) {
     let grid = this.grid;
-    let gridDest = grid.worldToGrid(dest.x, dest.y);
-    let gridPos = grid.worldToGrid(this.unit.x, this.unit.y);
+    let tileDest = grid.worldToGrid(dest);
+    let tilePos = grid.worldToGrid(this.unit);
 
-    if (gridDest.i == gridPos.i && gridDest.j == gridPos.j) {
+    if (tileDest.i == tilePos.i && tileDest.j == tilePos.j) {
       console.log('already there');
       this.finishPath();
       return;
     }
     //  if there's no dest or new dest given, find new path
-    if (this.dest == null || this.dest.i != gridDest.i || this.dest.j != gridDest.j) {
-      this.dest = gridDest;
-      grid.findPath(gridPos.j, gridPos.i, gridDest.j, gridDest.i, (path) => {
+    if (this.dest == null || this.dest.i != tileDest.i || this.dest.j != tileDest.j) {
+      this.dest = tileDest;
+      grid.findPath(tilePos, tileDest, (path) => {
         this.path = path;
         this.drawPathDots(grid);
         if (immediateStart) {
@@ -139,7 +140,8 @@ export class UnitMoverModule implements IUnitModule {
 
   private moveNextStep() {
     let distance = this.moveSpeed;
-    let finished = this.stepTowards(this.nextDest.x + 16, this.nextDest.y + 16, distance);
+    let stepDest = {x: this.nextDest.x + 16, y:this.nextDest.y + 16};
+    let finished = this.stepTowards(stepDest, distance);
     if (finished) {
       // finished stp
       this.pathBySteps.splice(0, 1);
@@ -169,12 +171,12 @@ export class UnitMoverModule implements IUnitModule {
     }
   }
 
-  private stepTowards(x: number, y: number, distance: number): boolean {
-    this.speed.x = x - this.unit.x;
-    this.speed.y = y - this.unit.y;
+  private stepTowards(p: Point, distance: number): boolean {
+    this.speed.x = p.x - this.unit.x;
+    this.speed.y = p.y - this.unit.y;
     if (this.speed.length() <= distance) {
-      this.unit.x = x;
-      this.unit.y = y;
+      this.unit.x = p.x;
+      this.unit.y = p.y;
       return true;
     }
     this.speed = this.normalize(this.speed, distance);

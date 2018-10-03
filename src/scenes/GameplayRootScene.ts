@@ -169,8 +169,8 @@ export class GameplayRootScene extends Phaser.Scene {
     };
     this.contextMenuModule.onReconClicked = (object: BaseUnit) => {
       // Send scouts to that object
-      let from = this.grid.snapToGrid(player.x, player.y);
-      let to = this.grid.snapToGrid(object.x, object.y);
+      let from = this.grid.snapToGrid(player);
+      let to = this.grid.snapToGrid(object);
       let scout = new ScoutUnit(this, from.x + 16, from.y + 16, this.grid, Hero.makeReconSquadConf());
 
       object.aggressedBy(player);
@@ -228,7 +228,7 @@ export class GameplayRootScene extends Phaser.Scene {
       }
     }
     if (!squad) {
-      let from = this.grid.snapToGrid(this.player.x, this.player.y);
+      let from = this.grid.snapToGrid(this.player);
       squad = new SquadUnit(this, from.x + 16, from.y + 16, this.grid, conf, 1);
       squad.events.addListener('death', () => { this.handleUnitDeath(squad); });
     }

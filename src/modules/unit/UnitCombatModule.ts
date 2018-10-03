@@ -87,7 +87,7 @@ export class UnitCombatModule implements IUnitModule {
 
   public startFight(target: BaseUnit) {
     console.log('start fight against: ' + target.conf.id);
-    let direction = this.owner.perimeter.findRelativePerimeterSpot(target.x, target.y);
+    let direction = this.owner.perimeter.findRelativePerimeterSpot(target);
     this.isFighting = true;
     this.fightTarget = target;
     this.owner.flipX = direction.j == 0;

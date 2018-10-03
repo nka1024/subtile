@@ -86,7 +86,7 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     this.banner.y = this.y - 8;
     this.banner.depth = this.depth + 1;
     
-
+    // this.grid.d();
     
   }
 
@@ -99,10 +99,13 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
   }
 
 
+  private targetScanUpdate() {
+
+  }
   // Fighting
 
 
-  // private flipOriginByDirection(direction: {i: number, j: number}, flip: boolean) {
+  // private flipOriginByDirection(direction: Tile, flip: boolean) {
   //   if (direction.j == 1) this.originX = 0.5
   //   else if (direction.j == 0) this.originX = flip ? 0.25 : 0.75;
   //   else if (direction.j == 2) this.originX = flip ? 0.75 : 0.25;

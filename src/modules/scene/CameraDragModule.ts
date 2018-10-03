@@ -5,6 +5,8 @@
 * @license      Apache 2.0
 */
 
+import { Point } from "../../types/Position";
+
 export class CameraDragModule {
   private prevPointerX: number;
   private prevPointerY: number;
@@ -12,7 +14,7 @@ export class CameraDragModule {
 
   private scene:Phaser.Scene;
 
-  private dragStart: {x: number, y: number};
+  private dragStart: Point;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;

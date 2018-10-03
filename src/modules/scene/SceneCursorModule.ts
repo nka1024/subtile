@@ -54,7 +54,7 @@ export class SceneCursorModule {
     let ptrY = Math.round(this.scene.input.activePointer.y / 2) * 2;
     let worldPtr = this.scene.cameras.main.getWorldPoint(ptrX, ptrY)
 
-    let snap = this.grid.snapToGrid(worldPtr.x, worldPtr.y);
+    let snap = this.grid.snapToGrid(worldPtr);
     this.cursor.x = snap.x + 16;
     this.cursor.y = snap.y + 16;
     this.cursor.scaleX = 1;

@@ -9,6 +9,7 @@ import { IUnit } from "../../actors/IUnit";
 import { Scene } from "phaser";
 import { IUnitModule } from "../interface/IUnitModule";
 import { UI_DEPTH } from "../../const/const";
+import { Point } from "../../types/Position";
 
 export class ProgressModule implements IUnitModule {
 
@@ -34,8 +35,8 @@ export class ProgressModule implements IUnitModule {
   private bgH: number;
   private lineFgTexture: string;
   private lineBgTexture: string;
-  private lineFgOffset: {x: number, y: number};
-  private lineBgOffset: {x: number, y: number};
+  private lineFgOffset: Point;
+  private lineBgOffset: Point;
 
   constructor(unit: IUnit, scene: Scene, type: string) {
     this.unit = unit;

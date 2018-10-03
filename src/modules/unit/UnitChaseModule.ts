@@ -10,6 +10,7 @@ import { BaseUnit } from "../../actors/BaseUnit";
 import { UnitMoverModule } from "./UnitMoverModule";
 import { TileGrid } from "../../TileGrid";
 import { UnitPerimeterSpot, UnitPerimeterModule } from "./UnitPerimeterModule";
+import { Tile, Point } from "../../types/Position";
 
 export class UnitChaseModule implements IUnitModule {
 
@@ -35,7 +36,7 @@ export class UnitChaseModule implements IUnitModule {
     this.target = target;
     this.tp = target.perimeter;
     this.trackTargetRevokes();
-    this.lastDest = this.grid.worldToGrid(target.x, target.y);
+    this.lastDest = this.grid.worldToGrid(target);
 
     // find first attacked spot with no defenders
     let spots = this.tp.attackedSpots;
@@ -44,8 +45,8 @@ export class UnitChaseModule implements IUnitModule {
       for (let attackedSpot of spots) {
         if (attackedSpot.defender == null) {
           spot = attackedSpot;
-          let tile = spot.attacker.positionIJ();
-          spot.attacker.mover.placeToIJ({i: tile.i, j: tile.j + 1})
+          let tile = spot.attacker.tile();
+          spot.attacker.mover.placeToTile({i: tile.i, j: tile.j + 1})
         }
       }
     } 
@@ -58,7 +59,7 @@ export class UnitChaseModule implements IUnitModule {
     // claim and deploy to spot
     this.claim(spot);
     let spotXY = this.tp.perimeterSpotToXY(spot);
-    this.mover.placeToXY(spotXY);
+    this.mover.placeToPoint(spotXY);
   }
 
   public restartIfHasTarget() {
@@ -77,9 +78,9 @@ export class UnitChaseModule implements IUnitModule {
     this.trackTargetRevokes();
     this.onChaseComplete = onComplete;
 
-    let onStepComplete = (stepsToGo: number, nextDest: { x: number, y: number }) => {
+    let onStepComplete = (stepsToGo: number, nextDest: Point) => {
       if (stepsToGo == 1) {
-        let spot = this.tp.findRelativePerimeterSpot(nextDest.x, nextDest.y);
+        let spot = this.tp.findRelativePerimeterSpot(nextDest);
         if (this.isClaimed(spot)) {
           this.mover.onStepComplete = onStepComplete;
           this.mover.onPathComplete = onPathComplete;
@@ -97,8 +98,8 @@ export class UnitChaseModule implements IUnitModule {
     }
 
     let onPathComplete = () => {
-      let gp = this.grid.worldToGrid(target.x, target.y);
-      if (this.lastDest.i != gp.i || this.lastDest.j != gp.j) {
+      let tile = this.grid.worldToGrid(target);
+      if (this.lastDest.i != tile.i || this.lastDest.j != tile.j) {
         // target already left old position, chase it again
         this.start(target, onComplete);
       } else {
@@ -125,7 +126,7 @@ export class UnitChaseModule implements IUnitModule {
 
     this.mover.onStepComplete = onStepComplete;
     this.mover.onPathComplete = onPathComplete;
-    this.lastDest = this.grid.worldToGrid(target.x, target.y);
+    this.lastDest = this.grid.worldToGrid(target);
     this.mover.moveTo(target, true);
   }
 
@@ -137,7 +138,7 @@ export class UnitChaseModule implements IUnitModule {
     if (Math.abs(distance.i) <= 1 && Math.abs(distance.j) <= 1) {
       // try to claim same spot
 
-      let spot = this.tp.findRelativePerimeterSpot(this.owner.x, this.owner.y);
+      let spot = this.tp.findRelativePerimeterSpot(this.owner);
       if (!this.isClaimed(spot)) {
         this.claim(spot);
         return;
@@ -204,10 +205,8 @@ export class UnitChaseModule implements IUnitModule {
     return Math.abs(distance.i) <= 1 && Math.abs(distance.j) <= 1;
   }
 
-  private gridDistanceToTarget(): { i: number, j: number } {
-    let tp = this.grid.worldToGrid(this.target.x, this.target.y);
-    let op = this.grid.worldToGrid(this.owner.x, this.owner.y);
-    return { i: op.i - tp.i, j: op.j - tp.j };
+  private gridDistanceToTarget(): Tile {
+    return this.grid.distanceXY(this.owner, this.target);
   }
 
 
@@ -215,15 +214,15 @@ export class UnitChaseModule implements IUnitModule {
 
   update() {
     if (this.target) {
-      let tp = this.grid.worldToGrid(this.target.x, this.target.y);
-      if (this.lastDest.i != tp.i || this.lastDest.j != tp.j) {
+      let destTile = this.grid.worldToGrid(this.target);
+      if (this.lastDest.i != destTile.i || this.lastDest.j != destTile.j) {
         if (!this.atMeleeToTarget()) {
           this.unclaim();
           this.start(this.target, this.onChaseComplete);
         }
         else {
-          this.lastDest.i = tp.i;
-          this.lastDest.j = tp.j;
+          this.lastDest.i = destTile.i;
+          this.lastDest.j = destTile.j;
         }
       }
     }

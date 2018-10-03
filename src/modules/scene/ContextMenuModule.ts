@@ -9,6 +9,7 @@ import { ContextMenuWindow } from "../../windows/ContextMenuWindow";
 import { GameobjectClicksModule } from "./GameobjectClicksModule";
 import { TargetListPanel } from "../../windows/TargetsListPanel";
 import { BaseUnit } from "../../actors/BaseUnit";
+import { Point } from "../../types/Position";
 
 export class ContextMenuModule {
 
@@ -58,7 +59,7 @@ export class ContextMenuModule {
     }
   }
 
-  private worldToScreen(p:{x: number, y:number}):{x: number, y: number} {
+  private worldToScreen(p: Point): Point {
     let camera = this.scene.cameras.main;
     let x = (p.x - camera.midPoint.x) * camera.zoom;
     let y = (p.y - camera.midPoint.y) * camera.zoom;
