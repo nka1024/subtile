@@ -9,7 +9,7 @@ import { IUnitModule } from "../interface/IUnitModule";
 import { BaseUnit } from "../../actors/BaseUnit";
 import { UnitMoverModule } from "./UnitMoverModule";
 import { TileGrid } from "../../TileGrid";
-import { UnitPerimeterSpot, UnitPerimeterModule } from "./UnitPerimeterModule";
+import { UnitPerimeterSpot } from "./UnitPerimeterModule";
 import { Tile, Point } from "../../types/Position";
 import { UnitStateModule } from "./UnitStateModule";
 
@@ -36,35 +36,30 @@ export class UnitChaseModule implements IUnitModule {
 
   private setTarget(target: BaseUnit) {
     this.target = target;
-    if(this.target) {
-      this.state.hasChaseTarget = true;
-      this.state.targetPerimeter = target.perimeter;
-    } else {
-      this.state.hasChaseTarget = false;
-      this.state.targetPerimeter = null;
-    }
+    this.state.chaseTarget = target;
+    this.state.isChasing = target != null;
   }
 
   public deploy(target: BaseUnit) {
     this.untrackTargetRevokes();
     this.setTarget(target);
-    
+
     this.target.perimeter = target.perimeter;
     this.trackTargetRevokes();
     this.lastDest = this.grid.worldToGrid(target);
 
     // find first attacked spot with no defenders
     let spots = this.target.perimeter.attackedSpots;
-    let spot:UnitPerimeterSpot = null;
+    let spot: UnitPerimeterSpot = null;
     if (spots.length > 0) {
       for (let attackedSpot of spots) {
         if (attackedSpot.defender == null) {
           spot = attackedSpot;
           let tile = spot.attacker.tile();
-          spot.attacker.mover.placeToTile({i: tile.i, j: tile.j + 1})
+          spot.attacker.mover.placeToTile({ i: tile.i, j: tile.j + 1 })
         }
       }
-    } 
+    }
 
     // if nothing, find first empty spot
     if (!spot) {
@@ -99,7 +94,7 @@ export class UnitChaseModule implements IUnitModule {
           this.mover.onStepComplete = onStepComplete;
           this.mover.onPathComplete = onPathComplete;
           spot = this.target.perimeter.findEmptyPerimeterSpot(this.owner, this.owner.side);
-          
+
           if (!spot) {
             console.log('empty spots not found')
           }
@@ -123,7 +118,7 @@ export class UnitChaseModule implements IUnitModule {
           this.mover.onStepComplete = onStepComplete;
           this.mover.onPathComplete = onPathComplete;
 
-          let spot = this.target.perimeter.findEmptyPerimeterSpot(this.owner,this.owner.side);
+          let spot = this.target.perimeter.findEmptyPerimeterSpot(this.owner, this.owner.side);
           if (!spot) {
             console.log('empty spots not found')
           }
@@ -147,7 +142,7 @@ export class UnitChaseModule implements IUnitModule {
 
   private onTargetClaimRevoked = () => {
     let distance = this.gridDistanceToTarget();
-    
+
     // if distance is still claimable
     if (Math.abs(distance.i) <= 1 && Math.abs(distance.j) <= 1) {
       // try to claim same spot
@@ -156,7 +151,7 @@ export class UnitChaseModule implements IUnitModule {
       if (!this.isClaimed(spot)) {
         this.claim(spot);
         return;
-      } 
+      }
     }
 
     // find new spot and claim it
@@ -186,7 +181,7 @@ export class UnitChaseModule implements IUnitModule {
     this.claimedSpot = null;
   }
 
-  private claim(spot:UnitPerimeterSpot) {
+  private claim(spot: UnitPerimeterSpot) {
     this.unclaim();
     this.claimedSpot = spot;
     if (this.owner.side == "attack") {
@@ -197,7 +192,7 @@ export class UnitChaseModule implements IUnitModule {
     }
   }
 
-  private isClaimed(spot:UnitPerimeterSpot) {
+  private isClaimed(spot: UnitPerimeterSpot) {
     if (this.owner.side == "attack") {
       return spot.attacker != null;
     }

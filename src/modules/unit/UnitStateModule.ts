@@ -7,16 +7,15 @@
 
 import { IUnitModule } from "../interface/IUnitModule";
 import { BaseUnit } from "../../actors/BaseUnit";
-import { UnitPerimeterModule } from "./UnitPerimeterModule";
 
 export class UnitStateModule implements IUnitModule {
 
   private owner: BaseUnit;
 
-  public targetPerimeter: UnitPerimeterModule;
-
-  public hasChaseTarget: boolean;
+  public isChasing: boolean;
   public isFighting: boolean;
+
+  public chaseTarget: BaseUnit;
   public fightTarget: BaseUnit;
 
   constructor(owner: BaseUnit) {

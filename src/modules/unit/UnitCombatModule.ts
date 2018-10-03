@@ -49,7 +49,7 @@ export class UnitCombatModule implements IUnitModule {
 
   update() {
     // start fight if attacker and defender are in the same tile
-    if (this.state.hasChaseTarget && !this.state.isFighting) {
+    if (this.state.isChasing && !this.state.isFighting) {
       this.findTargets();
     }
   }
@@ -142,7 +142,7 @@ export class UnitCombatModule implements IUnitModule {
   }
 
   private findTargets() {
-    let spot = this.state.targetPerimeter.spotOfUnit(this.owner);
+    let spot = this.target.perimeter.spotOfUnit(this.owner);
     if (spot) {
       if (this.owner.side == 'attack') {
         if (spot.defender) {
