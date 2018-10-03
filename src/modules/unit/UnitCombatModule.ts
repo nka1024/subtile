@@ -109,7 +109,7 @@ export class UnitCombatModule implements IUnitModule {
     this.fightTarget = null;
     clearInterval(this.attackTimer);
 
-    if (reason != 'death') {
+    if (reason != 'death' && reason != 'return') {
       this.owner.chase.restartIfHasTarget();
     }
   }
@@ -127,7 +127,7 @@ export class UnitCombatModule implements IUnitModule {
       console.log('stopping attack: target is dead');
       this.stopFight("dead_target")
     } else {
-      let damage = 0.3; //Math.random()/100 + Math.random()/50;
+      let damage = Math.random()/100 + Math.random()/50;
       this.fightTarget.combat.sufferAttack({ attacker: this.owner, damage: damage });
       console.log('performing attack');
 

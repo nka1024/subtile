@@ -35,7 +35,7 @@ export class GameplayRootScene extends Phaser.Scene {
   private grid: TileGrid;
 
   // objects
-  private player: HeroUnit;
+  public player: HeroUnit;
   private unitsGrp: Phaser.GameObjects.Group;
   private deployedSquads: Array<SquadUnit> = [];
 
@@ -158,11 +158,11 @@ export class GameplayRootScene extends Phaser.Scene {
     });
 
     this.createEnemy(10, 14);
-    this.createEnemy(11, 16);
+    // this.createEnemy(11, 16);
     this.createEnemy(8, 19);
     this.createEnemy(15, 10);
-    this.createEnemy(14, 15);
-    this.createEnemy(6, 13);
+    // this.createEnemy(14, 15);
+    // this.createEnemy(6, 13);
 
     this.contextMenuModule.onReturnClicked = (object: BaseUnit) => {
       this.returnSquad(object as SquadUnit);

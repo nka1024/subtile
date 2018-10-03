@@ -14,6 +14,7 @@ import { ISelectable } from "./ISelectable";
 import { BaseUnit } from "./BaseUnit";
 import { UnitData } from "../Hero";
 import { CONST } from "../const/const";
+import { GameplayRootScene } from "../scenes/GameplayRootScene";
 
 export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
 
@@ -28,7 +29,7 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
   constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid, conf: UnitData, squadType: number) {
     super(scene, x, y, CONST.SQUAD_SPEED, grid, conf, 'infantry_' + squadType + '_idle_48x48');
 
-    this.banner = scene.add.image(0,0, this.side == "attack" ? "banner_red_11x31": "banner_hazel_11x31");
+    this.banner = scene.add.image(0, 0, this.side == "attack" ? "banner_red_11x31" : "banner_hazel_11x31");
 
     this.squadType = squadType;
     this.selection = new UnitSelectionModule(this, scene);
@@ -85,9 +86,8 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     this.banner.x = this.x + 1;
     this.banner.y = this.y - 8;
     this.banner.depth = this.depth + 1;
-    
-    // this.grid.d();
-    
+
+    this.targetScanUpdate()
   }
 
   destroy() {
@@ -100,7 +100,13 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
 
 
   private targetScanUpdate() {
-
+    if (!this.chase.target) {
+      let player = (this.scene as GameplayRootScene).player;
+      let distToPlayer = this.grid.distanceXY(player, this, true);
+      if (distToPlayer.i <= 4 && distToPlayer.j <= 4) {
+        this.chase.start(player, () => { });
+      }
+    }
   }
   // Fighting
 
