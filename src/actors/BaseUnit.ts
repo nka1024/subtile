@@ -12,6 +12,8 @@ import { UnitModuleCore } from "../modules/UnitModuleCore";
 import { TileGrid } from "../TileGrid";
 import { UnitPerimeterModule } from "../modules/unit/UnitPerimeterModule";
 import { UnitData } from "../Hero";
+import { UnitCombatModule } from "../modules/unit/UnitCombatModule";
+import { UnitChaseModule } from "../modules/unit/UnitChaseModule";
 
 export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
 
@@ -21,11 +23,14 @@ export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
   public grid: TileGrid;
 
   // modules
+  public combat: UnitCombatModule;
   public mover: UnitMoverModule;
   public progress: ProgressModule;
   public hp: ProgressModule;
   public perimeter: UnitPerimeterModule;
   public events: Phaser.Events.EventEmitter;
+  public chase: UnitChaseModule;
+
 
   protected core: UnitModuleCore;
 
@@ -40,7 +45,9 @@ export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
     this.mover = new UnitMoverModule(this, scene, grid, speed);
     this.progress = new ProgressModule(this, scene, 'progress');
     this.hp = new ProgressModule(this, scene, 'hp');
-    this.core = new UnitModuleCore([this.mover, this.progress, this.perimeter, this.hp]);
+    this.chase = new UnitChaseModule(this, this.mover, grid);
+    this.combat = new UnitCombatModule(this, scene, this.mover, grid);
+    this.core = new UnitModuleCore([this.mover, this.progress, this.perimeter, this.hp, this.chase, this.combat]);
 
     this.setInteractive();
   }
@@ -70,19 +77,9 @@ export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
     return this.grid.worldToGrid(this.x, this.y);
   }
 
-  public sufferAttack(attack: {attacker: BaseUnit, damage: number}) {
-    this.conf.health -= attack.damage;
-
-    if (this.conf.health <= 0) {
-      this.events.emit('death');
-    }
-  }
-
-
   public aggressedBy(who: BaseUnit) {
     
   }
-
   
   public get side():string {
     return this.conf.id.includes("type_") ? "defend" : "attack";

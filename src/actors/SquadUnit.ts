@@ -13,15 +13,12 @@ import { UnitSelectionModule } from "../modules/unit/UnitSelectionModule";
 import { ISelectable } from "./ISelectable";
 import { BaseUnit } from "./BaseUnit";
 import { UnitData } from "../Hero";
-import { FloatingText } from "../FloatingText";
 import { CONST } from "../const/const";
-import { UnitChaseModule } from "../modules/unit/UnitChaseModule";
 
 export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
 
   public selection: UnitSelectionModule;
   public scoutee: ScouteeModule;
-  public chase: UnitChaseModule;
 
   private squadType: number = 1;
 
@@ -36,8 +33,7 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     this.squadType = squadType;
     this.selection = new UnitSelectionModule(this, scene);
     this.scoutee = new ScouteeModule(this.progress);
-    this.chase = new UnitChaseModule(this, this.mover, grid);
-    this.core.addModules([this.scoutee, this.selection, this.chase])
+    this.core.addModules([this.scoutee, this.selection])
 
     this.initializeOnce();
 
@@ -85,31 +81,13 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     this.depth = this.y - 4;
 
     super.update();
-    this.fightUpdate();
 
     this.banner.x = this.x + 1;
     this.banner.y = this.y - 8;
     this.banner.depth = this.depth + 1;
     
 
-    // start fight if attacker and defender are in the same tile
-    if (this.chase.target && !this.isFighting) {
-      let spot = this.chase.target.perimeter.spotOfUnit(this);
-      if (spot) {
-        if (this.side == 'attack') {
-          if (spot.defender) {
-            console.log('startFight with defender' + spot.defender.conf.id);
-            this.startFight(spot.defender);
-          }
-        }
-        else if (this.side == 'defend') {
-          if (spot.attacker) {
-            console.log('startFight with attacker ' + spot.defender.conf.id);
-            this.startFight(spot.attacker);
-          }
-        }
-      }
-    }
+    
   }
 
   destroy() {
@@ -123,101 +101,16 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
 
   // Fighting
 
-  public fightTarget: BaseUnit;
-  public isFighting: boolean;
-  private attackTimer: any;
-  public startFight(target: BaseUnit) {
-    console.log('start fight against: ' + target.conf.id);
-    let direction = this.perimeter.findRelativePerimeterSpot(target.x, target.y);
-    this.isFighting = true;
-    this.fightTarget = target;
-    this.flipX = direction.j == 0;
-    this.mover.pauseUpdates(true);
-    this.playUnitAnim('fight', true);
 
-    this.flipOriginByDirection(direction, false);
-    // same tile
-    if (direction.i == 1 && direction.j == 1) {
-      let heroDirection = this.chase.target.perimeter.findRelativePerimeterSpot(target.x, target.y);
+  // private flipOriginByDirection(direction: {i: number, j: number}, flip: boolean) {
+  //   if (direction.j == 1) this.originX = 0.5
+  //   else if (direction.j == 0) this.originX = flip ? 0.25 : 0.75;
+  //   else if (direction.j == 2) this.originX = flip ? 0.75 : 0.25;
 
-      if (this.side == 'defend') {
-        this.flipOriginByDirection(heroDirection, true);
-      }
-      else if (this.side == 'attack') {
-
-        this.flipOriginByDirection(heroDirection, false);
-      }
-    }
-    this.attackTimer = setInterval(() => { this.performAttack() }, 1000);
-  }
-
-  private flipOriginByDirection(direction: {i: number, j: number}, flip: boolean) {
-    if (direction.j == 1) this.originX = 0.5
-    // else if (direction.j == 0) this.originX = flip ? 0.25 : 0.75;
-    // else if (direction.j == 2) this.originX = flip ? 0.75 : 0.25;
-
-    if (direction.i == 1) this.originY = 0.5;
-  //   else if (direction.i == 0) this.originY = flip ? 0.25 : 0.75;
-  //   else if (direction.i == 2) this.originY = flip ? 0.75 : 0.25;
-  }
-  
-  // reason: 'death', 'dead_target', 'no_target', 'return'
-  public stopFight(reason: string) {
-    console.log('stop fight: ' + this.conf.id);
-    if (this.fightTarget && !this.fightTarget.destroyed) {
-      // this.fightTarget.perimeter.unclaimSpot(this.x, this.y);
-    }
-    if (this.mover) {
-      this.mover.pauseUpdates(false);
-    }
-    this.isFighting = false;
-    this.fightTarget = null;
-    clearInterval(this.attackTimer);
-    this.originX = 0.5;
-    this.originY = 0.5;
-
-    if (reason != 'death') {
-      this.chase.restartIfHasTarget();
-    }
-  }
-
-  private performAttack() {
-    if (!this.fightTarget || !this.fightTarget.active) {
-      this.stopFight("no_target");
-      return;
-    }
-
-    if (this.fightTarget.conf.health <= 0) {
-      console.log('stopping attack: target is dead');
-      this.stopFight("dead_target")
-    } else {
-      let damage = 0.3;//Math.random()/100 + Math.random()/50;
-      this.fightTarget.sufferAttack({ attacker: this, damage: damage });
-      console.log('performing attack');
-
-      // floaty text
-
-      let floatyX = this.fightTarget.x + Math.random() * 10 - 5;
-      let floatyY = this.fightTarget.y - Math.random() * 10 - 10;
-      let white = this.conf.id.indexOf('enemy') != -1;
-      new FloatingText(this.scene, floatyX, floatyY, Math.floor(damage * 1000).toString(), white);
-    }
-  }
-
-  private fightUpdate() {
-  }
-
-  public sufferAttack(attack: { attacker: BaseUnit, damage: number }) {
-    if (!this.isFighting) {
-      this.startFight(attack.attacker);
-    } else {
-      if (this.conf.health - attack.damage <= 0) {
-        this.stopFight("death");
-      }
-    }
-
-    super.sufferAttack(attack);
-  }
+  //   if (direction.i == 1) this.originY = 0.5;
+  //     else if (direction.i == 0) this.originY = flip ? 0.25 : 0.75;
+  //      else if (direction.i == 2) this.originY = flip ? 0.75 : 0.25;
+  // }
 
 
   public aggressedBy(who: BaseUnit) {
