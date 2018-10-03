@@ -109,7 +109,7 @@ export class UnitCombatModule implements IUnitModule {
     clearInterval(this.attackTimer);
 
     if (reason != 'death' && reason != 'return') {
-      this.events.emit('end_fight');
+      this.events.emit('fight_end');
     }
   }
 

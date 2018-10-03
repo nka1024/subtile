@@ -76,13 +76,17 @@ export class UnitChaseModule implements IUnitModule {
 
   public restartIfHasTarget() {
     if (this.target) {
-      let target = this.target;
-      let onChaseComplete = this.onChaseComplete;
-      this.unclaim();
-      this.stop()
-      this.start(target, onChaseComplete);
+      let targetMoved = this.lastDest.i != this.target.tile.i || this.lastDest.j != this.target.tile.j
+      if (targetMoved || !this.atMeleeToTarget()) {
+        let target = this.target;
+        let onChaseComplete = this.onChaseComplete;
+        this.unclaim();
+        this.stop()
+        this.start(target, onChaseComplete);
+      }
     }
   }
+  
   public start(target: BaseUnit, onComplete: () => void) {
     this.untrackTargetRevokes();
     this.setTarget(target);
@@ -109,8 +113,7 @@ export class UnitChaseModule implements IUnitModule {
     }
 
     let onPathComplete = () => {
-      let tile = this.grid.worldToGrid(target);
-      if (this.lastDest.i != tile.i || this.lastDest.j != tile.j) {
+      if (this.lastDest.i != target.tile.i || this.lastDest.j != target.tile.j) {
         // target already left old position, chase it again
         this.start(target, onComplete);
       } else {
@@ -223,16 +226,15 @@ export class UnitChaseModule implements IUnitModule {
   // Overrides
 
   update() {
-    if (this.target) {
-      let destTile = this.grid.worldToGrid(this.target);
-      if (this.lastDest.i != destTile.i || this.lastDest.j != destTile.j) {
+    if (this.target && !this.state.fightTarget) {
+      if (this.lastDest.i != this.target.tile.i || this.lastDest.j != this.target.tile.j) {
         if (!this.atMeleeToTarget()) {
           this.unclaim();
           this.start(this.target, this.onChaseComplete);
         }
         else {
-          this.lastDest.i = destTile.i;
-          this.lastDest.j = destTile.j;
+          this.lastDest.i = this.target.tile.i;
+          this.lastDest.j = this.target.tile.j;
         }
       }
     }

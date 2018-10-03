@@ -69,7 +69,7 @@ export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
   }
 
   public destroy() {
-    this.core.destroy();
+    if (this.core) this.core.destroy();
     this.core = null;
     this.mover = null;
     this.progress = null;

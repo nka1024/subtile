@@ -97,8 +97,8 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
   }
 
   destroy() {
-    this.combat.events.removeListener('fight_end', this.onFightEnd);
-    this.banner.destroy();
+    if (this.combat) this.combat.events.removeListener('fight_end', this.onFightEnd);
+    if (this.banner) this.banner.destroy();
     this.combat = null;
     this.scoutee = null;
     this.progress = null;
