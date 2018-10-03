@@ -39,11 +39,14 @@ export class UnitChaseModule implements IUnitModule {
 
     // find first attacked spot with no defenders
     let spots = this.tp.attackedSpots;
-    let spot = null;
+    let spot:UnitPerimeterSpot = null;
     if (spots.length > 0) {
       for (let attackedSpot of spots) {
-        if (attackedSpot.defender == null)
+        if (attackedSpot.defender == null) {
           spot = attackedSpot;
+          let tile = spot.attacker.positionIJ();
+          spot.attacker.mover.placeToIJ({i: tile.i, j: tile.j + 1})
+        }
       }
     } 
 
@@ -58,6 +61,15 @@ export class UnitChaseModule implements IUnitModule {
     this.mover.placeToXY(spotXY);
   }
 
+  public restartIfHasTarget() {
+    if (this.target) {
+      let target = this.target;
+      let onChaseComplete = this.onChaseComplete;
+      this.unclaim();
+      this.stop()
+      this.start(target, onChaseComplete);
+    }
+  }
   public start(target: BaseUnit, onComplete: () => void) {
     this.untrackTargetRevokes();
     this.target = target;

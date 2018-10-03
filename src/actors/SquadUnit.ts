@@ -26,9 +26,12 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
   private squadType: number = 1;
 
   private static initialized: boolean = false;
+  private banner: Phaser.GameObjects.Image;
 
   constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid, conf: UnitData, squadType: number) {
     super(scene, x, y, CONST.SQUAD_SPEED, grid, conf, 'infantry_' + squadType + '_idle_48x48');
+
+    this.banner = scene.add.image(0,0, this.side == "attack" ? "banner_red_11x31": "banner_hazel_11x31");
 
     this.squadType = squadType;
     this.selection = new UnitSelectionModule(this, scene);
@@ -84,6 +87,11 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     super.update();
     this.fightUpdate();
 
+    this.banner.x = this.x + 1;
+    this.banner.y = this.y - 8;
+    this.banner.depth = this.depth + 1;
+    
+
     // start fight if attacker and defender are in the same tile
     if (this.chase.target && !this.isFighting) {
       let spot = this.chase.target.perimeter.spotOfUnit(this);
@@ -105,6 +113,7 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
   }
 
   destroy() {
+    this.banner.destroy();
     this.scoutee = null;
     this.progress = null;
     this.selection = null;
@@ -144,15 +153,16 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
 
   private flipOriginByDirection(direction: {i: number, j: number}, flip: boolean) {
     if (direction.j == 1) this.originX = 0.5
-    else if (direction.j == 0) this.originX = flip ? 0.25 : 0.75;
-    else if (direction.j == 2) this.originX = flip ? 0.75 : 0.25;
+    // else if (direction.j == 0) this.originX = flip ? 0.25 : 0.75;
+    // else if (direction.j == 2) this.originX = flip ? 0.75 : 0.25;
 
     if (direction.i == 1) this.originY = 0.5;
-    else if (direction.i == 0) this.originY = flip ? 0.25 : 0.75;
-    else if (direction.i == 2) this.originY = flip ? 0.75 : 0.25;
+  //   else if (direction.i == 0) this.originY = flip ? 0.25 : 0.75;
+  //   else if (direction.i == 2) this.originY = flip ? 0.75 : 0.25;
   }
-
-  public stopFight() {
+  
+  // reason: 'death', 'dead_target', 'no_target', 'return'
+  public stopFight(reason: string) {
     console.log('stop fight: ' + this.conf.id);
     if (this.fightTarget && !this.fightTarget.destroyed) {
       // this.fightTarget.perimeter.unclaimSpot(this.x, this.y);
@@ -165,17 +175,21 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     clearInterval(this.attackTimer);
     this.originX = 0.5;
     this.originY = 0.5;
+
+    if (reason != 'death') {
+      this.chase.restartIfHasTarget();
+    }
   }
 
   private performAttack() {
     if (!this.fightTarget || !this.fightTarget.active) {
-      this.stopFight();
+      this.stopFight("no_target");
       return;
     }
 
     if (this.fightTarget.conf.health <= 0) {
       console.log('stopping attack: target is dead');
-      this.stopFight()
+      this.stopFight("dead_target")
     } else {
       let damage = 0.3;//Math.random()/100 + Math.random()/50;
       this.fightTarget.sufferAttack({ attacker: this, damage: damage });
@@ -198,7 +212,7 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
       this.startFight(attack.attacker);
     } else {
       if (this.conf.health - attack.damage <= 0) {
-        this.stopFight();
+        this.stopFight("death");
       }
     }
 

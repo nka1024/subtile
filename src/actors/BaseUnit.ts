@@ -18,6 +18,8 @@ export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
   public conf: UnitData;
   public destroyed: boolean;
   
+  public grid: TileGrid;
+
   // modules
   public mover: UnitMoverModule;
   public progress: ProgressModule;
@@ -30,9 +32,10 @@ export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
   constructor(scene: Phaser.Scene, x: number, y: number, speed: number, grid: TileGrid, conf:UnitData, texture: string) {
     super(scene, x, y, texture);
     this.conf = conf;
+    this.grid = grid;
 
     this.events = new Phaser.Events.EventEmitter();
-
+    
     this.perimeter = new UnitPerimeterModule(this, grid);
     this.mover = new UnitMoverModule(this, scene, grid, speed);
     this.progress = new ProgressModule(this, scene, 'progress');
@@ -61,6 +64,10 @@ export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
     this.progress = null;
     this.destroyed = true;
     super.destroy()
+  }
+
+  public positionIJ(): {i: number, j: number} {
+    return this.grid.worldToGrid(this.x, this.y);
   }
 
   public sufferAttack(attack: {attacker: BaseUnit, damage: number}) {

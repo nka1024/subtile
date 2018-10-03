@@ -30,6 +30,8 @@ export class AssetsLoader {
     scene.load.image("cursor_grid_2x_32x32", "./assets/cursor_grid_2x_32x32.png");
     scene.load.image("target_select_36x36", "./assets/target_select_36x36.png");
     scene.load.image("target_select_40x40", "./assets/target_select_40x40.png");
+    scene.load.image("banner_hazel_11x31", "./assets/banner_hazel_11x31.png");
+    scene.load.image("banner_red_11x31", "./assets/banner_red_11x31.png");
 
     scene.load.image("progress_yellow_50x2", "./assets/progress_yellow_50x2.png");
     scene.load.image("progress_black_52x4", "./assets/progress_black_52x4.png");

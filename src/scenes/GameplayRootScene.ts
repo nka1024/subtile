@@ -125,7 +125,7 @@ export class GameplayRootScene extends Phaser.Scene {
       for (let squad of this.deployedSquads) {
         if (squad.conf.id == conf.id) {
           if (squad.isFighting) {
-            squad.stopFight()
+            squad.stopFight('return');
           }
           this.returnSquad(squad);
         }
