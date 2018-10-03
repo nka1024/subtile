@@ -44,9 +44,9 @@ export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
     this.events = new Phaser.Events.EventEmitter();
     
     this.perimeter  = new UnitPerimeterModule(this, grid);
-    this.mover      = new UnitMoverModule(this, scene, grid, speed);
-    this.progress   = new ProgressModule(this, scene, 'progress');
     this.state      = new UnitStateModule(this);
+    this.mover      = new UnitMoverModule(this, scene, this.state, grid, speed);
+    this.progress   = new ProgressModule(this, scene, 'progress');
     this.hp         = new ProgressModule(this, scene, 'hp');
     this.chase      = new UnitChaseModule(this, this.state, this.mover, grid);
     this.combat     = new UnitCombatModule(this, scene, this.mover, this.state, grid);

@@ -14,10 +14,11 @@ export class UnitStateModule implements IUnitModule {
 
   public isChasing: boolean;
   public isFighting: boolean;
+  public isMoving: boolean;
 
   public chaseTarget: BaseUnit;
   public fightTarget: BaseUnit;
-
+  
   constructor(owner: BaseUnit) {
 
   }

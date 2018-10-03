@@ -208,6 +208,11 @@ export class UnitPerimeterModule extends Phaser.Events.EventEmitter implements I
     return null;
   }
 
+  public isWalkableSpot(spot: UnitPerimeterSpot):boolean {
+    let p = this.grid.worldToGrid(this.owner);
+    return this.grid.isFree(p.i + spot.i - 1, p.j + spot.j - 1);
+  }
+
   private spotCheckOrder(s: Tile): Tile[] {
     let p = this.grid.worldToGrid(this.owner);
     let result = null;

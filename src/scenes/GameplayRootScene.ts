@@ -87,8 +87,7 @@ export class GameplayRootScene extends Phaser.Scene {
     zoomPanel.show();
 
 
-    let player = new HeroUnit(this, 400, 280, this.grid, Hero.makeHeroConf());
-    player.depth = player.y + 16;
+    let player = new HeroUnit(this, 0, 0, this.grid, Hero.makeHeroConf());
     let hero = new Hero();
 
     this.cursorModule.onClick = (cursor) => {
@@ -107,8 +106,8 @@ export class GameplayRootScene extends Phaser.Scene {
     this.add.existing(player);
     this.player = player;
 
-    player.mover.moveTo({ x: 444, y: 280 }, true);
-    this.cameras.main.centerOn(444, 280);
+    player.mover.placeToTile({i: 17, j: 2});
+    this.cameras.main.centerOn(player.x, player.y);
     this.unitsGrp.add(this.player);
     let units = new UnitsPanel();
     units.populate(hero.data.units);
@@ -157,12 +156,11 @@ export class GameplayRootScene extends Phaser.Scene {
       }
     });
 
-    this.createEnemy(10, 14);
-    // this.createEnemy(11, 16);
+    this.createEnemy(1, 11);
+    this.createEnemy(13, 18);
     this.createEnemy(8, 19);
     this.createEnemy(15, 10);
-    // this.createEnemy(14, 15);
-    // this.createEnemy(6, 13);
+    this.createEnemy(20, 9);
 
     this.contextMenuModule.onReturnClicked = (object: BaseUnit) => {
       this.returnSquad(object as SquadUnit);

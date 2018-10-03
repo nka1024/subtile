@@ -9,6 +9,7 @@ import { TileGrid } from "../../TileGrid";
 import { IUnit } from "../../actors/IUnit";
 import { IUnitModule } from "../interface/IUnitModule";
 import { Point, Tile } from "../../types/Position";
+import { UnitStateModule } from "./UnitStateModule";
 
 export class UnitMoverModule implements IUnitModule {
 
@@ -22,6 +23,7 @@ export class UnitMoverModule implements IUnitModule {
   public unit: IUnit;
   private scene: Phaser.Scene;
   private grid: TileGrid;
+  private state: UnitStateModule;
 
   private dest: Tile;
   private path: Point[];
@@ -32,9 +34,10 @@ export class UnitMoverModule implements IUnitModule {
   private speed: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
   private updatesPaused: boolean;
 
-  constructor(unit: IUnit, scene: Phaser.Scene, grid: TileGrid, speed: number) {
+  constructor(unit: IUnit, scene: Phaser.Scene, state: UnitStateModule, grid: TileGrid, speed: number) {
     this.moveSpeed = speed;
     this.unit = unit;
+    this.state = state;
     this.scene = scene;
     this.grid = grid;
   }
@@ -112,14 +115,19 @@ export class UnitMoverModule implements IUnitModule {
     this.pathBySteps = null;
     this.path = null;
     this.pathDots = null;
+    this.state = null;
   }
 
 
   // Private
 
   private startMoving(grid: TileGrid) {
-    if (this.path == null) return;
-
+    if (this.path == null) {
+      this.state.isMoving = false;
+      return;
+    }
+    
+    this.state.isMoving = true;
     this.pathBySteps = [];
 
     let start = null
@@ -159,6 +167,7 @@ export class UnitMoverModule implements IUnitModule {
 
   private finishPath() {
     // finished path
+    this.state.isMoving = false;
     this.nextDest = null;
     // this.path = null;
     this.pathBySteps = null;

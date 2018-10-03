@@ -40,8 +40,14 @@ export class UnitChaseModule implements IUnitModule {
     this.state.isChasing = target != null;
   }
 
+
+  public redeployDefender() {
+    this.deployDefender(this.target);
+  }
+
   public deployDefender(target: BaseUnit) {
     this.untrackTargetRevokes();
+    this.unclaim();
     this.setTarget(target);
 
     this.target.perimeter = target.perimeter;
@@ -53,12 +59,13 @@ export class UnitChaseModule implements IUnitModule {
     let spot: UnitPerimeterSpot = null;
     if (spots.length > 0) {
       for (let attackedSpot of spots) {
-        if (attackedSpot.defender == null) {
-          spot = attackedSpot;
-          let tile = spot.attacker.tile;
-          let push = this.owner.perimeter.pushBackDistance(spot);
-
-          spot.attacker.mover.placeToTile({ i: tile.i + push.i, j: tile.j + push.j })
+        for (let s of [attackedSpot, attackedSpot.prev, attackedSpot.next]) {
+          if (s.defender == null) {
+            if (this.target.perimeter.isWalkableSpot(s)) {
+              spot = s;
+              break;
+            }
+          }
         }
       }
     }
@@ -68,10 +75,17 @@ export class UnitChaseModule implements IUnitModule {
       spot = this.target.perimeter.findEmptyPerimeterSpot(target, this.owner.side);
     }
 
+    if (!spot) {
+      return;
+    }
     // claim and deploy to spot
+    
     this.claim(spot);
     let spotXY = this.target.perimeter.perimeterSpotToXY(spot);
-    this.mover.placeToPoint(spotXY);
+    // this.mover.placeToPoint(spotXY);
+    this.mover.onPathComplete = null;
+    this.mover.onStepComplete = null;
+    this.mover.moveTo(spotXY, true);
   }
 
   public restartIfHasTarget() {
@@ -86,7 +100,7 @@ export class UnitChaseModule implements IUnitModule {
       }
     }
   }
-  
+
   public start(target: BaseUnit, onComplete: () => void) {
     this.untrackTargetRevokes();
     this.setTarget(target);
