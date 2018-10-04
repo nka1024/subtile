@@ -225,9 +225,13 @@ export class TileGrid {
 
   public findPath(from: Tile, to: Tile, callback: (path: Tile[]) => void): number {
     return this.pathfinder.findPath(from.j, from.i, to.j, to.i, (path: Point[]) => {
-      callback(path.map((v, i, arr) => {
-        return {i: v.y, j: v.x};
-      }));
+      let result = null;
+      if (path) {
+        result = path.map((v, i, arr) => {
+          return {i: v.y, j: v.x};
+        });
+      }
+      callback(result);
     });
   }
 
