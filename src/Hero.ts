@@ -69,7 +69,7 @@ export class Hero {
       quantity: 99
     });
 
-    for (let i in [0, 1]) {
+    for (let i in [0, 1,2,3,4,5,6,7,8,9]) {
       this.data.units.push({
         id: 'type_' + (i + 2) + '_unit_1',
         icon: "infantry_2_icon",

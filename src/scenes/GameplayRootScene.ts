@@ -209,7 +209,7 @@ export class GameplayRootScene extends Phaser.Scene {
   }
 
   private createEnemy(i: number, j: number) {
-    let worldPos = this.grid.gridToWorld(i, j);
+    let worldPos = this.grid.gridToWorld({i: i, j: j});
     let enemyUnit = new SquadUnit(this, worldPos.x + 16, worldPos.y + 16, this.grid, Hero.makeRogueSquadConf(), 2);
     this.add.existing(enemyUnit);
     this.unitsGrp.add(enemyUnit);

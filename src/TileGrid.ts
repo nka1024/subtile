@@ -14,6 +14,7 @@ export class TileGrid {
   private grid: Phaser.GameObjects.Image[];
   private tiles: Phaser.GameObjects.Image[][];
   private data: number[][];
+  private claims: number[][];
 
   private scene: Phaser.Scene;
   constructor(scene: Phaser.Scene) {
@@ -21,12 +22,15 @@ export class TileGrid {
 
     this.data = [];
     this.tiles = [];
+    this.claims = [];
     for (let i = 0; i < 24; i++) {
       this.data[i] = [];
       this.tiles[i] = [];
+      this.claims[i] = [];
       for (let j = 0; j < 24; j++) {
         this.data[i][j] = 0;
         this.tiles[i][j] = null;
+        this.claims[i][j] = 0;
       }
     }
     
@@ -75,12 +79,12 @@ export class TileGrid {
       for (let j = 0; j < 24; j++) {
         let n = this.data[i][j];
         let color = n == 0 ? "green" : "red";
-        this.tiles[i][j] = this.createTile(i, j, color);
+        this.tiles[i][j] = this.createTile({i: i, j: j}, color);
       }
     }
   }
 
-  public getTileXY(p: Point):any {
+  public getTileIJ(p: Point):any {
     try {
       if (p.x < 0 || p.y < 0) throw('cant be negative')
       let gridPos = this.worldToGrid(p);
@@ -96,17 +100,43 @@ export class TileGrid {
     return null;
   }
 
-  public isFree(i: number, j: number) {
-    return this.data[i][j] == 0;
+  public isFree(tile: Tile): boolean {
+    if (tile.i < 0 && tile.i >= this.data.length) return false;
+    if (tile.j < 0 && tile.j >= this.data.length) return false;
+    return this.data[tile.i][tile.j] == 0 && this.claims[tile.i][tile.j] == 0;
   }
   
-  private createTile(i: number, j: number, color: string):Phaser.GameObjects.Image {
+  public claim(tile: Tile) {
+    this.claims[tile.i][tile.j] = 1;
+  }
+
+  public unclaim(tile: Tile) {
+    this.claims[tile.i][tile.j] = 0;
+  }
+
+  public findClosestFreeTile(to: Tile) {
+    let work = {i: 0, j: 0}
+    for (let radius = 1; radius <= 4; radius++) {
+      for (let i = -radius; i <= radius; i++) {
+        for (let j = -radius; j <= radius; j++) {
+          work.i = to.i + i;
+          work.j = to.j + j;
+          if (this.isFree(work)) {
+            return work;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  private createTile(tile: Tile, color: string):Phaser.GameObjects.Image {
     let img = new Phaser.GameObjects.Image(this.scene, 0, 0, null);
     img.scaleX = 2;
     img.scaleY = 2;
     img.setTexture('grid_tile_' + color + '_16_a50');
     img.depth = UI_DEPTH.EDITOR_GRID_TILE;
-    var wc = this.gridToWorld(i, j)
+    var wc = this.gridToWorld(tile)
     img.x = wc.x + 16;
     img.y = wc.y + 16;
     this.scene.add.existing(img);
@@ -114,14 +144,14 @@ export class TileGrid {
   }
 
   public editTile(cursor: Phaser.GameObjects.Image, color: string) {
-    let gridPos = this.worldToGrid(cursor);
-    let currentTile = this.tiles[gridPos.i][gridPos.j];
+    let tile = this.worldToGrid(cursor);
+    let currentTile = this.tiles[tile.i][tile.j];
     if (currentTile != null) {
       currentTile.destroy();
     }
-    let img = this.createTile(gridPos.i, gridPos.j, color);
-    this.tiles[gridPos.i][gridPos.j] = img;
-    this.data[gridPos.i][gridPos.j] = "red" ? 1 : 0;
+    let img = this.createTile(tile, color);
+    this.tiles[tile.i][tile.j] = img;
+    this.data[tile.i][tile.j] = "red" ? 1 : 0;
     
     // todo: optimize?
     this.pathfinder.setGrid(this.data);
@@ -147,10 +177,10 @@ export class TileGrid {
     this.pathfinder.setGrid(this.data);
   }
 
-  public gridToWorld(i: number, j: number): Point {
+  public gridToWorld(tile: Tile): Point {
     return {
-      x: j * 32,
-      y: i * 32
+      x: tile.j * 32,
+      y: tile.i * 32
     };
   }
   public worldToGrid(p: Point): Tile {
@@ -162,7 +192,7 @@ export class TileGrid {
 
   public snapToGrid(p: Point): Point {
     let gridPos = this.worldToGrid(p);
-    return this.gridToWorld(gridPos.i, gridPos.j);
+    return this.gridToWorld(gridPos);
   }
 
   get visible() {
@@ -193,8 +223,12 @@ export class TileGrid {
     this.pathfinder.setAcceptableTiles([0]);
   }
 
-  public findPath(from: Tile, to: Tile, callback: (path: Point[]) => void): number {
-    return this.pathfinder.findPath(from.j, from.i, to.j, to.i, callback);
+  public findPath(from: Tile, to: Tile, callback: (path: Tile[]) => void): number {
+    return this.pathfinder.findPath(from.j, from.i, to.j, to.i, (path: Point[]) => {
+      callback(path.map((v, i, arr) => {
+        return {i: v.y, j: v.x};
+      }));
+    });
   }
 
   public update() {

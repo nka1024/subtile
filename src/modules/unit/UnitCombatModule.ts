@@ -142,37 +142,7 @@ export class UnitCombatModule implements IUnitModule {
   }
 
   private findTargets() {
-    let spot = this.state.chaseTarget.perimeter.spotOfUnit(this.owner);
-    if (spot) {
-      if (this.owner.side == 'attack') {
-        if (spot.defender) {
-          console.log('startFight with defender' + spot.defender.conf.id);
-          this.startFight(spot.defender);
-        }
-      }
-      else if (this.owner.side == 'defend') {
-        // defend nearby cells from attackers
-        for (let spot_ of [spot, spot.prev, spot.next, spot.prev.prev, spot.next.next, spot.next.next.next, spot.prev.prev.prev, spot.next.next.next.next]) {
-          if (spot_.attacker) {
-            let atkr = spot_.attacker;
-            let ownr = this.owner;
-            let d = this.grid.distance(ownr.tile, atkr.tile, true)
-            if (d.i > 1 || d.j > 1) {
-              ownr.chase.redeployDefender();
-            } else {
-              this.startFight(spot_.attacker);
-              if (atkr.tile.i == this.owner.tile.i && atkr.tile.j == this.owner.tile.j) {
-                let tile = atkr.tile;
-                let push = this.owner.perimeter.pushBackDistance(spot_);
-                atkr.mover.placeToTile({ i: tile.i + push.i, j: tile.j + push.j })
-              }
-
-              break;
-            }
-          }
-        }
-      }
-    }
+    
   }
 
 }

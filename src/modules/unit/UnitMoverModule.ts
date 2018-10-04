@@ -10,6 +10,7 @@ import { IUnit } from "../../actors/IUnit";
 import { IUnitModule } from "../interface/IUnitModule";
 import { Point, Tile } from "../../types/Position";
 import { UnitStateModule } from "./UnitStateModule";
+import { BaseUnit } from "../../actors/BaseUnit";
 
 export class UnitMoverModule implements IUnitModule {
 
@@ -20,13 +21,13 @@ export class UnitMoverModule implements IUnitModule {
   public onPathComplete: () => void;
   
   // private
-  public unit: IUnit;
+  public unit: BaseUnit;
   private scene: Phaser.Scene;
   private grid: TileGrid;
   private state: UnitStateModule;
 
   private dest: Tile;
-  private path: Point[];
+  private path: Tile[];
   private pathDots: Phaser.GameObjects.Image[];
 
   private nextDest: Point;
@@ -34,7 +35,9 @@ export class UnitMoverModule implements IUnitModule {
   private speed: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
   private updatesPaused: boolean;
 
-  constructor(unit: IUnit, scene: Phaser.Scene, state: UnitStateModule, grid: TileGrid, speed: number) {
+  public claimedTile: Tile;
+
+  constructor(unit: BaseUnit, scene: Phaser.Scene, state: UnitStateModule, grid: TileGrid, speed: number) {
     this.moveSpeed = speed;
     this.unit = unit;
     this.state = state;
@@ -47,13 +50,14 @@ export class UnitMoverModule implements IUnitModule {
 
   /// moves unit instantly
   public placeToTile(tile: Tile) {
-    let destXY = this.grid.gridToWorld(tile.i, tile.j);
+    let destXY = this.grid.gridToWorld(tile);
     this.placeToPoint(destXY);
   }
   /// moves unit instantly
   public placeToPoint(dest: Point) {
     this.unit.x = dest.x + 16;
     this.unit.y = dest.y + 16;
+    this.claimTile(this.unit.tile);
   }
 
   /// moves unit overtime
@@ -121,6 +125,20 @@ export class UnitMoverModule implements IUnitModule {
 
   // Private
 
+  private claimTile(tile: Tile) {
+    if (this.grid.isFree(tile)) {
+      this.grid.claim(tile);
+      this.claimedTile = tile;
+    }
+  }
+
+  private unclaimTile() {
+    if (this.claimedTile) {
+      this.grid.unclaim(this.claimedTile);
+      this.claimedTile = null;
+    }
+  }
+
   private startMoving(grid: TileGrid) {
     if (this.path == null) {
       this.state.isMoving = false;
@@ -132,8 +150,7 @@ export class UnitMoverModule implements IUnitModule {
 
     let start = null
     for (let step of this.path) {
-      let gridPos = { i: step.y, j: step.x };
-      let worldPos = grid.gridToWorld(gridPos.i, gridPos.j);
+      let worldPos = grid.gridToWorld(step);
       if (start == null) {
         start = worldPos
       } else {
@@ -147,6 +164,9 @@ export class UnitMoverModule implements IUnitModule {
   }
 
   private moveNextStep() {
+    this.unclaimTile();
+    this.claimTile(this.grid.worldToGrid(this.nextDest));
+
     let distance = this.moveSpeed;
     let stepDest = {x: this.nextDest.x + 16, y:this.nextDest.y + 16};
     let finished = this.stepTowards(stepDest, distance);
@@ -215,7 +235,7 @@ export class UnitMoverModule implements IUnitModule {
 
     let dots = [];
     for (let pos of this.path) {
-      let worldPos = grid.gridToWorld(pos.y, pos.x);
+      let worldPos = grid.gridToWorld(pos);
       let img = this.scene.add.image(worldPos.x + 16, worldPos.y + 16, "path_mid_14x14");
       dots.push(img)
     }

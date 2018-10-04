@@ -39,7 +39,7 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     this.core.addModules([this.scoutee, this.selection])
 
     this.onFightEnd = () => {
-      this.chase.restartIfHasTarget();
+      // this.chase.restartIfHasTarget();
     };
     this.combat.events.on('fight_end', this.onFightEnd);
     this.initializeOnce();
