@@ -251,7 +251,7 @@ export class GameplayRootScene extends Phaser.Scene {
 
   private createEnemy(i: number, j: number) {
     let worldPos = this.grid.gridToWorld({ i: i, j: j });
-    let enemyUnit = new SquadUnit(this, worldPos.x + 16, worldPos.y + 16, this.grid, Hero.makeRogueSquadConf(), 2);
+    let enemyUnit = new SquadUnit(this, worldPos.x + 16, worldPos.y + 16, this.grid, Hero.makeRogueSquadConf());
     enemyUnit.mover.placeToTile(enemyUnit.tile);
     this.add.existing(enemyUnit);
     this.unitsGrp.add(enemyUnit);
@@ -269,7 +269,7 @@ export class GameplayRootScene extends Phaser.Scene {
     }
     if (!squad) {
       let from = this.grid.snapToGrid(this.player);
-      squad = new SquadUnit(this, from.x + 16, from.y + 16, this.grid, conf, 1);
+      squad = new SquadUnit(this, from.x + 16, from.y + 16, this.grid, conf);
       squad.events.addListener('death', () => { this.handleUnitDeath(squad); });
     }
     return squad;

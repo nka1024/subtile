@@ -26,12 +26,13 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
 
   private onFightEnd:() => void;
     
-  constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid, conf: UnitData, squadType: number) {
-    super(scene, x, y, CONST.SQUAD_SPEED, grid, conf, 'infantry_' + squadType + '_idle_48x48');
+  constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid, conf: UnitData) {
+
+    super(scene, x, y, CONST.SQUAD_SPEED, grid, conf, 'infantry_1_idle_48x48');
 
     this.banner = scene.add.image(0, 0, this.side == "attack" ? "banner_red_11x31" : "banner_hazel_11x31");
     
-    this.squadType = squadType;
+    this.squadType = this.side == "attack" ? 2 : 1;
     this.scoutee = new ScouteeModule(this.progress);
     this.core.addModules([this.scoutee, this.selection]);
 
@@ -74,10 +75,24 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
         this.scene.anims.create(fightAnim);
       }
     }
+
+    var fightAnim = {
+      key: 'archers_fight',
+      frames: this.scene.anims.generateFrameNumbers('archers_fight_48x48', { start: 0, end: 8 }),
+      frameRate: 10,
+      repeat: -1,
+      repeatDelay: 0
+    };
+    this.scene.anims.create(fightAnim);
   }
 
   public playUnitAnim(key: string, ignoreIfPlaying: boolean) {
-    let anim = 'unit_' + this.squadType + '_' + key;
+    let anim = "";
+    if (key == 'fight' && this.conf.type == "archers") {
+      anim = "archers_fight";
+    } else {
+      anim = 'unit_' + this.squadType + '_' + key;
+    }
     this.anims.play(anim, ignoreIfPlaying);
   }
 

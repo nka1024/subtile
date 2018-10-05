@@ -98,6 +98,23 @@ export class AssetsLoader {
       endFrame: 8
     });
 
+
+    scene.load.spritesheet('archers_idle_48x48', './assets/sprites/infantry_2_idle_48x48.png', {
+      frameWidth: 48,
+      frameHeight: 48,
+      endFrame: 8
+    });
+    scene.load.spritesheet('archers_walk_48x48', './assets/sprites/infantry_2_walk_48x48.png', {
+      frameWidth: 48,
+      frameHeight: 48,
+      endFrame: 4
+    });
+    scene.load.spritesheet('archers_fight_48x48', './assets/sprites/archers_fight_48x48.png', {
+      frameWidth: 48,
+      frameHeight: 48,
+      endFrame: 9
+    });
+
     scene.load.spritesheet('anim_scout_eagle_32x32', './assets/sprites/anim_scout_eagle_32x32.png', {
       frameWidth: 32,
       frameHeight: 32,

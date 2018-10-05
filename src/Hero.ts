@@ -14,6 +14,7 @@ export type UnitData = {
   energy: number;
   range: number;
   quantity: number;
+  type: string // archers, infantry, hero, scout
 }
 
 export type HeroData = {
@@ -31,6 +32,7 @@ export class Hero {
       id: "hero_squad",
       name: "Hiro",
       icon: "infantry_1_icon",
+      type: "hero",
       health: 1,
       energy: 1,
       range: 1,
@@ -43,6 +45,7 @@ export class Hero {
       id: "recon_squad",
       name: "Scouts",
       icon: "infantry_1_icon",
+      type: "scout",
       health: 1,
       energy: 1,
       range: 1,
@@ -55,6 +58,7 @@ export class Hero {
       id: "enemy_squad",
       icon: "infantry_2_icon",
       name: "Rogues",
+      type: "infantry",
       health: 1,
       energy: 1,
       range: 1,
@@ -66,8 +70,9 @@ export class Hero {
     this.data = { units: [] };
     this.data.units.push({
       id: "type_1_unit_1",
-      icon: "infantry_1_icon",
-      name: "Infantry",
+      icon: "archers_1_icon",
+      name: "Archers",
+      type: "archers",
       health: 1,
       energy: 1,
       range: 2,
@@ -78,7 +83,8 @@ export class Hero {
       this.data.units.push({
         id: 'type_' + (i + 2) + '_unit_1',
         icon: "infantry_2_icon",
-        name: "Archers",
+        name: "Infantry",
+        type: "infantry",
         range: 1,
         health: Math.random(),
         energy: Math.random(),
