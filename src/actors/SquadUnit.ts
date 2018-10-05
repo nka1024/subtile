@@ -18,7 +18,6 @@ import { GameplayRootScene } from "../scenes/GameplayRootScene";
 
 export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
 
-  public selection: UnitSelectionModule;
   public scoutee: ScouteeModule;
 
   private squadType: number = 1;
@@ -34,9 +33,8 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     this.banner = scene.add.image(0, 0, this.side == "attack" ? "banner_red_11x31" : "banner_hazel_11x31");
 
     this.squadType = squadType;
-    this.selection = new UnitSelectionModule(this, scene);
     this.scoutee = new ScouteeModule(this.progress);
-    this.core.addModules([this.scoutee, this.selection])
+    this.core.addModules([this.scoutee, this.selection]);
 
     this.onFightEnd = () => {
       // this.chase.restartIfHasTarget();

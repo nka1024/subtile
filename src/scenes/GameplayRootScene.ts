@@ -26,7 +26,6 @@ import { GameobjectClicksModule } from "../modules/scene/GameobjectClicksModule"
 import { TargetListPanel } from "../windows/TargetsListPanel";
 import { BaseUnit } from "../actors/BaseUnit";
 import { Hero, UnitData } from "../Hero";
-import { OkPopup } from "../windows/OkPopup";
 import { CONST } from "../const/const";
 
 
@@ -38,7 +37,7 @@ export class GameplayRootScene extends Phaser.Scene {
   public player: HeroUnit;
   private unitsGrp: Phaser.GameObjects.Group;
   private deployedSquads: Array<SquadUnit> = [];
-  private selectedSquad: SquadUnit;
+  private selectedUnit: BaseUnit;
 
   // windows
   private targetListPanel: TargetListPanel;
@@ -93,15 +92,15 @@ export class GameplayRootScene extends Phaser.Scene {
 
     this.cursorModule.onClick = (cursor) => {
       if (!this.cameraDragModule.isDrag && !this.clicksTracker.objectClickedInThisFrame) {
-        if (this.selectedSquad) {
-          if(this.selectedSquad.state.isFighting) {
-            this.selectedSquad.combat.stopFight('command');
+        let squad = this.selectedUnit;
+        if (squad) {
+          if (squad.state.isFighting) {
+            squad.combat.stopFight('command');
           }
-          if (this.selectedSquad.state.isChasing) {
-            this.selectedSquad.chase.stop();
+          if (squad.state.isChasing) {
+            squad.chase.stop();
           }
-          this.selectedSquad.mover.moveTo(cursor, true);
-          this.selectedSquad = null;
+          squad.mover.moveTo(cursor);
         } else {
           if (player.state.isFighting) {
             player.combat.stopFight('command');
@@ -120,8 +119,11 @@ export class GameplayRootScene extends Phaser.Scene {
 
     this.add.existing(player);
     this.player = player;
+    player.selection.showHard();
+    this.selectedUnit = player;
 
-    player.mover.placeToTile({i: 17, j: 2});
+
+    player.mover.placeToTile({ i: 17, j: 2 });
     this.cameras.main.centerOn(player.x, player.y);
     this.unitsGrp.add(this.player);
     let units = new UnitsPanel();
@@ -130,18 +132,23 @@ export class GameplayRootScene extends Phaser.Scene {
     units.onUnitAttack = (conf: UnitData) => {
       let squad = this.findOrDeploySquad(conf);
       squad.chase.deployDefender(player);
-      
+
       this.add.existing(squad);
       this.unitsGrp.add(squad);
       this.deployedSquads.push(squad);
     }
-    units.onUnitReturn = (conf: UnitData) => {
+    units.onUnitRecall = (conf: UnitData) => {
       for (let squad of this.deployedSquads) {
         if (squad.conf.id == conf.id) {
           if (squad.state.isFighting) {
             squad.combat.stopFight('return');
           }
-          this.returnSquad(squad);
+          if (this.selectedUnit == squad) {
+            squad.selection.hideHard();
+            this.selectedUnit = this.player;
+            this.player.selection.showHard();
+          }
+          this.recallSquad(squad);
         }
       }
     }
@@ -159,7 +166,15 @@ export class GameplayRootScene extends Phaser.Scene {
 
     this.clicksTracker.on('click', (object: BaseUnit) => {
       // deselect old
-      this.targetListPanel.deselectAll()
+      this.targetListPanel.deselectAll();
+      let squad: SquadUnit = (object as SquadUnit)
+      if (squad) {
+        if (this.selectedUnit) {
+          this.selectedUnit.selection.hideHard();
+        }
+        this.selectedUnit = squad
+        squad.selection.showHard();
+      }
 
       if (object.conf.id.indexOf('enemy') == -1) {
         return;
@@ -179,10 +194,10 @@ export class GameplayRootScene extends Phaser.Scene {
     this.createEnemy(14, 1);
 
     this.contextMenuModule.onReturnClicked = (object: BaseUnit) => {
-      this.returnSquad(object as SquadUnit);
+      this.recallSquad(object as SquadUnit);
     };
     this.contextMenuModule.onMoveClicked = (object: BaseUnit) => {
-      this.selectedSquad = object as SquadUnit;
+      this.selectedUnit = object as SquadUnit;
     };
     this.contextMenuModule.onReconClicked = (object: BaseUnit) => {
       // Send scouts to that object
@@ -193,7 +208,7 @@ export class GameplayRootScene extends Phaser.Scene {
       object.aggressedBy(player);
       // Start scouting when scouts arrive to object
       scout.mover.onPathComplete = () => {
-        
+
         this.unitsGrp.remove(scout, true);
         scout.destroy();
         if ('scoutee' in object) {
@@ -218,17 +233,17 @@ export class GameplayRootScene extends Phaser.Scene {
     };
   }
 
-  private returnSquad(squad: SquadUnit) {
+  private recallSquad(squad: SquadUnit) {
     // squad.chase.start(this.player, () => {
-      console.log('returned');
-      this.unitsGrp.remove(squad, true);
-      this.deployedSquads = this.deployedSquads.filter((o, i, arr) => { return o != squad });
-      squad.destroy();
+    console.log('returned');
+    this.unitsGrp.remove(squad, true);
+    this.deployedSquads = this.deployedSquads.filter((o, i, arr) => { return o != squad });
+    squad.destroy();
     // });
   }
 
   private createEnemy(i: number, j: number) {
-    let worldPos = this.grid.gridToWorld({i: i, j: j});
+    let worldPos = this.grid.gridToWorld({ i: i, j: j });
     let enemyUnit = new SquadUnit(this, worldPos.x + 16, worldPos.y + 16, this.grid, Hero.makeRogueSquadConf(), 2);
     enemyUnit.mover.placeToTile(enemyUnit.tile);
     this.add.existing(enemyUnit);

@@ -16,7 +16,8 @@ export class ContextMenuWindow extends BaseWindow {
 
     // public
     public buttons: HTMLInputElement[] = [];
-
+    public object: any;
+    
     constructor(x:number, y:number, buttons: string[], width:number = ContextMenuWindow.defaultWidth) {
         super();
         this.width = width;

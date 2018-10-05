@@ -54,7 +54,6 @@ export class UnitChaseModule implements IUnitModule {
       this.claimedDest = null;
     }
   }
-  
 
 
   public redeployDefender() {
@@ -97,6 +96,7 @@ export class UnitChaseModule implements IUnitModule {
 
   public stop() {
     this.setTarget(null);
+    this.unclaimDest();
     this.mover.onPathComplete = null;
     this.mover.onStepComplete = null;
     this.onChaseComplete = null;

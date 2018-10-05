@@ -55,7 +55,14 @@ export class ContextMenuModule {
   // Private
 
   private handleClick(object: BaseUnit) {
-    if (!this.targetList.isTargeted(object)) {
+    // if (!this.targetList.isTargeted(object)) {
+    let currentObj = null;
+    if (this.contextWindow) {
+      currentObj = this.contextWindow.object;
+      this.destroyContextWindow();
+    }
+
+    if (object.selection.isHard && object != currentObj) {
       this.showContextWindowForObject(object);
     }
   }
@@ -78,6 +85,8 @@ export class ContextMenuModule {
     } else {
       this.contextWindow = this.makeEnemySquadWindow(object);
     }
+    this.contextWindow.object = object;
+
     this.contextWindow.onDestroy = (w) => {
       this.contextWindow = null
     };

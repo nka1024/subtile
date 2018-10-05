@@ -64,6 +64,9 @@ export class UnitSelectionModule implements IUnitModule {
     this.destroyHard();
   }
 
+  public get isHard():boolean { return this.hardFrame != null }
+  public get isSoft():boolean { return this.softFrame != null }
+
   private destroySoft() {
     if (this.softFrame) {
       this.softFrame.destroy();

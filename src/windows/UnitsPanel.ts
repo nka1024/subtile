@@ -16,7 +16,7 @@ export class UnitsPanel extends BaseWindow {
 
   // public
   public onUnitAttack: (conf: UnitData) => void;
-  public onUnitReturn: (conf: UnitData) => void;
+  public onUnitRecall: (conf: UnitData) => void;
   public filenamePrefix: string;
 
   // private
@@ -96,8 +96,8 @@ export class UnitsPanel extends BaseWindow {
     item.onSelectionChange = (selected: boolean) => {
         if (selected && this.onUnitAttack) {
           this.onUnitAttack(conf);
-        } else if (!selected && this.onUnitReturn) {
-          this.onUnitReturn(conf);
+        } else if (!selected && this.onUnitRecall) {
+          this.onUnitRecall(conf);
         }
     };
     let onIconClick = () => {
