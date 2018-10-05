@@ -176,6 +176,7 @@ export class GameplayRootScene extends Phaser.Scene {
     this.createEnemy(8, 19);
     this.createEnemy(15, 10);
     this.createEnemy(20, 9);
+    this.createEnemy(14, 1);
 
     this.contextMenuModule.onReturnClicked = (object: BaseUnit) => {
       this.returnSquad(object as SquadUnit);

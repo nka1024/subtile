@@ -12,6 +12,7 @@ export type UnitData = {
   name: string;
   health: number;
   energy: number;
+  range: number;
   quantity: number;
 }
 
@@ -32,7 +33,8 @@ export class Hero {
       icon: "infantry_1_icon",
       health: 1,
       energy: 1,
-      quantity: 1
+      range: 1,
+      quantity: 1,
     };
   }
 
@@ -43,6 +45,7 @@ export class Hero {
       icon: "infantry_1_icon",
       health: 1,
       energy: 1,
+      range: 1,
       quantity: 1
     };
   }
@@ -54,6 +57,7 @@ export class Hero {
       name: "Rogues",
       health: 1,
       energy: 1,
+      range: 1,
       quantity: 99
     };
   }
@@ -66,6 +70,7 @@ export class Hero {
       name: "Infantry",
       health: 1,
       energy: 1,
+      range: 2,
       quantity: 99
     });
 
@@ -74,6 +79,7 @@ export class Hero {
         id: 'type_' + (i + 2) + '_unit_1',
         icon: "infantry_2_icon",
         name: "Archers",
+        range: 1,
         health: Math.random(),
         energy: Math.random(),
         quantity: Math.floor(Math.random() * 10) * 10

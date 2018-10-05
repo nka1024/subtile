@@ -154,10 +154,10 @@ export class TileGrid {
     return null;
   }
 
-  public findClosestUnits(to: Tile, side: string): SquadUnit[] {
+  public findClosestUnits(to: Tile, side: string, range: number): SquadUnit[] {
     let result = [];
     let work = { i: 0, j: 0 }
-    for (let radius = 1; radius <= 1; radius++) {
+    for (let radius = range; radius <= range; radius++) {
       for (let i = -radius; i <= radius; i++) {
         for (let j = -radius; j <= radius; j++) {
           work.i = to.i + i;

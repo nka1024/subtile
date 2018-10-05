@@ -72,7 +72,9 @@ export class UnitCombatModule implements IUnitModule {
 
   public sufferAttack(attack: { attacker: BaseUnit, damage: number }) {
     if (!this.state.isFighting && !this.state.isMoving && !this.state.isPathfinding) {
-      this.startFight(attack.attacker);
+      if (this.isTargetInRange(attack.attacker)) {
+        this.startFight(attack.attacker);
+      }
     } else {
       if (this.owner.conf.health - attack.damage <= 0) {
         this.stopFight("death");
@@ -88,6 +90,10 @@ export class UnitCombatModule implements IUnitModule {
   }
 
   public startFight(target: BaseUnit) {
+    if (!this.isTargetInRange(target)) {
+      console.log('won\'t start fight - target too far')
+      return;
+    }
     console.log('start fight against: ' + target.conf.id);
     let direction = this.owner.perimeter.findRelativePerimeterSpot(target);
     this.setTarget(target);
@@ -114,13 +120,11 @@ export class UnitCombatModule implements IUnitModule {
     }
   }
 
-
   // Private
 
   private performAttack() {
     if (this.state.isFighting && this.target) {
-      let distance = this.grid.distance(this.owner.tile, this.target.tile);
-      if (distance.i > 1 || distance.j > 1) {
+      if (!this.isTargetInRange(this.target)) {
         this.stopFight("target_too_far");
         return;
       } 
@@ -143,6 +147,11 @@ export class UnitCombatModule implements IUnitModule {
     }
   }
 
+  private isTargetInRange(target: BaseUnit): boolean {
+    let distance = this.grid.distance(this.owner.tile, target.tile, true);
+    return distance.i <= this.owner.conf.range && distance.j <= this.owner.conf.range;
+  }
+
   private showFloatyText(damage: number) {
     let floatyX = this.target.x + Math.random() * 10 - 5;
     let floatyY = this.target.y - Math.random() * 10 - 10;
@@ -151,7 +160,8 @@ export class UnitCombatModule implements IUnitModule {
   }
 
   private findTargets() {
-    let nearest = this.grid.findClosestUnits(this.owner.tile, this.owner.side == "attack" ? "defend" : "attack");
+    let side = this.owner.side == "attack" ? "defend" : "attack";
+    let nearest = this.grid.findClosestUnits(this.owner.tile, side, this.owner.conf.range);
     for (let squad of nearest) {
       if (!squad.state.isMoving) {
         console.log('wanna attack ' + squad.conf.id);
