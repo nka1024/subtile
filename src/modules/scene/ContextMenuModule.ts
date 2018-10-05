@@ -16,10 +16,11 @@ export class ContextMenuModule {
   // Public
   public onReconClicked: (object: BaseUnit) => void;
   public onReturnClicked: (object: BaseUnit) => void;
-  
+  public onMoveClicked: (object: BaseUnit) => void;
+
   // Private
   private contextWindow: ContextMenuWindow;
-  
+
   // Dependencies 
   private scene: Phaser.Scene;
   private targetList: TargetListPanel;
@@ -65,32 +66,47 @@ export class ContextMenuModule {
     let y = (p.y - camera.midPoint.y) * camera.zoom;
     let halfW = camera.width / 2;
     let halfH = camera.height / 2;
-    
-    return {x: halfW + x, y: halfH + y};
+
+    return { x: halfW + x, y: halfH + y };
   }
 
   private showContextWindowForObject(object: BaseUnit) {
     this.destroyContextWindow();
 
-    let p = this.worldToScreen({x: object.x, y: object.y});
-
-    let isDeployedSquad = object.conf.id.indexOf('type') != -1;
-    this.contextWindow = new ContextMenuWindow(p.x - ContextMenuWindow.defaultWidth / 2, p.y + 16);
-    this.contextWindow.button.value = isDeployedSquad ? "Return" : "Scout";
-    this.contextWindow.button.addEventListener('click', () => {
-      if (this.onReconClicked) {
-        if (isDeployedSquad) {
-          this.onReturnClicked(object);
-        }
-        else {
-          this.onReconClicked(object);
-        }
-      }
-    });
+    if (object.conf.id.indexOf('type') != -1) {
+      this.contextWindow = this.makeHeroSquadWindow(object);
+    } else {
+      this.contextWindow = this.makeEnemySquadWindow(object);
+    }
     this.contextWindow.onDestroy = (w) => {
       this.contextWindow = null
     };
     this.contextWindow.show();
+  }
+
+  private makeHeroSquadWindow(object: BaseUnit): ContextMenuWindow {
+    let p = this.worldToScreen(object);
+    let buttons = ["Move", "Return"];
+    let window = new ContextMenuWindow(p.x - ContextMenuWindow.defaultWidth / 2, p.y + 16, buttons);
+    window.buttons[0].addEventListener('click', () => {
+      this.onMoveClicked(object);
+    });
+    window.buttons[1].addEventListener('click', () => {
+      this.onReturnClicked(object);
+    });
+    return window
+  }
+
+  private makeEnemySquadWindow(object: BaseUnit): ContextMenuWindow {
+    let buttons = ["Scout"];
+    let p = this.worldToScreen(object);
+    let window = new ContextMenuWindow(p.x - ContextMenuWindow.defaultWidth / 2, p.y + 16, buttons);
+    window.buttons[0].addEventListener('click', () => {
+      if (this.onReconClicked) {
+        this.onReconClicked(object);
+      }
+    });
+    return window;
   }
 
   private destroyContextWindow() {

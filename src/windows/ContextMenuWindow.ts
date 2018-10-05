@@ -15,9 +15,9 @@ export class ContextMenuWindow extends BaseWindow {
     public static defaultWidth:number = 100;
 
     // public
-    public button: HTMLInputElement;
+    public buttons: HTMLInputElement[] = [];
 
-    constructor(x:number, y:number, width:number = ContextMenuWindow.defaultWidth) {
+    constructor(x:number, y:number, buttons: string[], width:number = ContextMenuWindow.defaultWidth) {
         super();
         this.width = width;
 
@@ -25,13 +25,38 @@ export class ContextMenuWindow extends BaseWindow {
         this.element.style.left = x + "px";
         this.element.style.top = y + "px";
         this.element.style.width = width + "px";
-        this.button = this.element.querySelector(".recon_button");
-
-        this.button.addEventListener('click', () => {
+        this.buttons.push(this.element.querySelector(".recon_button"));
+        this.buttons[0].value = buttons[0];
+        this.buttons[0].addEventListener('click', () => {
             this.destroy();
         });
+
+        let container = this.element.querySelector(".button_container") as HTMLElement;
+        
+        buttons.shift();
+        for(let value of buttons) {
+            let button = this.createButton(container);
+            button.value = value;
+            this.buttons.push(button);
+            button.addEventListener('click', () => {
+                this.destroy();
+            });
+        }
     }
 
+    private createButton(parent: HTMLElement): HTMLInputElement {
+        var element = document.createElement('div');
+        element.className = "submit ";
+        element.id = "loginForm";
+        element.style.display = "flex";
+        element.style.textAlign = "center";
+        element.style.padding = "0px"
+        element.innerHTML = '<input class="btn btn-blue inner_button" style="margin-left: 5px; margin-right: 5px; margin-bottom: 5px; height: 30px; padding: 0px; padding-left:10px; padding-right:10px; font-size: 12px; vertical-align: middle;" type="button" value="value" />'
+        let button: HTMLInputElement = element.querySelector('.inner_button');
+        parent.appendChild(element);
+        
+        return button;
+    }
     // Window HTML properties
     protected getWindowName(): string { return "context_object_popup" }
     protected getInnerHTML(): string  { return ContextMenuWindow.innerHtml }

@@ -126,6 +126,7 @@ export class TileGrid {
   public unclaimDest(tile: Tile) {
     this.dests[tile.i][tile.j] = 0;
   }
+  
   public claim(tile: Tile) {
     this.claims[tile.i][tile.j] = 1;
   }

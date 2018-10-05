@@ -38,6 +38,7 @@ export class GameplayRootScene extends Phaser.Scene {
   public player: HeroUnit;
   private unitsGrp: Phaser.GameObjects.Group;
   private deployedSquads: Array<SquadUnit> = [];
+  private selectedSquad: SquadUnit;
 
   // windows
   private targetListPanel: TargetListPanel;
@@ -92,7 +93,12 @@ export class GameplayRootScene extends Phaser.Scene {
 
     this.cursorModule.onClick = (cursor) => {
       if (!this.cameraDragModule.isDrag && !this.clicksTracker.objectClickedInThisFrame) {
-        player.mover.moveTo(cursor);
+        if (this.selectedSquad) {
+          this.selectedSquad.mover.moveTo(cursor, true);
+          this.selectedSquad = null;
+        } else {
+          player.mover.moveTo(cursor);
+        }
       }
     };
 
@@ -164,6 +170,9 @@ export class GameplayRootScene extends Phaser.Scene {
 
     this.contextMenuModule.onReturnClicked = (object: BaseUnit) => {
       this.returnSquad(object as SquadUnit);
+    };
+    this.contextMenuModule.onMoveClicked = (object: BaseUnit) => {
+      this.selectedSquad = object as SquadUnit;
     };
     this.contextMenuModule.onReconClicked = (object: BaseUnit) => {
       // Send scouts to that object
