@@ -9,7 +9,6 @@ import { IScoutable } from "./IScouteable";
 
 import { TileGrid } from "../TileGrid";
 import { ScouteeModule } from "../modules/unit/ScouteeModule";
-import { UnitSelectionModule } from "../modules/unit/UnitSelectionModule";
 import { ISelectable } from "./ISelectable";
 import { BaseUnit } from "./BaseUnit";
 import { UnitData } from "../Hero";
@@ -26,12 +25,12 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
   private banner: Phaser.GameObjects.Image;
 
   private onFightEnd:() => void;
-
+    
   constructor(scene: Phaser.Scene, x: number, y: number, grid: TileGrid, conf: UnitData, squadType: number) {
     super(scene, x, y, CONST.SQUAD_SPEED, grid, conf, 'infantry_' + squadType + '_idle_48x48');
 
     this.banner = scene.add.image(0, 0, this.side == "attack" ? "banner_red_11x31" : "banner_hazel_11x31");
-
+    
     this.squadType = squadType;
     this.scoutee = new ScouteeModule(this.progress);
     this.core.addModules([this.scoutee, this.selection]);
@@ -91,7 +90,7 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
     this.banner.y = this.y - 8;
     this.banner.depth = this.depth + 1;
 
-    this.targetScanUpdate()
+    this.targetScanUpdate();
   }
 
   destroy() {
