@@ -22,9 +22,10 @@ export class UnitChaseModule implements IUnitModule {
 
   private onChaseComplete: () => void;
   private lastDest: { i: number, j: number };
-  private claimedSpot: UnitPerimeterSpot;
 
   private target: BaseUnit;
+
+  private claimedDest: Tile;
 
   constructor(owner: BaseUnit, state: UnitStateModule, mover: UnitMoverModule, grid) {
     this.owner = owner;
@@ -40,6 +41,21 @@ export class UnitChaseModule implements IUnitModule {
     this.state.isChasing = target != null;
   }
 
+  private claimDest(tile: Tile) {
+    if (this.grid.isFree(tile)) {
+      this.grid.claimDest(tile);
+      this.claimedDest = tile;
+    }
+  }
+
+  private unclaimDest() {
+    if (this.claimedDest) {
+      this.grid.unclaimDest(this.claimedDest);
+      this.claimedDest = null;
+    }
+  }
+  
+
 
   public redeployDefender() {
     this.deployDefender(this.target);
@@ -51,6 +67,7 @@ export class UnitChaseModule implements IUnitModule {
 
 
   public start(target: BaseUnit, onComplete: () => void) {
+    this.unclaimDest();
     this.setTarget(target);
     
     this.lastDest = this.grid.worldToGrid(target);
@@ -66,11 +83,15 @@ export class UnitChaseModule implements IUnitModule {
     let onPathComplete = () => {
       if (!this.mover.claimedTile) {
         this.start(target, onComplete);
+      } else {
+
       }
     };
+    
     this.mover.onPathComplete = onPathComplete;
     this.mover.onStepComplete = onStepComplete;
     this.mover.moveTo(this.grid.gridToWorld(tile), true);
+    this.claimDest(tile);
   }
 
 

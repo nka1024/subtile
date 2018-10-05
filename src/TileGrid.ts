@@ -15,6 +15,7 @@ export class TileGrid {
   private tiles: Phaser.GameObjects.Image[][];
   private data: number[][];
   private claims: number[][];
+  private dests: number[][];
 
   private scene: Phaser.Scene;
   constructor(scene: Phaser.Scene) {
@@ -23,14 +24,17 @@ export class TileGrid {
     this.data = [];
     this.tiles = [];
     this.claims = [];
+    this.dests = [];
     for (let i = 0; i < 24; i++) {
       this.data[i] = [];
       this.tiles[i] = [];
       this.claims[i] = [];
+      this.dests[i] = [];
       for (let j = 0; j < 24; j++) {
         this.data[i][j] = 0;
         this.tiles[i][j] = null;
         this.claims[i][j] = 0;
+        this.dests[i][j] = 0;
       }
     }
     
@@ -103,9 +107,25 @@ export class TileGrid {
   public isFree(tile: Tile): boolean {
     if (tile.i < 0 && tile.i >= this.data.length) return false;
     if (tile.j < 0 && tile.j >= this.data.length) return false;
-    return this.data[tile.i][tile.j] == 0 && this.claims[tile.i][tile.j] == 0;
+    return this.data[tile.i][tile.j] == 0 && 
+          this.claims[tile.i][tile.j] == 0;
   }
+
+  public isFreeDest(tile: Tile): boolean {
+    if (tile.i < 0 && tile.i >= this.data.length) return false;
+    if (tile.j < 0 && tile.j >= this.data.length) return false;
+    return this.dests[tile.i][tile.j] == 0;
+  }
+
   
+  
+  public claimDest(tile: Tile) {
+    this.dests[tile.i][tile.j] = 1;
+  }
+
+  public unclaimDest(tile: Tile) {
+    this.dests[tile.i][tile.j] = 0;
+  }
   public claim(tile: Tile) {
     this.claims[tile.i][tile.j] = 1;
   }
@@ -121,7 +141,7 @@ export class TileGrid {
         for (let j = -radius; j <= radius; j++) {
           work.i = to.i + i;
           work.j = to.j + j;
-          if (this.isFree(work)) {
+          if (this.isFree(work) && this.isFreeDest(work)) {
             return work;
           }
         }
