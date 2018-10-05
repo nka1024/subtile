@@ -41,6 +41,7 @@ export class GameplayRootScene extends Phaser.Scene {
 
   // windows
   private targetListPanel: TargetListPanel;
+  private unitsPanel: UnitsPanel;
 
   // modules
   private cameraDragModule: CameraDragModule;
@@ -126,10 +127,10 @@ export class GameplayRootScene extends Phaser.Scene {
     player.mover.placeToTile({ i: 17, j: 2 });
     this.cameras.main.centerOn(player.x, player.y);
     this.unitsGrp.add(this.player);
-    let units = new UnitsPanel();
-    units.populate(hero.data.units);
-    units.show();
-    units.onUnitAttack = (conf: UnitData) => {
+    this.unitsPanel = new UnitsPanel();
+    this.unitsPanel.populate(hero.data.units);
+    this.unitsPanel.show();
+    this.unitsPanel.onUnitAttack = (conf: UnitData) => {
       let squad = this.findOrDeploySquad(conf);
       squad.chase.deployDefender(player);
 
@@ -137,17 +138,9 @@ export class GameplayRootScene extends Phaser.Scene {
       this.unitsGrp.add(squad);
       this.deployedSquads.push(squad);
     }
-    units.onUnitRecall = (conf: UnitData) => {
+    this.unitsPanel.onUnitRecall = (conf: UnitData) => {
       for (let squad of this.deployedSquads) {
         if (squad.conf.id == conf.id) {
-          if (squad.state.isFighting) {
-            squad.combat.stopFight('return');
-          }
-          if (this.selectedUnit == squad) {
-            squad.selection.hideHard();
-            this.selectedUnit = this.player;
-            this.player.selection.showHard();
-          }
           this.recallSquad(squad);
         }
       }
@@ -234,6 +227,20 @@ export class GameplayRootScene extends Phaser.Scene {
   }
 
   private recallSquad(squad: SquadUnit) {
+    // stop fighting
+    if (squad.state.isFighting) {
+      squad.combat.stopFight('return');
+    }
+    // deselect tile
+    if (this.selectedUnit == squad) {
+      squad.selection.hideHard();
+      this.selectedUnit = this.player;
+      this.player.selection.showHard();
+    }
+    // deselect unit item
+    this.unitsPanel.deselect(squad);
+
+
     // squad.chase.start(this.player, () => {
     console.log('returned');
     this.unitsGrp.remove(squad, true);
@@ -269,6 +276,15 @@ export class GameplayRootScene extends Phaser.Scene {
   }
 
   private handleUnitDeath(unit: BaseUnit) {
+     // deselect tile
+     if (this.selectedUnit == unit) {
+      unit.selection.hideHard();
+      this.selectedUnit = this.player;
+      this.player.selection.showHard();
+    }
+    // deselect unit item
+    this.unitsPanel.deselect(unit);
+
     this.unitsGrp.remove(unit, true);
     this.targetListPanel.removeTarget(unit);
     unit.destroy();

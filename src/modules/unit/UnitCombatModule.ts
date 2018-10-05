@@ -123,7 +123,7 @@ export class UnitCombatModule implements IUnitModule {
   // Private
 
   private performAttack() {
-    if (this.state.isFighting && this.target) {
+    if (this.target && this.state.isFighting) {
       if (!this.isTargetInRange(this.target)) {
         this.stopFight("target_too_far");
         return;

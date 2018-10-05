@@ -8,6 +8,7 @@
 import { BaseWindow } from "./BaseWindow";
 import { UnitData } from "../Hero";
 import { UnitItem } from "./elements/UnitItem";
+import { BaseUnit } from "../actors/BaseUnit";
 
   
 export class UnitsPanel extends BaseWindow {
@@ -56,7 +57,7 @@ export class UnitsPanel extends BaseWindow {
     }
   }
 
-  
+
   // Data population
 
   public populate(units: Array<UnitData>) {
@@ -71,6 +72,14 @@ export class UnitsPanel extends BaseWindow {
       
       this.unitsList.appendChild(unitItem.element);
       this.allUnitItems.push(unitItem);
+    }
+  }
+
+  public deselect(unit: BaseUnit) {
+    for (let item of this.allUnitItems) {
+      if (item.conf.id == unit.conf.id) {
+        item.setSelected(false);
+      }
     }
   }
 
