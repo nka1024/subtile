@@ -169,7 +169,7 @@ export class GameplayRootScene extends Phaser.Scene {
       this.targetListPanel.deselectAll();
       let squad: SquadUnit = (object as SquadUnit)
       if (squad) {
-        if (this.selectedUnit) {
+        if (this.selectedUnit && this.selectedUnit.active) {
           this.selectedUnit.selection.hideHard();
         }
         this.selectedUnit = squad
