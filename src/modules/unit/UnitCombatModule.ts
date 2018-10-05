@@ -49,7 +49,8 @@ export class UnitCombatModule implements IUnitModule {
 
   update() {
     // start fight if attacker and defender are in the same tile
-    if (this.state.isChasing && !this.state.isFighting && !this.state.isMoving) {
+    // if (this.state.isChasing && !this.state.isFighting && !this.state.isMoving) {
+    if (!this.state.isFighting && !this.state.isMoving && !this.state.isPathfinding) {
       this.findTargets();
     }
   }
@@ -70,7 +71,7 @@ export class UnitCombatModule implements IUnitModule {
   // public
 
   public sufferAttack(attack: { attacker: BaseUnit, damage: number }) {
-    if (!this.state.isFighting) {
+    if (!this.state.isFighting && !this.state.isMoving && !this.state.isPathfinding) {
       this.startFight(attack.attacker);
     } else {
       if (this.owner.conf.health - attack.damage <= 0) {
@@ -99,9 +100,9 @@ export class UnitCombatModule implements IUnitModule {
     this.attackTimer = setInterval(() => { this.performAttack() }, 1000);
   }
 
-  // reason: 'death', 'dead_target', 'no_target', 'return'
+  /// reason: 'death', 'dead_target', 'no_target', 'return', 'command', 'target_too_far'
   public stopFight(reason: string) {
-    console.log('stop fight: ' + this.owner.conf.id);
+    console.log('stop fight: ' + this.owner.conf.id + ' (reason: ' + reason + ')');
     if (this.mover) {
       this.mover.pauseUpdates(false);
     }
@@ -117,6 +118,14 @@ export class UnitCombatModule implements IUnitModule {
   // Private
 
   private performAttack() {
+    if (this.state.isFighting && this.target) {
+      let distance = this.grid.distance(this.owner.tile, this.target.tile);
+      if (distance.i > 1 || distance.j > 1) {
+        this.stopFight("target_too_far");
+        return;
+      } 
+    }
+    
     if (!this.state.fightTarget || !this.state.fightTarget.active) {
       this.stopFight("no_target");
       return;
@@ -142,7 +151,13 @@ export class UnitCombatModule implements IUnitModule {
   }
 
   private findTargets() {
-    
+    let nearest = this.grid.findClosestUnits(this.owner.tile, this.owner.side == "attack" ? "defend" : "attack");
+    for (let squad of nearest) {
+      if (!squad.state.isMoving) {
+        console.log('wanna attack ' + squad.conf.id);
+        this.startFight(squad);
+      }
+    }
   }
 
 }

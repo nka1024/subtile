@@ -8,13 +8,15 @@
 import { js as easystar } from "easystarjs";
 import { UI_DEPTH } from "./const/const";
 import { Point, Tile } from "./types/Position";
+import { BaseUnit } from "./actors/BaseUnit";
+import { SquadUnit } from "./actors/SquadUnit";
 
 export class TileGrid {
 
   private grid: Phaser.GameObjects.Image[];
   private tiles: Phaser.GameObjects.Image[][];
   private data: number[][];
-  private claims: number[][];
+  private claims: BaseUnit[][];
   private dests: number[][];
 
   private scene: Phaser.Scene;
@@ -33,11 +35,11 @@ export class TileGrid {
       for (let j = 0; j < 24; j++) {
         this.data[i][j] = 0;
         this.tiles[i][j] = null;
-        this.claims[i][j] = 0;
+        this.claims[i][j] = null;
         this.dests[i][j] = 0;
       }
     }
-    
+
     this.initPathfinder();
     this.pathfinder.setGrid(this.data);
   }
@@ -83,14 +85,14 @@ export class TileGrid {
       for (let j = 0; j < 24; j++) {
         let n = this.data[i][j];
         let color = n == 0 ? "green" : "red";
-        this.tiles[i][j] = this.createTile({i: i, j: j}, color);
+        this.tiles[i][j] = this.createTile({ i: i, j: j }, color);
       }
     }
   }
 
-  public getTileIJ(p: Point):any {
+  public getTileIJ(p: Point): any {
     try {
-      if (p.x < 0 || p.y < 0) throw('cant be negative')
+      if (p.x < 0 || p.y < 0) throw ('cant be negative')
       let gridPos = this.worldToGrid(p);
       let tile = this.data[gridPos.i][gridPos.j];
       return {
@@ -105,20 +107,21 @@ export class TileGrid {
   }
 
   public isFree(tile: Tile): boolean {
-    if (tile.i < 0 && tile.i >= this.data.length) return false;
-    if (tile.j < 0 && tile.j >= this.data.length) return false;
-    return this.data[tile.i][tile.j] == 0 && 
-          this.claims[tile.i][tile.j] == 0;
+    return this.legit(tile) &&
+      this.data[tile.i][tile.j] == 0 &&
+      this.claims[tile.i][tile.j] == null;
   }
 
   public isFreeDest(tile: Tile): boolean {
-    if (tile.i < 0 && tile.i >= this.data.length) return false;
-    if (tile.j < 0 && tile.j >= this.data.length) return false;
-    return this.dests[tile.i][tile.j] == 0;
+    return this.legit(tile) && this.dests[tile.i][tile.j] == 0;
   }
 
-  
-  
+  public legit(tile: Tile): boolean {
+    if (tile.i < 0 && tile.i >= this.data.length) return false;
+    if (tile.j < 0 && tile.j >= this.data.length) return false;
+    return true;
+  }
+
   public claimDest(tile: Tile) {
     this.dests[tile.i][tile.j] = 1;
   }
@@ -126,17 +129,17 @@ export class TileGrid {
   public unclaimDest(tile: Tile) {
     this.dests[tile.i][tile.j] = 0;
   }
-  
-  public claim(tile: Tile) {
-    this.claims[tile.i][tile.j] = 1;
+
+  public claim(tile: Tile, unit: BaseUnit) {
+    this.claims[tile.i][tile.j] = unit;
   }
 
-  public unclaim(tile: Tile) {
-    this.claims[tile.i][tile.j] = 0;
+  public unclaim(tile: Tile, unit: BaseUnit) {
+    this.claims[tile.i][tile.j] = null;
   }
 
-  public findClosestFreeTile(to: Tile) {
-    let work = {i: 0, j: 0}
+  public findClosestFreeTile(to: Tile): Tile {
+    let work = { i: 0, j: 0 }
     for (let radius = 1; radius <= 4; radius++) {
       for (let i = -radius; i <= radius; i++) {
         for (let j = -radius; j <= radius; j++) {
@@ -151,7 +154,28 @@ export class TileGrid {
     return null;
   }
 
-  private createTile(tile: Tile, color: string):Phaser.GameObjects.Image {
+  public findClosestUnits(to: Tile, side: string): SquadUnit[] {
+    let result = [];
+    let work = { i: 0, j: 0 }
+    for (let radius = 1; radius <= 1; radius++) {
+      for (let i = -radius; i <= radius; i++) {
+        for (let j = -radius; j <= radius; j++) {
+          work.i = to.i + i;
+          work.j = to.j + j;
+          if (this.legit(work)) {
+            let squad = this.claims[work.i][work.j] as SquadUnit;
+            if (squad) {
+              if (squad.side == side)
+                result.push(squad);
+            }
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  private createTile(tile: Tile, color: string): Phaser.GameObjects.Image {
     let img = new Phaser.GameObjects.Image(this.scene, 0, 0, null);
     img.scaleX = 2;
     img.scaleY = 2;
@@ -173,7 +197,7 @@ export class TileGrid {
     let img = this.createTile(tile, color);
     this.tiles[tile.i][tile.j] = img;
     this.data[tile.i][tile.j] = "red" ? 1 : 0;
-    
+
     // todo: optimize?
     this.pathfinder.setGrid(this.data);
   }
@@ -184,16 +208,16 @@ export class TileGrid {
     let worldPosX = screenPosX + this.scene.cameras.main.scrollX;
     let worldPosY = screenPosY + this.scene.cameras.main.scrollY;
 
-    let snapPos = this.snapToGrid({x: worldPosX, y: worldPosY})
+    let snapPos = this.snapToGrid({ x: worldPosX, y: worldPosY })
     cursor.x = snapPos.x + 16;
     cursor.y = snapPos.y + 16;
   }
 
-  public export():any {
+  public export(): any {
     return this.data;
   }
 
-  public import(grid:any) {
+  public import(grid: any) {
     this.data = grid;
     this.pathfinder.setGrid(this.data);
   }
@@ -226,17 +250,17 @@ export class TileGrid {
     return this.distance(ap, bp, abs);
   }
 
-  public distance(a: Tile, b:Tile, abs: boolean = false): Tile {
-    if (abs) 
+  public distance(a: Tile, b: Tile, abs: boolean = false): Tile {
+    if (abs)
       return { i: Math.abs(a.i - b.i), j: Math.abs(a.j - b.j) };
-    else 
+    else
       return { i: a.i - b.i, j: a.j - b.j };
   }
 
 
   // Pathfinding with Easystarjs
 
-  private pathfinder:easystar;
+  private pathfinder: easystar;
   private initPathfinder() {
     this.pathfinder = new easystar();
     this.pathfinder.enableSync();
@@ -249,7 +273,7 @@ export class TileGrid {
       let result = null;
       if (path) {
         result = path.map((v, i, arr) => {
-          return {i: v.y, j: v.x};
+          return { i: v.y, j: v.x };
         });
       }
       callback(result);

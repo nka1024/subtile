@@ -15,6 +15,7 @@ export class UnitStateModule implements IUnitModule {
   public isChasing: boolean;
   public isFighting: boolean;
   public isMoving: boolean;
+  public isPathfinding: boolean;
 
   public chaseTarget: BaseUnit;
   public fightTarget: BaseUnit;

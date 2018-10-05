@@ -86,6 +86,7 @@ export class BaseUnit extends Phaser.GameObjects.Sprite implements IUnit {
   }
   
   public get side():string {
+    if (this.conf.id == "hero_squad") return "hero";
     return this.conf.id.includes("type_") ? "defend" : "attack";
   }
 }

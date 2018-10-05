@@ -129,6 +129,7 @@ export class UnitChaseModule implements IUnitModule {
   }
 
   destroy() {
+    this.unclaimDest();
     this.setTarget(null);
     this.owner = null;
     this.mover = null;

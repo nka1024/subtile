@@ -74,7 +74,9 @@ export class UnitMoverModule implements IUnitModule {
     //  if there's no dest or new dest given, find new path
     if (this.dest == null || this.dest.i != tileDest.i || this.dest.j != tileDest.j) {
       this.dest = tileDest;
+      this.state.isPathfinding = true;
       grid.findPath(tilePos, tileDest, (path) => {
+        this.state.isPathfinding = false;
         this.path = path;
         this.drawPathDots(grid);
         if (immediateStart) {
@@ -111,6 +113,7 @@ export class UnitMoverModule implements IUnitModule {
 
   public destroy() {
     this.destroyAllDots();
+    this.unclaimTile();
     this.onStepComplete = null;
     this.onPathComplete = null;
     this.grid = null;
@@ -127,14 +130,14 @@ export class UnitMoverModule implements IUnitModule {
 
   private claimTile(tile: Tile) {
     if (this.grid.isFree(tile)) {
-      this.grid.claim(tile);
+      this.grid.claim(tile, this.unit);
       this.claimedTile = tile;
     }
   }
 
   private unclaimTile() {
     if (this.claimedTile) {
-      this.grid.unclaim(this.claimedTile);
+      this.grid.unclaim(this.claimedTile, this.unit);
       this.claimedTile = null;
     }
   }

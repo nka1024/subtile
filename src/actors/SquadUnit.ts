@@ -108,10 +108,10 @@ export class SquadUnit extends BaseUnit implements IScoutable, ISelectable {
 
 
   private targetScanUpdate() {
-    if (!this.state.isChasing) {
+    if (!this.state.isChasing && this.side == 'attack') {
       let player = (this.scene as GameplayRootScene).player;
       let distToPlayer = this.grid.distanceXY(player, this, true);
-      if (distToPlayer.i <= 4 && distToPlayer.j <= 4) {
+      if (distToPlayer.i <= 2 && distToPlayer.j <= 2) {
         this.chase.start(player, () => { });
       }
     }

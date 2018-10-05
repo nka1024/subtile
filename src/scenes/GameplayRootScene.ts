@@ -94,9 +94,18 @@ export class GameplayRootScene extends Phaser.Scene {
     this.cursorModule.onClick = (cursor) => {
       if (!this.cameraDragModule.isDrag && !this.clicksTracker.objectClickedInThisFrame) {
         if (this.selectedSquad) {
+          if(this.selectedSquad.state.isFighting) {
+            this.selectedSquad.combat.stopFight('command');
+          }
+          if (this.selectedSquad.state.isChasing) {
+            this.selectedSquad.chase.stop();
+          }
           this.selectedSquad.mover.moveTo(cursor, true);
           this.selectedSquad = null;
         } else {
+          if (player.state.isFighting) {
+            player.combat.stopFight('command');
+          }
           player.mover.moveTo(cursor);
         }
       }
@@ -220,6 +229,7 @@ export class GameplayRootScene extends Phaser.Scene {
   private createEnemy(i: number, j: number) {
     let worldPos = this.grid.gridToWorld({i: i, j: j});
     let enemyUnit = new SquadUnit(this, worldPos.x + 16, worldPos.y + 16, this.grid, Hero.makeRogueSquadConf(), 2);
+    enemyUnit.mover.placeToTile(enemyUnit.tile);
     this.add.existing(enemyUnit);
     this.unitsGrp.add(enemyUnit);
     enemyUnit.events.addListener('death', () => { this.handleUnitDeath(enemyUnit); });
